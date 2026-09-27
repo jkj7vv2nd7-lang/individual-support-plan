@@ -1,0 +1,3167 @@
+<!DOCTYPE html>
+<html lang="ja" data-fs="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個別の支援・指導計画 ｜ 作成支援ツール</title>
+<meta name="excel-import-version" content="v46">
+<style>
+
+
+
+:root{
+  --bg:#e9edf3; --paper:#ffffff; --paper-2:#f4f7fb;
+  --ink:#15202e; --muted:#5b6a7c;
+  --brand:#193a63; --brand-2:#2b5790; --accent:#0e8a7c; --accent-ink:#0a6a5f;
+  --stamp:#c0452f; --amber:#b0701a; --ok:#26794c;
+  --line:color-mix(in oklab, var(--ink) 13%, transparent);
+  --line-2:color-mix(in oklab, var(--ink) 22%, transparent);
+  --brand-soft:color-mix(in oklab, var(--brand) 9%, var(--paper));
+  --accent-soft:color-mix(in oklab, var(--accent) 11%, var(--paper));
+  --stamp-soft:color-mix(in oklab, var(--stamp) 11%, var(--paper));
+  --amber-soft:color-mix(in oklab, var(--amber) 12%, var(--paper));
+  --step-0:clamp(.93rem,.9rem+.2vw,1rem);
+  --step-1:clamp(1.06rem,1rem+.4vw,1.22rem);
+  --step-2:clamp(1.32rem,1.15rem+.85vw,1.8rem);
+  --step-3:clamp(1.75rem,1.4rem+1.7vw,2.6rem);
+  --radius:13px;
+  --shadow:0 1px 2px rgba(18,32,52,.05), 0 10px 26px -18px rgba(18,32,52,.45);
+  --shadow-lg:0 2px 4px rgba(18,32,52,.06), 0 26px 50px -28px rgba(18,32,52,.5);
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+  --round:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html[data-fs="lg"]{font-size:18.5px}
+html[data-fs="xl"]{font-size:20.5px}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.8;font-size:var(--step-0)}
+h1,h2,h3,h4{font-family:var(--round);font-weight:900;line-height:1.32;margin:0 0 .35rem;letter-spacing:-.01em}
+h1{font-size:var(--step-3)} h2{font-size:var(--step-2)} h3{font-size:var(--step-1)} h4{font-size:1rem}
+p{margin:.2rem 0 .8rem}
+.lead{color:var(--muted);font-size:.93rem}
+.muted{color:var(--muted);font-size:.85rem}
+.small{font-size:.82rem}
+a{color:var(--brand-2)}
+:focus-visible{outline:3px solid color-mix(in oklab,var(--accent) 60%,white);outline-offset:2px;border-radius:6px}
+
+.appbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--brand),#16304f);color:#fff;box-shadow:0 6px 22px -14px rgba(10,25,45,.9)}
+.appbar .inner{max-width:1180px;margin:0 auto;padding:.55rem clamp(.7rem,2.4vw,1.3rem);display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.logo{font-family:var(--round);font-weight:900;font-size:1rem;display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.logo .mk{width:1.7rem;height:1.7rem;border-radius:9px;background:var(--accent);display:grid;place-items:center;font-size:.85rem;color:#fff}
+nav.main{display:flex;gap:.12rem;flex-wrap:wrap}
+nav.main button{background:transparent;border:none;color:#cddcf0;font-family:var(--round);font-weight:700;font-size:.82rem;padding:.34rem .58rem;border-radius:8px;cursor:pointer}
+nav.main button:hover{background:rgba(255,255,255,.13);color:#fff}
+nav.main button[aria-current="page"]{background:rgba(255,255,255,.22);color:#fff}
+.tools{margin-left:auto;display:flex;align-items:center;gap:.4rem}
+.tools .who{font-size:.76rem;color:#b9cbe4;white-space:nowrap}
+.tbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#e6eefb;font-size:.75rem;font-family:var(--round);font-weight:700;padding:.28rem .55rem;border-radius:8px;cursor:pointer}
+.tbtn:hover{background:rgba(255,255,255,.22)}
+.savedot{width:.6rem;height:.6rem;border-radius:50%;background:#6fdcae;box-shadow:0 0 0 3px rgba(111,220,174,.22)}
+.savedot.busy{background:#ffd479;box-shadow:0 0 0 3px rgba(255,212,121,.22)}
+.savedot.save-error{background:#ff7b7b;box-shadow:0 0 0 3px rgba(255,123,123,.22)}
+.drop-active{border-color:var(--brand)!important;background:var(--brand-soft)!important;transform:translateY(-1px)}
+.file-summary{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.65rem}
+.file-summary .chip{font-weight:700}
+.import-help{border-left:4px solid var(--brand);padding:.55rem .75rem;background:var(--brand-soft);border-radius:8px;margin-top:.7rem}
+button:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible{outline:3px solid color-mix(in oklab,var(--accent) 65%,white);outline-offset:3px}
+nav.main button:focus-visible,.tbtn:focus-visible{outline-color:#fff;outline-offset:3px}
+@media (pointer:coarse){button{min-height:2.45rem}}
+
+
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(.8rem,2.4vw,1.5rem)}
+.screen{display:none}
+.screen.active{display:block;animation:rise .32s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.active{animation:none}html{scroll-behavior:auto}}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(.9rem,2vw,1.3rem);box-shadow:var(--shadow)}
+.card+.card{margin-top:1rem}
+.stack>*+*{margin-top:1rem}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 auto}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap}
+.section-head{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.5rem}
+.eyebrow{font-family:var(--round);font-weight:700;font-size:.72rem;letter-spacing:.14em;color:var(--accent-ink);text-transform:uppercase}
+
+button{font-family:var(--round);font-weight:700;cursor:pointer;border:1px solid transparent;border-radius:10px;padding:.55rem .95rem;font-size:.89rem;transition:transform .08s ease,box-shadow .15s ease,background .15s ease,filter .15s ease}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.b-primary{background:var(--accent);color:#fff}
+.b-primary:hover{filter:brightness(1.06);box-shadow:0 8px 18px -10px var(--accent)}
+.b-brand{background:var(--brand);color:#fff}
+.b-ghost{background:var(--paper);color:var(--ink);border-color:var(--line-2)}
+.b-ghost:hover{background:var(--paper-2)}
+.b-stamp{background:var(--stamp);color:#fff}
+.b-soft{background:var(--brand-soft);color:var(--brand);border-color:color-mix(in oklab,var(--brand) 24%,transparent)}
+.b-soft:hover{background:color-mix(in oklab,var(--brand) 16%,var(--paper))}
+.b-sm{padding:.35rem .7rem;font-size:.8rem}
+
+input[type=text],input[type=date],select,textarea{width:100%;font-family:var(--sans);font-size:.95rem;color:var(--ink);background:var(--paper);border:1px solid var(--line-2);border-radius:9px;padding:.55rem .62rem}
+textarea{resize:vertical;line-height:1.75}
+.next-action{border:1px solid var(--line-2);background:linear-gradient(135deg,var(--paper),var(--soft));border-radius:14px;padding:1rem 1.1rem;display:flex;align-items:center;gap:.9rem;justify-content:space-between}
+.next-action .na-main{min-width:0}.next-action .na-title{font-weight:800}.next-action .na-sub{font-size:.86rem;color:var(--muted);margin-top:.18rem}.next-action .na-btn{flex:none}
+.import-step{display:inline-flex;align-items:center;gap:.35rem;margin:.15rem .45rem .15rem 0}.import-step .num{display:inline-grid;place-items:center;width:1.45rem;height:1.45rem;border-radius:50%;background:var(--line);font-size:.78rem;font-weight:800}.import-step.done .num{background:var(--brand);color:#fff}
+
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+label.f{display:block;font-family:var(--round);font-weight:700;font-size:.83rem;color:var(--brand);margin-bottom:.25rem}
+label.f .tag{font-family:var(--sans);font-weight:400;font-size:.72rem;color:var(--muted)}
+
+.hero{position:relative;overflow:hidden;border-radius:16px;color:#fff;padding:clamp(1.2rem,3.2vw,2.1rem);background:linear-gradient(140deg,var(--brand),#28517f 62%,#12304f);box-shadow:var(--shadow-lg)}
+.hero::after{content:"";position:absolute;right:-70px;top:-90px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,color-mix(in oklab,var(--accent) 60%,transparent),transparent 68%);opacity:.55}
+.hero .kicker{font-family:var(--round);font-weight:700;letter-spacing:.14em;font-size:.74rem;color:#a9c6ea;margin:0}
+.hero h1{color:#fff;margin:.15rem 0 .3rem}
+.hero .sub{color:#cfe0f5;max-width:58ch;margin:0 0 1.1rem}
+.hero .cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:.85rem 1.5rem;font-size:1.02rem;box-shadow:0 14px 30px -16px rgba(0,0,0,.75)}
+.hero .cta:hover{filter:brightness(1.06)}
+.hero .alt{margin-left:.8rem;font-size:.85rem;color:#bcd2ee}
+.hero .alt button{padding:.32rem .68rem}
+
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+
+.ringwrap{display:flex;align-items:center;gap:1rem}
+.ring .track{stroke:var(--line);fill:none;stroke-width:11}
+.ring .val{stroke:var(--accent);fill:none;stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.ring text{font-family:var(--round);font-weight:900;fill:var(--brand)}
+.ring-facts{font-size:.85rem;color:var(--muted)}
+.ring-facts b{color:var(--ink)}
+
+.planrow{display:grid;grid-template-columns:auto auto auto 1fr auto auto;gap:.8rem;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:.8rem .9rem;margin-bottom:.6rem}
+.planrow:hover{box-shadow:var(--shadow)}
+@media (max-width:720px){.planrow{grid-template-columns:1fr 1fr;row-gap:.45rem}}
+.planrow .code{font-family:var(--round);font-weight:900;font-size:1.02rem}
+.badge{display:inline-block;padding:.08rem .62rem;border-radius:999px;font-size:.71rem;font-weight:700;color:#fff;white-space:nowrap}
+.badge.draft{background:#71808f}.badge.review{background:var(--amber)}.badge.approved{background:var(--ok)}
+.bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;min-width:110px}
+.bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),#4bbfae)}
+.planrow .next{font-size:.8rem;color:var(--muted)}
+
+.pad{background:var(--paper);border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--line) 31px,var(--line) 32px);background-position:0 12px}
+textarea.memo{background:transparent;border:none;box-shadow:none;min-height:240px;padding:.9rem 1rem;font-size:1.02rem;line-height:2;border-radius:0}
+textarea.memo:focus{box-shadow:none}
+.micbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.mic{display:inline-flex;align-items:center;gap:.5rem}
+.mic.rec{background:var(--stamp);color:#fff}
+.mic.rec .dot{width:.6rem;height:.6rem;border-radius:50%;background:#fff;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+@media (prefers-reduced-motion:reduce){.mic.rec .dot{animation:none}}
+.level{height:6px;flex:1;min-width:90px;border-radius:999px;background:var(--line);overflow:hidden}
+.level>i{display:block;height:100%;width:0%;background:var(--accent)}
+.chip{background:var(--accent-soft);color:var(--accent-ink);border:1px solid color-mix(in oklab,var(--accent) 30%,transparent);border-radius:999px;padding:.24rem .68rem;font-size:.79rem;font-weight:700;cursor:pointer;font-family:var(--round)}
+.chip:hover{background:color-mix(in oklab,var(--accent) 20%,var(--paper))}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.sticky{background:#fff6cf;border:1px solid #eddfa2;border-radius:10px;padding:.75rem .9rem;font-size:.84rem;color:#6a5a1c}
+.sticky b{color:#4a3d0e}
+
+.srow{display:grid;grid-template-columns:190px 1fr 1.6fr auto;gap:.55rem;align-items:start;padding:.55rem;border:1px solid var(--line);border-radius:11px;background:var(--paper-2);margin-bottom:.5rem}
+@media (max-width:820px){.srow{grid-template-columns:1fr}}
+.srow textarea{min-height:2.3rem;background:var(--paper)}
+.catdot{width:.55rem;height:.55rem;border-radius:50%;display:inline-block;margin-right:.4rem}
+
+.tabrail{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.4rem;margin-bottom:1rem}
+.tabrail button{flex:0 0 auto;display:flex;align-items:center;gap:.45rem;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:11px;padding:.5rem .8rem;font-size:.83rem}
+.tabrail button .n{width:1.45rem;height:1.45rem;border-radius:7px;display:grid;place-items:center;background:var(--line);color:var(--muted);font-size:.74rem}
+.tabrail button.done{border-color:color-mix(in oklab,var(--ok) 40%,transparent);color:var(--ok)}
+.tabrail button.done .n{background:var(--ok);color:#fff}
+.tabrail button.now{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:var(--shadow)}
+.tabrail button.now .n{background:var(--accent);color:#fff}
+.tabrail button.filled:not(.now){border-bottom:3px solid var(--accent)}
+.wizcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(1rem,2.4vw,1.55rem);box-shadow:var(--shadow)}
+.field{margin-bottom:1.05rem}
+.airow{margin-top:.35rem;display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.draftbox{background:var(--brand-soft);border:1px dashed color-mix(in oklab,var(--brand) 35%,transparent);border-radius:10px;padding:.65rem .85rem;margin-top:.5rem;font-size:.88rem;white-space:pre-wrap}
+.warnline{color:var(--stamp);font-size:.79rem;font-weight:700}
+.footnav{display:flex;gap:.5rem;justify-content:space-between;margin-top:1.3rem;flex-wrap:wrap;align-items:center}
+.tablenote{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:.6rem .8rem;font-size:.83rem;color:var(--muted);margin-bottom:.8rem}
+.gridtable{display:grid;gap:.5rem}
+.trow{display:grid;grid-template-columns:1.1fr 1.1fr 1.3fr 1.1fr;gap:.4rem;border:1px solid var(--line);border-radius:10px;padding:.5rem;background:var(--paper-2)}
+@media (max-width:760px){.trow{grid-template-columns:1fr}}
+.trow textarea{min-height:2.6rem;font-size:.88rem}
+.trow .rn{font-family:var(--round);font-weight:900;color:var(--muted);font-size:.8rem;grid-column:1/-1}
+.piinote{background:var(--stamp-soft);border:1px solid color-mix(in oklab,var(--stamp) 30%,transparent);color:#8f3323;border-radius:10px;padding:.55rem .8rem;font-size:.82rem;margin-bottom:.9rem}
+
+.issuelist{list-style:none;padding:0;margin:.4rem 0 0}
+.issuelist li{border-left:4px solid var(--line);padding:.5rem .75rem;margin-bottom:.4rem;background:var(--paper-2);border-radius:0 9px 9px 0;font-size:.88rem}
+.issuelist li.err{border-color:var(--stamp);background:var(--stamp-soft)}
+.issuelist li.warn{border-color:var(--amber);background:var(--amber-soft)}
+.issuelist li.info{border-color:var(--brand-2);background:var(--brand-soft)}
+.issuelist .rule{font-family:var(--round);font-weight:700;font-size:.76rem;color:var(--muted);display:block}
+.tagrow{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.6rem}
+.scoreband{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.scorebig{font-family:var(--round);font-weight:900;font-size:2.4rem;line-height:1}
+.checkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.6rem}
+.chk{display:flex;gap:.55rem;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:.6rem .7rem;background:var(--paper)}
+.chk .st{font-family:var(--round);font-weight:900;flex:0 0 auto}
+.chk.ok .st{color:var(--ok)}.chk.ng .st{color:var(--stamp)}
+
+.paper{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:clamp(1rem,3vw,2.2rem);max-width:860px;margin:0 auto}
+.paper h2{border-bottom:2.5px solid var(--brand);padding-bottom:.3rem;font-size:1.35rem}
+.paper .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.4rem .9rem;font-size:.88rem;border:1px solid var(--line);border-radius:8px;padding:.6rem .8rem;margin-bottom:1rem}
+.paper .meta span b{color:var(--muted);font-weight:400;font-size:.78rem;display:block}
+.paper section{margin-bottom:1.1rem;break-inside:avoid}
+.paper h3{font-size:1rem;color:var(--brand);border-left:4px solid var(--accent);padding-left:.5rem;margin-bottom:.35rem}
+.paper .body{white-space:pre-wrap;font-size:.92rem;border-bottom:1px solid var(--line);padding-bottom:.4rem;min-height:1.2rem}
+.paper .sign{display:flex;gap:1rem;justify-content:flex-end;margin-top:1.4rem;font-size:.85rem}
+.paper .hash{font-size:.72rem;color:var(--muted);margin-top:.6rem}
+
+/* 様式フォーム風 */
+.formtable{width:100%;border-collapse:collapse;font-size:.86rem}
+.formtable th,.formtable td{border:1px solid var(--line-2);padding:.4rem .5rem;vertical-align:top;text-align:left}
+.formtable th{background:var(--paper-2);font-family:var(--round);font-weight:700;color:var(--brand);width:30%;white-space:normal}
+.formtable td{white-space:pre-wrap}
+.formtable td.empty{color:var(--muted);font-style:italic}
+.formtable tr.sec td{background:var(--brand);color:#fff;font-family:var(--round);font-weight:700;letter-spacing:.05em}
+.maprow{display:grid;grid-template-columns:1.1fr 1.1fr 1.3fr;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.45rem .55rem;background:var(--paper-2);margin-bottom:.4rem}
+@media (max-width:760px){.maprow{grid-template-columns:1fr}}
+.maprow .rlabel{font-family:var(--round);font-weight:700;font-size:.83rem}
+.maprow .pv{font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.maprow.unset{border-color:color-mix(in oklab,var(--amber) 45%,transparent);background:var(--amber-soft)}
+
+.layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.8rem}
+.layer{border:1px solid var(--line);border-radius:12px;padding:.7rem .85rem;background:var(--paper)}
+.layer.record{border-color:var(--line-2)}
+.layer.share{border-color:color-mix(in oklab,var(--accent) 40%,transparent);background:var(--accent-soft)}
+.layer.support{border-color:color-mix(in oklab,var(--brand) 30%,transparent);background:var(--brand-soft)}
+.layer h4{margin:0 0 .3rem;font-family:var(--round);font-size:.9rem}
+.layer .txt{white-space:pre-wrap;font-size:.9rem;min-height:3rem}
+.softtag{display:inline-block;background:var(--stamp-soft);color:#8f3323;border-radius:6px;padding:0 .35rem;font-size:.78rem;margin:.1rem .15rem;font-weight:700}
+.dictrow{display:grid;grid-template-columns:160px 1fr;gap:.5rem;padding:.35rem .5rem;border-bottom:1px solid var(--line);font-size:.84rem}
+.dictrow .from{font-weight:700;color:var(--stamp)}
+@media (max-width:600px){.dictrow{grid-template-columns:1fr}}
+
+.notice{background:var(--amber-soft);border:1px solid color-mix(in oklab,var(--amber) 35%,transparent);color:#6a5313;border-radius:10px;padding:.55rem .8rem;font-size:.82rem}
+.privacy{display:flex;gap:.5rem;align-items:center;background:var(--accent-soft);border:1px solid color-mix(in oklab,var(--accent) 28%,transparent);color:var(--accent-ink);border-radius:10px;padding:.5rem .75rem;font-size:.81rem}
+
+@media print{
+  .appbar,.noprint,.tabrail{display:none!important}
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  .screen{display:none!important}
+  .screen.active{display:block!important}
+  .paper{border:none;box-shadow:none;padding:0;max-width:none}
+  .formtable th{background:#f1f1f1}
+}
+@page{size:A4;margin:16mm}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(18px);opacity:0;pointer-events:none;background:var(--brand);color:#fff;padding:.6rem 1.15rem;border-radius:999px;font-family:var(--round);font-weight:700;font-size:.87rem;box-shadow:var(--shadow-lg);transition:.22s;z-index:80;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{color:var(--muted);font-size:.78rem;text-align:center;padding:1.8rem 0 1rem}
+details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-size:.88rem;color:var(--brand)}
+
+
+.mt{margin-top:1rem}
+.mt2{margin-top:1.6rem}
+.seiro-banner{display:flex;gap:.75rem;align-items:center;background:linear-gradient(135deg,var(--brand),#28517f);color:#fff;border-radius:13px;padding:.85rem 1.05rem}
+.seiro-banner b{font-family:var(--round)}
+.seiro-banner .small{color:#cfe0f5}
+.seiro-banner svg{color:#8fe3d6;flex:0 0 auto}
+.importbox{background:var(--paper);border:1px solid var(--line-2);border-radius:12px;padding:.85rem 1rem;margin-top:1rem}
+.importbox code{background:var(--brand-soft);color:var(--brand);padding:0 .3rem;border-radius:5px;font-size:.82rem}
+.dict{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dictrow:last-child{border-bottom:none}
+.rnin{font-family:var(--round);font-weight:700;font-size:.85rem;background:var(--paper);border:1px solid var(--line-2);border-radius:8px;padding:.3rem .45rem;width:100%}
+.formtable th{white-space:normal}
+
+
+.librow{display:flex;gap:.6rem;align-items:flex-start;margin-top:.5rem}
+.liblabel{flex:0 0 84px;font-family:var(--round);font-weight:700;font-size:.8rem;color:var(--brand);padding-top:.25rem}
+.libcard{border:1px solid var(--line);border-radius:11px;background:var(--paper-2);padding:.6rem .75rem;margin-bottom:.5rem}
+.libcard .libtext{font-size:.93rem;line-height:1.75}
+.libtags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.35rem}
+.ltag{background:var(--accent-soft);color:var(--accent-ink);border:1px solid color-mix(in oklab,var(--accent) 26%,transparent);border-radius:999px;padding:0 .5rem;font-size:.71rem;font-weight:700}
+.ltag.dis{background:var(--brand-soft);color:var(--brand);border-color:color-mix(in oklab,var(--brand) 26%,transparent)}
+.ltag.stage{background:var(--amber-soft);color:#6a5313;border-color:color-mix(in oklab,var(--amber) 30%,transparent)}
+
+</style>
+
+</head>
+<body>
+
+
+
+<div class="appbar">
+  <div class="inner">
+    <div class="logo"><span class="mk">計</span>個別の支援・指導計画</div>
+    <nav class="main" id="nav" aria-label="画面">
+      <button data-go="home">ホーム</button>
+      <button data-go="memo">メモから作成</button>
+      <button data-go="wizard">計画の入力</button>
+      <button data-go="library">文例を探す</button>
+      <button data-go="soften">配慮した文面</button>
+      <button data-go="check">チェック</button>
+      <button data-go="form">様式・差し込み</button>
+      <button data-go="preview">プレビュー</button>
+      <button data-go="import">📂 Excel取り込み</button>
+      <button data-go="data">データ</button>
+    </nav>
+    <div class="tools">
+      <span class="savedot" id="savedot" title="保存状態" role="status" aria-label="保存済み"></span>
+      <span class="who">先生</span>
+      <button class="tbtn" id="btnFs" title="文字の大きさ">文字</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- HOME -->
+  <section class="screen active" id="s-home">
+    <div class="hero">
+      <p class="kicker">きょうの仕事</p>
+      <h1>メモから、まっすぐ計画へ。</h1>
+      <p class="sub">走り書きや思いつきをそのまま書いてな。付箋みたいなメモを項目に振り分けて下ごしらえするわ。否定的なメモも、保護者や支援委員会に見せられる文面に整えるお手伝いをするで。自治体や学校の様式にもそのまま差し込める。</p>
+      <button class="cta" data-go="memo">📝 メモから計画をつくる</button>
+      <span class="alt">または <button class="b-ghost b-sm" data-go="form">様式に差し込む</button></span>
+    </div>
+
+    <div id="resumeAction" class="next-action mt" hidden aria-live="polite"></div>
+    <div class="card mt" id="quickStart">
+      <div class="section-head"><span class="eyebrow">はじめての先生へ</span><h3 style="margin:0">まずは10分で、1件つくってみる</h3></div>
+      <div class="checkgrid">
+        <div class="chk ok"><span class="st">1</span><div><b>メモを書く</b><br><span class="muted">「できたこと・好きなこと・困っていること」を箇条書きで入力</span></div></div>
+        <div class="chk ok"><span class="st">2</span><div><b>計画を整える</b><br><span class="muted">振り分けと文章を確認し、必要な項目だけ追記</span></div></div>
+        <div class="chk ok"><span class="st">3</span><div><b>チェックして保存</b><br><span class="muted">チェック画面で見直し、必要なら様式へ差し込む</span></div></div>
+      </div>
+      <div class="row mt"><button class="b-brand b-sm" data-go="memo">10分で始める</button><span class="small muted">入力内容はこのブラウザ内に保存されます。</span></div>
+    </div>
+    <div id="homeSummary" class="card mt" aria-live="polite">
+      <div class="section-head"><span class="eyebrow">年度の見通し</span><h3 style="margin:0">いま確認する計画</h3></div>
+      <div id="homeSummaryBody" class="small muted">読み込み中…</div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="card">
+        <div class="spread">
+          <div class="section-head"><span class="eyebrow">Progress</span><h2 style="margin:0">進行中の計画</h2></div>
+          <button class="b-ghost b-sm" id="btnSeed">サンプルを入れる</button>
+        </div>
+        <div id="planRows"></div>
+        <p class="muted" id="planEmpty" hidden>まだ計画がないで。上の「メモから計画をつくる」か、Excelを取り込んで始めてな。</p>
+      </div>
+      <div class="stack">
+        <div class="card">
+          <div class="section-head"><span class="eyebrow">Completeness</span><h3 style="margin:0">入力の進み具合</h3></div>
+          <div class="ringwrap">
+            <svg class="ring" width="112" height="112" viewBox="0 0 120 120" role="img" aria-label="入力率">
+              <circle class="track" cx="60" cy="60" r="50"></circle>
+              <circle class="val" id="ringVal" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16" transform="rotate(-90 60 60)"></circle>
+              <text x="60" y="67" text-anchor="middle" font-size="26" id="ringTxt">0%</text>
+            </svg>
+            <div class="ring-facts" id="ringFacts"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-head"><span class="eyebrow">Alerts</span><h3 style="margin:0">見直しアラート</h3></div>
+          <div id="alertBody" class="row"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Flow</span><h3 style="margin:0">きょうの流れ</h3></div>
+      <div class="checkgrid">
+        <div class="chk ok"><span class="st">1</span><div><b>メモを書く</b><br><span class="muted">箇条書き・音声入力でOK</span></div></div>
+        <div class="chk ok"><span class="st">2</span><div><b>振り分けを直す</b><br><span class="muted">自動で当てた項目を確認</span></div></div>
+        <div class="chk ok"><span class="st">3</span><div><b>配慮した文面にする</b><br><span class="muted">否定的な表現を和らげ、専門用語を言い換え</span></div></div>
+        <div class="chk ok"><span class="st">4</span><div><b>項目を埋める</b><br><span class="muted">8ステップ・AI下書きつき</span></div></div>
+        <div class="chk ok"><span class="st">5</span><div><b>チェックする</b><br><span class="muted">やさしい日本語・目標の具体性</span></div></div>
+        <div class="chk ok"><span class="st">6</span><div><b>様式に差し込む</b><br><span class="muted">自治体様式を読み込んで出力</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMO -->
+  <section class="screen" id="s-memo">
+    <h1>メモから計画をつくる</h1>
+    <p class="lead">箇条書きでOK。1行にひとつ書いてな。音声でも入れられるで。あとで項目に振り分けるわ。</p>
+    <div class="grid2">
+      <div>
+        <div class="pad"><textarea class="memo" id="memoBox" aria-label="メモ"
+          placeholder="例）&#10;・見通しがあると集中できる&#10;・急な予定変更が苦手で、固まってしまう&#10;・電車と時刻表が好き&#10;・本人は友だちと一緒に活動したいと思っている&#10;・保護者は、自分で身支度できるようになってほしい&#10;・予定表を見て5分で支度するのが目標&#10;・切り替えはタイマーと声かけで支援&#10;・できたことを一緒に振り返って記録する"></textarea></div>
+        <div class="micbar mt">
+          <button class="b-stamp mic" id="btnMic"><span class="dot" hidden></span>🎤 音声で入力</button>
+          <span class="level" aria-hidden="true"><i id="micLevel"></i></span>
+          <span class="small muted" id="micHint">対応ブラウザなら、話した言葉がそのまま箇条書きになるで</span>
+        </div>
+        <div class="row mt">
+          <button class="b-ghost b-sm" id="btnSample">サンプルを入れる</button>
+          <button class="b-ghost b-sm" id="btnSampleNeg">困りごとのある例</button>
+          <button class="b-ghost b-sm" id="btnClearMemo">消す</button>
+          <span class="grow"></span>
+          <span class="small muted" id="memoCount">0 行</span>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="sticky">
+          <b>書くコツ</b><br>
+          ・「できたこと」「好きなこと」も書いとくと、前向きな計画になるで。<br>
+          ・目標は数字や回数を入れると具体的（例：5分で支度）。<br>
+          ・否定的に書いてしまっても大丈夫。あとで配慮した文面に整えるボタンがあるから。
+        </div>
+        <div class="card">
+          <div class="small" style="margin-bottom:.35rem">よく使う言い回し（押すと足せるで）</div>
+          <div class="row" id="quickChips"></div>
+        </div>
+        <div class="privacy">🔒 メモも計画も、このブラウザの中だけに保存。クラウドには送らへん。</div>
+      </div>
+    </div>
+    <div class="footnav">
+      <button class="b-ghost" data-go="home">← ホーム</button>
+      <button class="b-primary" id="btnToSort">メモを振り分ける →</button>
+    </div>
+  </section>
+
+  <!-- SORT -->
+  <section class="screen" id="s-sort">
+    <h1>メモの振り分け</h1>
+    <p class="lead">各行がどの項目に入るか自動で当てたで。違うとこは直してな。要らん行は消してOK。否定的な表現には印をつけとくわ。</p>
+    <div class="notice" id="sortSummary"></div>
+    <div class="mt" id="sortRows"></div>
+    <div class="row mt">
+      <button class="b-ghost b-sm" id="btnAddRow">＋ 行を追加</button>
+      <button class="b-soft b-sm" id="btnSortSoften">否定的な表現を配慮した文面に直す</button>
+      <span class="small muted grow" id="sortHint" style="text-align:right"></span>
+    </div>
+    <div class="footnav">
+      <button class="b-ghost" data-go="memo">← メモに戻る</button>
+      <button class="b-primary" id="btnToWizard">この内容で計画をつくる →</button>
+    </div>
+  </section>
+
+  <!-- SOFTEN -->
+  <section class="screen" id="s-soften">
+    <h1>配慮した文面にする</h1>
+    <p class="lead">否定的なメモや専門用語も、保護者や支援委員会のメンバーに見せられる言葉に整えるで。勝手に書き換えへん、「元の記録」「共有する文面」「支援の視点」の3つに分けて出すから、選んで使ってな。</p>
+    <div class="grid2">
+      <div>
+        <label class="f" for="softIn">元のメモ・記録</label>
+        <div class="pad"><textarea class="memo" id="softIn" style="min-height:200px" placeholder="例）&#10;・問題行動が多くて、注意しても無視する&#10;・落ち着きがなく、指示が通らない&#10;・こだわりが強くて切り替えができない&#10;・発達障害のため集団行動が難しい"></textarea></div>
+        <div class="row mt">
+          <button class="b-soft b-sm" id="btnSoftSample">困りごとの例を入れる</button>
+          <button class="b-primary b-sm" id="btnSoftGo">配慮した文面にする</button>
+        </div>
+        <div class="row mt">
+          <span class="small muted">専門用語や言い換えの一覧は</span><button class="b-ghost b-sm" id="btnToggleDict">辞書を開く</button>
+        </div>
+        <div id="dictBox" hidden class="card mt"></div>
+      </div>
+      <div>
+        <div class="sticky">
+          <b>書き分けのコツ</b><br>
+          ・記録には事実を残す（あとで支援を考えるため）。<br>
+          ・共有する文面は、行動・背景・手立ての順で、「できていること」も1行足す。<br>
+          ・「〜できない」より「今はむずかしく、こう支えている」。<br>
+          ・断定（いつも・絶対）は「よくある」「〜のことが多い」に和らげる。
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head mt2"><span class="eyebrow">Result</span><h2 style="margin:0">3つの層</h2></div>
+    <div class="layers" id="softLayers">
+      <div class="layer record"><h4>1　事実の記録（校内・引継ぎ用）</h4><div class="txt muted">まだ変換してへんで。</div></div>
+      <div class="layer share"><h4>2　共有する文面（保護者・委員会向け）</h4><div class="txt muted">まだ変換してへんで。</div></div>
+      <div class="layer support"><h4>3　支援の視点（手立てのヒント）</h4><div class="txt muted">まだ変換してへんで。</div></div>
+    </div>
+    <div id="softApplied" class="mt"></div>
+    <div class="row mt">
+      <button class="b-brand" id="btnSoftToField">この文面を計画の欄へ入れる</button>
+      <button class="b-ghost" id="btnSoftPrint">🖨 印刷・PDF</button>
+    </div>
+    <div class="footnav">
+      <button class="b-ghost" data-go="memo">← メモに戻る</button>
+      <button class="b-primary" data-go="form">様式に差し込む →</button>
+    </div>
+  </section>
+
+  <!-- WIZARD -->
+  <section class="screen" id="s-wizard">
+    <div class="spread">
+      <div>
+        <h1 style="margin-bottom:.1rem">計画の入力</h1>
+        <p class="lead" style="margin:0">タブを押しても、行き来できるで。空欄のタブは薄くなっとくわ。</p>
+      </div>
+      <span class="small muted" id="wizMeta"></span>
+    </div>
+    <div class="tabrail mt" id="tabrail" role="tablist"></div>
+    <div class="wizcard" id="wizBody"></div>
+    <div class="footnav">
+      <button class="b-ghost" id="btnPrev">← 前へ</button>
+      <div class="row">
+        <button class="b-ghost" id="btnSave">下書き保存</button>
+        <button class="b-soft" id="btnJumpCheck">チェックへ</button>
+        <button class="b-primary" id="btnNext">次へ →</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- LIBRARY -->
+  <section class="screen" id="s-library">
+    <div class="spread">
+      <div>
+        <h1 style="margin-bottom:.1rem">文例を探す</h1>
+        <p class="lead" style="margin:0">目の前の子に近い文例を、<b>障害特性・場面・学校段階・欄</b>で絞り込めるで。見つけたら、そのまま計画の欄に入れられる（自分の言葉に直してな）。</p>
+      </div>
+      <span class="small muted" id="libCount"></span>
+    </div>
+    <div class="card mt">
+      <div class="row">
+        <input type="search" id="libSearch" placeholder="キーワードで探す（例：切り替え／漢字／癇癪／予定表）" style="max-width:440px">
+        <select id="libField" style="max-width:240px"></select>
+        <button class="b-ghost b-sm" id="libReset">条件をリセット</button>
+      </div>
+      <div class="mt">
+        <div class="librow"><span class="liblabel">障害特性</span><div class="tagrow" id="libDis"></div></div>
+        <div class="librow"><span class="liblabel">場面・領域</span><div class="tagrow" id="libScene"></div></div>
+        <div class="librow"><span class="liblabel">学校段階</span><div class="tagrow" id="libStage"></div></div>
+      </div>
+      <div class="small muted" style="margin-top:.4rem">※ 「共通」は、特性にかかわらず使える文例やで。特性を選んでも共通は一緒に出る。</div>
+    </div>
+    <div id="libResults" class="mt"></div>
+    <div class="footnav">
+      <button class="b-ghost" data-go="wizard">← 計画の入力</button>
+      <button class="b-primary" data-go="form">様式に差し込む →</button>
+    </div>
+  </section>
+  <!-- EXCEL IMPORT -->
+  <section class="screen" id="s-import">
+    <div class="spread">
+      <div>
+        <h1 style="margin-bottom:.1rem">📂 Excelを取り込む</h1>
+        <p class="lead" style="margin:0">聖籠町様式のExcel（.xlsx）を読み込んで、内容を確認・修正してから計画として登録できます。前期・後期が入った1冊のExcelも自動で1計画にまとめます。ネット接続なしでもExcel取込を行える内蔵方式です。</p>
+      </div>
+      <span class="small muted">🔒 ブラウザ内完結・外部送信なし</span>
+    </div>
+    <div class="card mt" id="dropZone" tabindex="0" role="button" aria-label="Excelファイルを選択またはドラッグ＆ドロップ" style="border:2px dashed var(--line);text-align:center;padding:2rem;cursor:pointer">
+      <div style="font-size:2rem">📁</div>
+      <div style="font-weight:700;margin-top:.5rem">Excelファイルをここにドラッグ＆ドロップ</div>
+      <div class="small muted" style="margin-top:.3rem">またはここをクリックしてファイルを選択（複数可）</div>
+      <input type="file" id="excelFiles" accept=".xlsx" multiple style="display:none">
+      <div id="excelFileSummary" class="file-summary" aria-live="polite"></div>
+    </div>
+    <div class="card mt">
+      <div style="font-weight:700;margin-bottom:.35rem">対応様式</div>
+      <div class="tagrow">
+        <span class="chip on">聖籠町（令和5年度〜）</span>
+        <span class="chip">文科省参考様式</span>
+        <span class="chip">新潟県様式</span>
+        <span class="chip">その他（汎用）</span>
+      </div>
+      <div class="small muted" style="margin-top:.4rem">※ 聖籠町様式は自動判定。他の様式は「取り込み設定」で欄名を手動マッピングできます。</div>
+    </div>
+    <div style="margin-top:.8rem">
+      <button class="b-primary" id="btnParseExcel" disabled>🔍 取り込み内容を確認</button>
+      <button class="b-ghost" id="btnImportExcel" disabled>💾 計画として登録</button>
+      <button class="b-ghost" id="btnImportSettings">⚙️ 取り込み設定</button>
+      <div class="import-help small" aria-label="Excel取り込み手順">
+        <span class="import-step"><span class="num">1</span>Excelを選ぶ</span>
+        <span class="import-step"><span class="num">2</span>内容を確認</span>
+        <span class="import-step"><span class="num">3</span>必要なら修正</span>
+        <span class="import-step"><span class="num">4</span>計画として登録</span>
+        <br>元のExcelファイルは変更しません。</div>
+    </div>
+    <div id="importPreview" class="mt"></div>
+    <div id="importSettingsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:60;align-items:center;justify-content:center">
+      <div class="card" style="width:min(840px,92vw);max-height:84vh;overflow:auto">
+        <div class="spread" style="margin-bottom:.6rem">
+          <h3 style="margin:0">取り込み設定（欄名マッピング）</h3>
+          <button class="b-ghost b-sm" id="btnCloseSettings">✕ 閉じる</button>
+        </div>
+        <p class="small muted">Excelの欄名（左）を、アプリの項目名（右）に対応付けます。自動判定できへん欄はここで修正してな。</p>
+        <div id="mappingTable" class="mt"></div>
+        <div style="margin-top:.8rem">
+          <button class="b-primary" id="btnSaveMapping">設定を保存</button>
+          <button class="b-ghost" id="btnResetMapping">デフォルトに戻す</button>
+        </div>
+      </div>
+    </div>
+    <div class="footnav">
+      <button class="b-ghost" data-go="home">← ホーム</button>
+      <button class="b-ghost" data-go="wizard">計画の入力 →</button>
+    </div>
+  </section>
+  <!-- CHECK -->
+  <section class="screen" id="s-check">
+    <h1>保存前・提出前チェック</h1>
+    <p class="lead">やさしい日本語・目標の具体性・配慮が必要な表現を、その場で見てくれるで。文章は勝手に書き換えへん、判断はあんさんに任せるわ。</p>
+    <div class="card">
+      <div class="scoreband">
+        <div class="scorebig" id="scoreBig">–</div>
+        <div class="grow">
+          <div id="scoreLabel"><b>「チェックを実行」</b>を押してな。</div>
+          <div class="tagrow mt" id="scoreTags"></div>
+        </div>
+        <button class="b-primary" id="btnRunCheck">✓ チェックを実行</button>
+      </div>
+    </div>
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Findings</span><h3 style="margin:0">指摘一覧</h3></div>
+      <div class="tagrow" id="checkTags">
+        <span class="chip on" data-filt="all">すべて</span>
+        <span class="chip" data-filt="err">要修正</span>
+        <span class="chip" data-filt="warn">直すと良い</span>
+        <span class="chip" data-filt="info">ヒント</span>
+      </div>
+      <ul class="issuelist" id="issueList"><li class="info">まだチェックしてへんで。</li></ul>
+    </div>
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Readiness</span><h3 style="margin:0">提出前チェック</h3></div>
+      <div class="checkgrid" id="readyGrid"></div>
+    </div>
+    <div class="footnav">
+      <button class="b-ghost" data-go="wizard">← 入力に戻る</button>
+      <button class="b-primary" data-go="form">様式に差し込む →</button>
+    </div>
+  </section>
+
+  <!-- FORM / 様式 -->
+  <section class="screen" id="s-form">
+    <div class="spread noprint">
+      <div>
+        <h1 style="margin-bottom:.1rem">様式・差し込み</h1>
+        <p class="lead" style="margin:0">自治体・学校ごとの様式に、計画の内容を差し込むで。Excel/CSV/PDFに出力できる。</p>
+      </div>
+      <div class="row">
+        <button class="b-ghost" id="btnFormCsv">⬇ CSV</button>
+        <button class="b-ghost" id="btnFormExcel">⬇ Excel</button>
+        <button class="b-brand" id="btnFormPrint">🖨 印刷・PDF</button>
+      </div>
+    </div>
+
+    <div class="card noprint mt">
+      <div class="spread">
+        <div class="section-head"><span class="eyebrow">Template</span><h3 style="margin:0">様式を選ぶ</h3></div>
+        <span class="small muted" id="formMeta"></span>
+      </div>
+      <div class="row">
+        <select id="formSelect" style="max-width:420px"></select>
+        <button class="b-ghost b-sm" id="btnMapAuto">候補を自動で割当</button>
+      </div>
+      <details class="mt">
+        <summary>＋ 自校・自治体の様式を読み込む（欄名を貼る／ファイル）</summary>
+        <div class="mt">
+          <p class="small muted">様式の「欄の名前」を1行ずつ貼り付けてな（Excelなら欄名の列をコピーして貼るだけでOK）。あとで差し込み先を選べる。</p>
+          <textarea id="formNewName" class="small" rows="3" placeholder="例）&#10;個別の教育支援計画（様式例）&#10;これまでの生育歴&#10;生活の様子"></textarea>
+          <div class="row mt">
+            <textarea id="formNewCols" rows="6" placeholder="欄名を1行ずつ（例）&#10;児童生徒氏名&#10;これまでの生育歴（療育・教育歴）&#10;生活の様子&#10;願い・希望&#10;長期目標&#10;学校における支援&#10;関係者による支援：家庭"></textarea>
+          </div>
+          <div class="row mt">
+            <label class="b-ghost" style="display:inline-flex;align-items:center;cursor:pointer;padding:.5rem .85rem;border-radius:10px;border:1px solid var(--line-2);font-family:var(--round);font-weight:700;font-size:.85rem">
+              ⬆ ファイル（CSV/TSV/テキスト）<input type="file" id="formFile" accept=".csv,.tsv,.txt" hidden>
+            </label>
+            <button class="b-primary b-sm" id="btnFormAdd">この様式を登録</button>
+            <button class="b-ghost b-sm" id="btnFormDel">この様式を削除</button>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="card noprint mt">
+      <div class="section-head"><span class="eyebrow">Mapping</span><h3 style="margin:0">差し込み先の対応</h3></div>
+      <div class="row" style="margin-bottom:.5rem">
+        <button class="b-ghost b-sm" id="btnFillBlank">空欄の指摘</button>
+        <span class="small muted" id="mapHint">「未割当」が黄色の行やで。プルダウンで選んでな。</span>
+      </div>
+      <div id="mapRows"></div>
+    </div>
+
+    <div class="mt" id="formPaperArea"></div>
+
+    <div class="footnav noprint">
+      <button class="b-ghost" data-go="check">← チェックに戻る</button>
+      <button class="b-primary" data-go="preview">計画のプレビューへ →</button>
+    </div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="screen" id="s-preview">
+    <div class="spread noprint">
+      <div>
+        <h1 style="margin-bottom:.1rem">計画のプレビュー</h1>
+        <p class="lead" style="margin:0">このまま印刷すれば、A4の計画書になるで。</p>
+      </div>
+      <div class="row">
+        <button class="b-ghost" id="btnExcel">⬇ Excel</button>
+        <button class="b-ghost" id="btnCsv">⬇ CSV</button>
+        <button class="b-brand" id="btnPrint">🖨 印刷・PDF</button>
+      </div>
+    </div>
+    <div class="mt" id="paperArea"></div>
+  </section>
+
+  <!-- DATA -->
+  <section class="screen" id="s-data">
+    <h1>データ管理</h1>
+    <p class="lead">このアプリの入力は、ぜんぶ使こうてるブラウザの中に保存されるで。大事なデータはファイルに書き出して、バックアップしといてな。</p>
+    <div class="card">
+      <div class="section-head"><span class="eyebrow">Backup</span><h3 style="margin:0">バックアップと復元</h3></div>
+      <div class="row">
+        <button class="b-brand" id="btnExportJson">⬇ すべて書き出す（JSON）</button>
+        <button class="b-ghost" id="btnExportCsv">⬇ 計画一覧をCSVで</button>
+        <label class="b-ghost" style="display:inline-flex;align-items:center;cursor:pointer;padding:.55rem .95rem;border-radius:10px;border:1px solid var(--line-2);font-family:var(--round);font-weight:700;font-size:.89rem">
+          ⬆ ファイルを読み込む<input type="file" id="fileImport" accept=".json,application/json" hidden>
+        </label>
+      </div>
+      <p class="small muted mt">JSONは復元用、CSVはExcelで見る用や。実名（個人情報欄）は、書き出しに含めるか選べるで。</p>
+      <label class="small"><input type="checkbox" id="incPii"> 書き出しに個人情報欄（氏名・住所・電話）を含める</label>
+    </div>
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Plans</span><h3 style="margin:0">計画の整理</h3></div>
+      <div class="row" style="gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem">
+        <input id="planSearch" type="search" placeholder="氏名・管理番号・学年・学校名で検索" aria-label="計画を検索" style="flex:1;min-width:240px;padding:.6rem .75rem;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);color:var(--ink)">
+        <select id="planScope" aria-label="表示する計画" style="padding:.6rem .75rem;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);color:var(--ink)">
+          <option value="current">在籍中を表示</option><option value="all">すべて表示</option><option value="archived">保管済みを表示</option>
+        </select>
+      </div>
+      <p class="small muted" id="planScopeSummary" style="margin:.2rem 0 .7rem"></p>
+      <div id="dataRows"></div>
+    </div>
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Danger</span><h3 style="margin:0">リセット</h3></div>
+      <p class="small muted">このブラウザに保存された内容を、すべて消すで。取り消しはできへんから気ぃつけてな。</p>
+      <button class="b-stamp" id="btnWipe">すべて消す</button>
+    </div>
+    <div class="card mt">
+      <h3>このアプリについて</h3>
+      <ul class="small muted" style="padding-left:1.2rem;margin:0">
+        <li>入力・音声・保存・様式の差し込みは、ブラウザの中だけで完結（外部に送信しません）</li>
+        <li>様式は、聖籠町（令和5年度〜）・文科省参考様式・新潟県様式・汎用を初期搭載。自校の欄名を貼り付ければ、そのまま差し込めるで</li>
+        <li>Excel出力は、内蔵方式で本物の.xlsxとして書き出すで</li>
+        <li>やさしい日本語チェック・配慮した文面づくりは、本アプリ（新潟県ハンドブック準拠）と同じ観点を再現しとる</li>
+        <li>文例ライブラリは、発達障害の特性ごとの信頼できる資料（文科省・自治体等）を参考に 155 文例を収録しとる</li>
+        <li>実際の運用では、ログイン・承認フロー・監査ログはサーバー側で動く</li>
+        <li>年度更新用の複製では、前年度の評価・同意・確認・記入情報を自動で持ち越さず、新年度に再確認する</li>
+        <li>卒業・転出などで在籍が終了した計画は「保管」に移せます。削除せず、必要なときだけ「保管済み」から確認できます</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>正式リリース候補／v46／ 入力内容はこのブラウザ内にのみ保存されます。</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
+
+<script>
+
+
+
+"use strict";
+var LSKEY="kobetsu_plan_v3";
+
+/* ===== 項目マスタ（自治体様式の欄名と対応させる） ===== */
+var FM={
+ school_year:"年度",child_code:"管理番号（匿名）",grade:"学年",class_type:"在籍形態",school:"学校名",
+ profile_strengths:"好き・得意（強み）",profile_needs:"苦手・配慮点",
+ strengths:"得意なこと・興味関心",weaknesses:"苦手なこと・配慮すること",
+ child_wish:"本人の願い",guardian_wish:"保護者の願い",
+ support_history:"これまでの支援",related_agencies:"関係機関",
+ support_long_goal:"支援・長期目標（3年）",guidance_long_goal:"指導・長期目標（1年）",
+ short_goal_1:"短期目標1",short_goal_2:"短期目標2",
+ supports:"具体的支援・手立て",eval_method:"評価方法・時期",
+ school_support:"学校における支援",eval_handover:"評価・引継ぎ事項",
+ conference_memo:"会議・面談記録",
+ history:"これまでの生育歴（療育・教育歴）",life:"生活の様子",wish:"願い・希望",
+ family_support:"関係者による支援：家庭",community_support:"関係者による支援：地域",
+ welfare_support:"関係者による支援：福祉",medical_support:"関係者による支援：医療",
+ handover_to:"引継ぎ先",start_ease:"糊しろ（4月のおさらい）",
+ effective_supports:"有効だった工夫と条件",episode:"対応エピソード",
+ written_date:"記入日",writer:"記入者",grade_year:"学年（年）",
+ child_furigana:"児童生徒ふりがな",child_name:"児童生徒氏名",gender:"性別",birth_date:"生年月日",
+ address:"住所",address2:"住所（続き）",
+ guardian_furigana:"保護者ふりがな",guardian_name:"保護者氏名",tel:"電話番号",emergency:"緊急連絡先",
+ consent_date:"了承日",guardian_name_confirm:"了承者氏名",table:"指導表",table_pre:"指導表（前期）",table_post:"指導表（後期）",table_seiro:"指導表",table_all:"指導表（前期・後期）",edu_history:"これまでの生育歴＜教育歴＞",dev_test:"これまでの生育歴＜発達検査＞",class_grade:"学級・学年",seiro_strengthen:"＜伸ばしたい力＞",seiro_complement:"＜補いたい力＞",selfcare:"日常生活（身辺自立）",speech:"言葉・コミュニケーション",academics:"学習（国語・算数）",period_note:"前期の評価・後期の見通し"
+};
+var PII=["child_furigana","child_name","gender","birth_date","address","address2","guardian_furigana","guardian_name","tel","emergency","guardian_name_confirm"];
+var LONG_KEYS=["profile_strengths","profile_needs","strengths","weaknesses","child_wish","guardian_wish","support_history","related_agencies",
+ "support_long_goal","guidance_long_goal","short_goal_1","short_goal_2","supports","eval_method","school_support","eval_handover",
+ "conference_memo","history","life","wish","family_support","community_support","welfare_support","medical_support",
+ "start_ease","effective_supports","episode","handover_to","edu_history","dev_test","seiro_strengthen","seiro_complement","selfcare","speech","academics","period_note"];
+var GOAL_KEYS=["support_long_goal","guidance_long_goal","short_goal_1","short_goal_2"];
+
+var CATS=[
+ ["profile_strengths","好き・得意"],["profile_needs","苦手・配慮点"],["child_wish","本人の願い"],
+ ["guardian_wish","保護者の願い"],["support_history","これまでの支援"],["related_agencies","関係機関"],
+ ["support_long_goal","支援・長期目標(3年)"],["guidance_long_goal","指導・長期目標(1年)"],
+ ["short_goal_1","短期目標1"],["short_goal_2","短期目標2"],["supports","具体的支援・手立て"],
+ ["eval_method","評価方法・時期"],["school_support","学校における支援"],["life","生活の様子"],
+ ["history","生育歴"],["start_ease","糊しろ"],["seiro_strengthen","伸ばしたい力"],["seiro_complement","補いたい力"],["selfcare","日常生活の実態"],["speech","言葉・コミュニケーション"],["academics","学習（国語・算数）"],["period_note","前期の評価・後期の見通し"],["none","（使わない）"]
+];
+function CAT(id){for(var i=0;i<CATS.length;i++){if(CATS[i][0]===id)return CATS[i][1];}return id;}
+var CATCOLOR={profile_strengths:"#0e8a7c",profile_needs:"#c0452f",child_wish:"#4b5fa6",guardian_wish:"#8b4f8d",
+ support_history:"#5b6a7c",related_agencies:"#5b6a7c",support_long_goal:"#193a63",guidance_long_goal:"#193a63",
+ short_goal_1:"#2b5790",short_goal_2:"#2b5790",supports:"#b0701a",eval_method:"#26794c",school_support:"#5b6a7c",
+ life:"#8b4f8d",history:"#5b6a7c",start_ease:"#8b4f8d",seiro_strengthen:"#0e8a7c",seiro_complement:"#c0452f",selfcare:"#5b6a7c",speech:"#4b5fa6",academics:"#b0701a",period_note:"#26794c",none:"#9aa6b6"};
+
+/* ===== ウィザードの区分 ===== */
+var STEPS=[
+ {id:"seiro_setup",t:"自治体様式セットアップ",keys:[]},
+ {id:"basic",t:"基本情報",keys:["school_year","child_code","grade","class_type","school","class_grade"]},
+ {id:"jittai",t:"実態と願い",keys:["profile_strengths","profile_needs","history","edu_history","dev_test","life","child_wish","guardian_wish","wish","seiro_strengthen","seiro_complement"]},
+ {id:"goal",t:"目標",keys:["support_long_goal","guidance_long_goal","short_goal_1","short_goal_2"]},
+ {id:"support",t:"手立て・評価",keys:["supports","eval_method","school_support","eval_handover"]},
+ {id:"table",t:"指導表（前期）",keys:[]},
+ {id:"table2",t:"指導表（後期）",keys:[]},
+ {id:"network",t:"関係機関・自立活動",keys:["support_history","related_agencies","selfcare","speech","academics","family_support","community_support","welfare_support","medical_support"]},
+ {id:"handover",t:"引継ぎ・面談",keys:["handover_to","start_ease","effective_supports","episode","conference_memo","period_note"]},
+ {id:"personal",t:"個人情報・署名",keys:["written_date","writer","grade_year","child_furigana","child_name","gender","birth_date","address","address2","guardian_furigana","guardian_name","tel","emergency","consent_date","guardian_name_confirm"]}
+];
+var BASIC_KEYS=["school_year","child_code","grade","class_type","school"];
+
+/* ===== 指導表（前期・後期） ===== */
+var ROW_LABELS=["日常生活","対人","自立活動","国語","算数"];
+var COL={fact:"実態",goal:"目標",method:"指導・支援方法",eval:"評価"};
+function tblRows(){return ROW_LABELS.map(function(name){return {name:name,fact:"",goal:"",method:"",eval:""};});}
+function hasTblRow(r){return !!(r&&((r.fact||"")+(r.goal||"")+(r.method||"")+(r.eval||"")).trim());}
+function normalizeTable(p){
+  if(!p.table||!p.table.length)p.table=tblRows();
+  if(!p.table2||!p.table2.length)p.table2=tblRows();
+  [p.table,p.table2].forEach(function(arr){arr.forEach(function(r,i){if(!r.name)r.name=ROW_LABELS[i]||("領域"+(i+1));});});
+}
+function tableText(p,period){
+  var t=(period==="後期")?(p.table2||[]):(p.table||[]);
+  var out=[];
+  t.forEach(function(r,i){
+    var parts=[];
+    ["fact","goal","method","eval"].forEach(function(c){if((r[c]||"").trim())parts.push(COL[c]+"："+r[c]);});
+    if(parts.length)out.push((r.name||ROW_LABELS[i]||("領域"+(i+1)))+"｜"+parts.join("｜"));
+  });
+  return out.join("\n");
+}
+function tableAllText(p){
+  var a=tableText(p,"前期"),b=tableText(p,"後期"),h="";
+  if(a)h+="【前期】\n"+a;
+  if(b)h+=(h?"\n\n":"")+"【後期】\n"+b;
+  return h;
+}
+
+/* ===== 聖籠町セットアップ ===== */
+var SEIRO_SVG='<svg width="54" height="54" viewBox="0 0 54 54" role="img" aria-label="様式の目印"><circle cx="27" cy="27" r="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.2"/><path d="M14 33c4-9 22-9 26 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="27" cy="19" r="4.4" fill="currentColor"/></svg>';
+var SEIRO_MAP=[
+ ["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],["住所","address"],
+ ["電話","tel"],["学級","class_grade"],["学年","class_grade"],["保護者氏名","guardian_name"],["緊急連絡先","emergency"],
+ ["療育","history"],["教育歴","edu_history"],["発達検査","dev_test"],
+ ["得意なこと","profile_strengths"],["苦手なこと","profile_needs"],
+ ["本人","child_wish"],["保護者","guardian_wish"],
+ ["長期目標","support_long_goal"],["学校における支援","school_support"],["評価・引継ぎ","eval_handover"],
+ ["家庭","family_support"],["福祉","welfare_support"],["地域","community_support"],["医療","medical_support"],
+ ["伸ばしたい力","seiro_strengthen"],["補いたい力","seiro_complement"],
+ ["言葉","speech"],["国語","academics"],["算数","academics"],["学習","academics"],
+ ["記入日","written_date"],["記入者","writer"]
+];
+function parseSeiro(text){
+  var out={};
+  String(text||"").split(/\r?\n/).forEach(function(line){
+    var i=line.indexOf("：");if(i<0)i=line.indexOf(":");
+    if(i<0)return;
+    var k=line.slice(0,i).trim(),v=line.slice(i+1).trim();
+    if(k&&v)out[k]=(out[k]?out[k]+"\n":"")+v;
+  });
+  return out;
+}
+function applySeiroText(text,quiet){
+  var p=cur();if(!p){toast("計画を起こしてからにしてな");return;}
+  var kv=parseSeiro(text),n=0,un=[];
+  Object.keys(kv).forEach(function(k){
+    var hit=null;
+    for(var j=0;j<SEIRO_MAP.length;j++){if(k.indexOf(SEIRO_MAP[j][0])>=0){hit=SEIRO_MAP[j][1];break;}}
+    if(!hit){un.push(k);return;}
+    p.data[hit]=kv[k];n++;
+  });
+  touch();renderWizard();
+  var msg=document.getElementById("seiroPasteMsg");
+  if(msg)msg.textContent=n?("取り込んだで："+n+"項目"+(un.length?"（未対応："+un.slice(0,4).join("、")+(un.length>4?" 他":"")+"）":"")):"取り込めた項目がなかったで";
+  if(!quiet)toast(n?("Excelの内容を取り込んだで（"+n+"項目）"):"取り込めた項目がなかったで（「項目名：内容」の形になってるか確認してな）");
+}
+var SEIRO_EX=[
+ "＜療育＞：・児童発達支援センター「○○」　ソーシャルスキルの集団療育（H30・4月〜）2週間に1回",
+ "＜教育歴＞：・通級指導教室（R4・9月〜R5・3月）　週1回 SST実施",
+ "＜発達検査＞：・WISC-IV　FIQ90 VCI107 PRI82 WMI85 PSI81",
+ "＜得意なこと＞：・ピアノで県音楽コンクールに出場している。\n・学習発表会で挨拶や進行を希望し、堂々と話すことができる。",
+ "＜苦手なこと＞：・漢字の書きが苦手で、1年生から習得できていない。\n・課題が多いと気持ちが高ぶってしまうことがある。",
+ "＜本人＞：・仲のいい友達がほしい。",
+ "＜保護者＞：・友達と仲良く過ごして、トラブルを無くしてほしい。",
+ "長期目標：相手のことを考えた優しい言葉を使うことができる。",
+ "学校における支援：（1）言葉が気になるときは、気持ちを落ち着かせてから個別に話し、相手が傷つくことを理解できるようにする。\n（2）優しい言葉を使えたときに、すぐほめて価値を伝える。",
+ "＜評価・引継ぎ＞：（1）本人の思いを聴いてから話すと、同じことを繰り返しにくい。\n（2）すぐほめると続く。帰りの会で振り返り、自己評価カードにシールを貼る取組を始めた。",
+ "＜家庭＞：・家庭でも、落ち着かせ、本人の気持ちを聴いてから話をする。",
+ "＜福祉＞：・児童発達支援センター「○○」　ソーシャルスキルの集団療育　2週間に1回、他校の児童と4人グループで実施",
+ "＜医療＞：・発達クリニック「○○」　半年に1回　「○○」服薬",
+ "＜伸ばしたい力＞：・発表会でセリフを覚える。",
+ "＜補いたい力＞：・乱暴な言葉遣いが減り、優しい言葉が増えてほしい。"
+];
+function renderSeiroStep(body,p){
+  body.innerHTML="";
+  var b=el("div","seiro-banner");
+  b.innerHTML=SEIRO_SVG+'<div><b>聖籠町の教育支援計画・指導計画（令和5年度〜）</b>'
+    +'<div class="small muted">Excelのシート構成：支援計画／支援計画記入例／指導計画（前期）／（後期）／指導計画記入例</div></div>';
+  body.appendChild(b);
+  body.appendChild(el("p","lead","聖籠町のExcel様式に合わせて、このアプリの欄を自動で差し込むで。記入例の言葉づかいも、ボタンひとつで参考にできるわ。"));
+  var box=el("div","importbox");
+  box.innerHTML='<label class="f">Excelから既存の内容を取り込む（任意）</label>'
+   +'<p class="small muted">Excelで <b>「項目名：内容」</b> の形にした行をコピーして、ここに貼ってな。上のセルでも下のセルでも、改行して貼ればええで（例：<code>長期目標：相手のことを考えた言葉を使う</code>）。</p>'
+   +'<textarea id="seiroPaste" rows="5" placeholder="例）\n児童生徒氏名：菅井　玲奈\n長期目標：相手のことを考えた優しい言葉を使うことができる。"></textarea>'
+   +'<div class="row mt"><button class="b-primary b-sm" id="btnSeiroPaste">貼り付けた内容を取り込む</button><span class="small muted" id="seiroPasteMsg"></span></div>';
+  body.appendChild(box);
+  var ex=el("div","card mt");
+  ex.innerHTML='<div class="section-head"><span class="eyebrow">例文</span><h3 style="margin:0">記入例の言葉づかいを入れる</h3></div>'
+   +'<p class="small muted">聖籠町の「支援計画記入例」「指導計画記入例」の文面やで。そのまま使わず、自分の言葉に直してな。</p>'
+   +'<div class="row"><button class="b-soft b-sm" id="btnSeiroExAll">記入例をまとめて入れる</button>'
+   +'<button class="b-ghost b-sm" id="btnSeiroExSupport">関係者による支援（家庭・福祉・医療）の例を入れる</button></div>';
+  body.appendChild(ex);
+  var note=el("div","piinote mt","🔒 記入例の氏名（菅井　玲奈 など）は練習用のサンプルや。実在の児童の名前は入れんといてな。");body.appendChild(note);
+  var det=el("div","card mt");
+  det.innerHTML='<details><summary>記入例の中身を見る（反映される文面）</summary><div class="dict" style="margin-top:.5rem">'
+   +SEIRO_EX.map(function(x){return '<div class="dictrow"><span class="from">'+esc(x.split("：")[0])+"</span><span>"+esc(x.split("：").slice(1).join("："))+"</span></div>";}).join("")
+   +'</div></details>';
+  body.appendChild(det);
+  $("btnSeiroPaste").onclick=function(){applySeiroText($("seiroPaste").value);};
+  $("btnSeiroExAll").onclick=function(){
+    var p2=cur();if(!p2)return;
+    applySeiroText(SEIRO_EX.join("\n"),true);
+    p2.data.seiro_strengthen="・発表会でセリフを覚える。\n（得意なこと・好きなことから、さらに伸ばしたい力を書きます）";
+    p2.data.seiro_complement="・乱暴な言葉遣いが減り、優しい言葉が増えてほしい。\n（苦手なこと・困っていることから、補いたい力を書きます）";
+    p2.table=tblRows();p2.table[1]={name:"対人",fact:"友達とのトラブルで、相手に強い言葉を使ってしまうことがある。",goal:"相手のことを考えた言葉を選ぶことができる。",method:"落ち着いてから個別に話し、優しい言葉を使えたらすぐほめる。",eval:"同じことを繰り返さなくなった。帰りの会の自己評価カードで確認。"};
+    touch();renderWizard();toast("記入例をまとめて入れたで（要確認・修正）");
+  };
+  $("btnSeiroExSupport").onclick=function(){
+    var p2=cur();if(!p2)return;
+    applySeiroText(SEIRO_EX.slice(10,13).join("\n"),true);
+    toast("支援計画の例の文面を入れたで（要確認・修正）");
+  };
+}
+
+
+/* ===== やさしい日本語＝専門用語の言い換え ===== */
+var JARGON={"アセスメント":"お子さんの様子をくわしく見ること","実態把握":"ふだんの様子","療育":"発達のサポート・練習",
+ "自立活動":"自分でできることをふやす学習","通級":"通級指導教室（ことばや気持ちの教室）","SST":"友だちとの関わりの練習",
+ "合理的配慮":"学びやすくするための工夫","実行機能":"段取りをする力","ワーキングメモリ":"覚えたことを使って考える力",
+ "感覚過敏":"音や光などが気になりやすいこと","就学":"入学","交流及び共同学習":"いっしょに学ぶ時間",
+ "特別支援":"一人ひとりに合わせた応援","診断":"お医者さんの見立て","投薬":"お薬",
+ "集団適応":"みんなの中での過ごし方","規範意識":"きまりを守ろうとする気持ち","自己肯定感":"自分は大丈夫と思える気持ち",
+ "所見":"様子","課題":"がんばるポイント","手立て":"工夫・やり方","評価":"ふりかえり","引継ぎ":"次の先生への申送り",
+ "関係機関":"関わる場所（病院・福祉など）","医療機関":"病院","放課後等デイサービス":"放課後の教室（デイサービス）",
+ "パニック":"気持ちが高ぶって落ち着けなくなること","逸脱":"きまりとちがう行動","変容":"変化・成長","促す":"声をかけて手伝う"};
+
+/* ===== 配慮のための言い換え（否定的な表現→行動＋背景＋手立て） ===== */
+var SOFT=[
+ ["問題行動","気になる行動"],
+ ["問題児","支援を必要としている子ども"],
+ ["反抗的","気持ちが高ぶると、うまく伝えられないことがある"],
+ ["癇癪","気持ちが高ぶっている状態"],
+ ["かんしゃく","気持ちが高ぶっている状態"],
+ ["落ち着きがない","落ち着いて過ごしにくいときがある"],
+ ["集中力がない","集中が続きにくいときがある"],
+ ["やる気がない","取りかかりに時間がかかることがある"],
+ ["無視する","声かけが届きにくいときがある"],
+ ["指示が通らない","ことばだけでは伝わりにくく、視覚的な手がかりがあると伝わりやすい"],
+ ["言うことを聞かない","ことばでの指示が届きにくいときがある"],
+ ["乱暴","気持ちをうまく伝えられず、行動に出ることがある"],
+ ["嘘をつく","言いにくいことをうまく伝えられないことがある"],
+ ["嘘","言いにくいことをうまく伝えられないことがある"],
+ ["こだわりが強い","決まったやり方があると安心して取り組める"],
+ ["こだわり","安心できるやり方"],
+ ["甘えている","安心したい気持ちがある"],
+ ["甘え","安心したい気持ち"],
+ ["わがまま","自分の気持ちを優先したいときがある"],
+ ["発達障害","発達の特性（学び方や感じ方の違い）"],
+ ["障害","困りごと・特性"],
+ ["障がい","困りごと・特性"],
+ ["できない","今はむずかしいことがあり、できそうなことから取り組んでいる"],
+ ["遅れ","発達のペース"],
+ ["異常","特徴"],
+ ["手がかかる","支援を必要としている"],
+ ["ダメ","むずかしい"],
+ ["駄目","むずかしい"],
+ ["全然できない","まだむずかしい"],
+ ["いつも","よくある"],
+ ["絶対に","どうしても"],
+ ["必ず","できるだけ"]
+];
+var NEG_RAW=["問題行動","問題児","反抗的","癇癪","かんしゃく","落ち着きがない","集中力がない","やる気がない","無視","指示が通らない",
+ "言うことを聞かない","乱暴","嘘","こだわりが強い","甘え","わがまま","発達障害","障害","障がい","できない","遅れ","異常","手がかかる"];
+var CONCRETE=["回","分","％","%","割","枚","人","場面","とき","時間","までに","自分から","自分で","見て","聞いて","声をかけられて"];
+var NEG_FOCUS=["できない","苦手","ダメ","問題がある","困った子","落ち着きがない"];
+
+/* ===== 様式テンプレート（初期搭載） ===== */
+var TEMPLATES=[
+ {id:"mext_support",name:"個別の教育支援計画（文科省参考様式）",rows:[
+  ["記入日","written_date"],["記入者","writer"],
+  ["児童生徒ふりがな","child_furigana"],["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],
+  ["住所","address"],["電話番号","tel"],["保護者氏名","guardian_name"],["緊急連絡先","emergency"],
+  ["これまでの生育歴（療育・教育歴）","history"],["生活の様子","life"],["願い・希望","wish"],
+  ["長期目標","support_long_goal"],["学校における支援","school_support"],["評価・引継ぎ事項","eval_handover"],
+  ["関係者による支援：家庭","family_support"],["関係者による支援：地域","community_support"],
+  ["関係者による支援：福祉","welfare_support"],["関係者による支援：医療","medical_support"],
+  ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
+ ]},
+ {id:"mext_guidance",name:"個別の指導計画（文科省参考様式）",rows:[
+  ["記入日","written_date"],["記入者","writer"],["学年","grade"],
+  ["児童生徒ふりがな","child_furigana"],["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],
+  ["得意なこと・興味関心","profile_strengths"],["苦手なこと・配慮すること","profile_needs"],
+  ["指導表（実態・目標・方法・評価）","table"],["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
+ ]},
+ {id:"niigata01",name:"新潟県様式（支援計画＋指導計画）",rows:[
+  ["記入日","written_date"],["記入者","writer"],["学年（年）","grade_year"],
+  ["児童生徒ふりがな","child_furigana"],["性別","gender"],["生年月日","birth_date"],["児童生徒氏名","child_name"],
+  ["得意なこと・興味関心","profile_strengths"],["苦手なこと・配慮すること","profile_needs"],
+  ["これまでの生育歴（療育・教育歴）","history"],["生活の様子","life"],["願い・希望","wish"],
+  ["長期目標（支援・3年）","support_long_goal"],["長期目標（指導・1年）","guidance_long_goal"],
+  ["短期目標1","short_goal_1"],["短期目標2","short_goal_2"],
+  ["学校における支援","school_support"],["具体的支援・手立て","supports"],["評価方法・時期","eval_method"],
+  ["関係者による支援：家庭","family_support"],["関係者による支援：地域","community_support"],
+  ["関係者による支援：福祉","welfare_support"],["関係者による支援：医療","medical_support"],
+  ["評価・引継ぎ事項","eval_handover"],["指導表","table"],
+  ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
+ ]},
+ {id:"seiro_support",name:"聖籠町 個別の教育支援計画（令和5年度〜）",rows:[
+  ["（記入日）","written_date"],["（記入者）","writer"],
+  ["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],
+  ["住所","address"],["電話番号","tel"],["学級・学年","class_grade"],
+  ["保護者氏名","guardian_name"],["緊急連絡先","emergency"],
+  ["これまでの生育歴＜療育＞","history"],["これまでの生育歴＜教育歴＞","edu_history"],["これまでの生育歴＜発達検査＞","dev_test"],
+  ["本人の生活の様子＜得意なこと・好きなこと・興味関心＞","profile_strengths"],
+  ["本人の生活の様子＜苦手なこと・困っていること＞","profile_needs"],
+  ["願い・希望＜本人＞","child_wish"],["願い・希望＜保護者＞","guardian_wish"],
+  ["長期目標","support_long_goal"],
+  ["学校における支援","school_support"],["評価・引継ぎ事項","eval_handover"],
+  ["関係者による支援＜家庭＞","family_support"],["関係者による支援＜福祉＞","welfare_support"],
+  ["関係者による支援＜地域＞","community_support"],["関係者による支援＜医療＞","medical_support"],
+  ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
+ ]},
+ {id:"seiro_guidance_pre",name:"聖籠町 個別の指導計画（前期）",rows:[
+  ["（記入日）","written_date"],["（記入者）","writer"],
+  ["児童生徒氏名","child_name"],["性別","gender"],["学級・学年","class_grade"],
+  ["＜伸ばしたい力＞","seiro_strengthen"],["＜補いたい力＞","seiro_complement"],
+  ["指導表（前期）","table_pre"],
+  ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
+ ]},
+ {id:"seiro_guidance_post",name:"聖籠町 個別の指導計画（後期）",rows:[
+  ["（記入日）","written_date"],["（記入者）","writer"],
+  ["児童生徒氏名","child_name"],["性別","gender"],["学級・学年","class_grade"],
+  ["＜伸ばしたい力＞","seiro_strengthen"],["＜補いたい力＞","seiro_complement"],
+  ["指導表（後期）","table_post"],
+  ["前期の評価・後期の見通し","period_note"],
+  ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
+ ]},
+ {id:"seiro_both",name:"聖籠町 指導計画（前期＋後期 一括）",rows:[
+  ["（記入日）","written_date"],["（記入者）","writer"],
+  ["児童生徒氏名","child_name"],["性別","gender"],["学級・学年","class_grade"],
+  ["＜伸ばしたい力＞","seiro_strengthen"],["＜補いたい力＞","seiro_complement"],
+  ["指導表（前期・後期）","table_all"]
+ ]},
+ {id:"generic",name:"汎用（自由様式・全項目）",rows:[
+  ["管理番号","child_code"],["学年","grade"],["在籍形態","class_type"],["学校名","school"],
+  ["子ども（管理番号）","child_code"],["好き・得意（強み）","profile_strengths"],["苦手・配慮点","profile_needs"],
+  ["本人の願い","child_wish"],["保護者の願い","guardian_wish"],["これまでの支援","support_history"],
+  ["関係機関","related_agencies"],["支援・長期目標（3年）","support_long_goal"],["指導・長期目標（1年）","guidance_long_goal"],
+  ["短期目標1","short_goal_1"],["短期目標2","short_goal_2"],["具体的支援・手立て","supports"],
+  ["評価方法・時期","eval_method"],["学校における支援","school_support"],["評価・引継ぎ事項","eval_handover"],
+  ["引継ぎ先","handover_to"],["糊しろ","start_ease"],["有効だった工夫と条件","effective_supports"],["対応エピソード","episode"],
+  ["指導表","table"]
+ ]}
+];
+
+/* ===== 文例（保護者・委員会に見せられる配慮ある表現） ===== */
+var AI_SAMPLES={
+ profile_strengths:"・見通しがあると、集中して取り組めます\n・電車や時刻表が好きで、数字をよく覚えています",
+ profile_needs:"・急な予定変更が苦手で、気持ちが高ぶると動けなくなることがあります\n・切り替えに時間がかかることがあります",
+ strengths:"・電車の図鑑をよく眺め、乗り物の絵を細かいところまで丁寧に仕上げることができます",
+ weaknesses:"・大きな音や騒がしい場所では、気持ちが落ち着きにくいことがあります",
+ child_wish:"・友だちと一緒に活動したいと考えています",
+ guardian_wish:"・自分で身支度ができるようになってほしいと願っています",
+ support_long_goal:"・自分の見通しを持ち、安心して学校生活を送ることができる\n・自分の気持ちをことばで伝えることができる",
+ guidance_long_goal:"・見通しを持ち、自分で身支度や切り替えができる",
+ short_goal_1:"・予定表を見て、5分で支度を終える\n・切り替えのとき、自分からタイマーを押せる",
+ short_goal_2:"・活動の終わりに、声をかけられて10秒で切り替える",
+ supports:"・活動の前に予定表を一緒に確認し、見通しを持てるようにします\n・切り替えはタイマーと短い声かけで知らせます\n・できたことはその場で一緒に振り返り、次の意欲につなげます",
+ eval_method:"・毎日の帰りの会で、できたことを本人と一緒に振り返り、記録に残します\n・週1回、支援会議メモにまとめて見取り、学期末に評価します",
+ school_support:"・活動の前に見通しを伝え、落ち着ける場所を確保します\n・ことばだけでなく、絵カードや手順表を合わせて使います",
+ eval_handover:"・できていることと、それを支えている条件をあわせて記録します\n・次年度は、4月のおさらいから安心して始められるようにします",
+ life:"・好きな活動には見通しを持って取り組めています。切り替えには、少し時間がかかることがあります",
+ history:"・3歳児健診でことばの育ちについて指摘があり、医療機関で見立てを受けています",
+ wish:"・同年齢の友だちと関わりながら、できることを増やしてほしいと願っています",
+ start_ease:"・4月は、得意な電車の教材から始め、安心して座れるようにします",
+ family_support:"・家庭では、食事や身支度のときに、できたことを一緒にほめています",
+ medical_support:"・かかりつけ医に定期的に相談し、支援の方向を確認しています",
+ edu_history:"・通級指導教室（R4・9月〜R5・3月）　週1回　SST（友だちとの関わりの練習）を行いました",
+ dev_test:"・WISC-IV　FIQ90　VCI107　PRI82　WMI85　PSI81",
+ seiro_strengthen:"・発表会でセリフを覚え、堂々と話すことができるようにする。\n（得意なこと・好きなことから、さらに伸ばしたい力を書きます）",
+ seiro_complement:"・友達との関わりで、優しい言葉が増える。\n（苦手なこと・困っていることから、補いたい力を書きます）",
+ selfcare:"・朝の支度は、予定表を見ながら進められることが増えました",
+ speech:"・気持ちが高ぶったときは、ことばで伝えにくいことがあります。絵カードがあると伝えやすいです",
+ academics:"・漢字の書きは、1年生の内容から復習しています。文章を読む力は伸びています",
+ period_note:"・前期は、落ち着いて話せる場面が増えました。後期は、自分から気持ちを伝える機会をふやします"
+};
+
+/* ===== メモ→振り分けのルール ===== */
+var RULES=[
+ [/好き|得意|はまる|集中でき|落ち着く|夢中|興味|楽しみ|強み|細かい|丁寧/,"profile_strengths"],
+ [/苦手|不安|難しい|配慮|パニック|こだわ|嫌が|固ま|癇癪|手が止ま|つまず|大きな音|騒がし/,"profile_needs"],
+ [/本人は|本人が|やりたい|やりたが|こうなりたい|自分でし/,"child_wish"],
+ [/保護者|お母さん|お父さん|家では|ご家庭|家庭では/,"guardian_wish"],
+ [/手立て|支援|工夫|環境|声かけ|カード|タイマー|予定表|構造化|視覚|手順|切り替え/,"supports"],
+ [/評価|振り返り|記録|見取|個人内|成長/,"eval_method"],
+ [/以前|これまで|前年度|引継|経過|3歳児健診|健診/,"support_history"],
+ [/病院|クリニック|相談|センター|デイ|療育|関係機関|かかりつけ/,"related_agencies"],
+ [/目標|できるように|目指す|見通し|までに/,"short_goal_1"],
+ [/生活の様子|普段|日常|朝|帰り/,"life"],
+ [/会議|面談|話し合い/,"conference_memo"],
+ [/4月|おさらい|最初の|スタート|糊しろ/,"start_ease"]
+];
+
+/* ===== 状態 ===== */
+var APP_SCHEMA_VERSION=7;
+var MIGRATION_PENDING=null;
+var MIGRATION_RECOVERY_KEY=LSKEY+"_pre_migration_backup";
+var CORRUPT_RECOVERY_KEY=LSKEY+"_corrupt_recovery";
+var LAST_GOOD_RECOVERY_KEY=LSKEY+"_last_good";
+var RECOVERY_PENDING=null;
+var RECOVERY_BLOCKED=false;
+var UNSAVED_CHANGES=false;
+var RECOVERY_BLOCK_REASON="";
+var EMPTY_STATE={plans:[],cur:null,step:0,memo:"",sort:[],fs:"md",templates:[],maps:{},formId:"mext_support",soft:{in:"",out:null},schemaVersion:APP_SCHEMA_VERSION};
+var S=normalizeState(load()||EMPTY_STATE);
+function makePlanId(prefix){return (prefix||"p")+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,9);}
+function blankTableRow(name){return {name:name||"",fact:"",goal:"",method:"",eval:""};}
+function academicYearFromDate(value){
+  var d=null;
+  if(typeof value==="number"&&isFinite(value)){
+    /* Excelシリアル日付（例: 46144）と通常のUNIXミリ秒を区別する。 */
+    if(value>=1&&value<100000)d=new Date(Date.UTC(1899,11,30)+value*86400000);
+    else d=new Date(value);
+  }
+  else if(value instanceof Date) d=value;
+  else if(typeof value==="string"&&value.trim()){
+    var m=value.trim().match(/^(\d{4})[\/\-.年](\d{1,2})/);
+    if(m)d=new Date(Number(m[1]),Number(m[2])-1,1);
+    else {var t=Date.parse(value);if(!isNaN(t))d=new Date(t);}
+  }
+  if(!d||isNaN(d.getTime()))d=new Date();
+  return d.getMonth()>=3?d.getFullYear():d.getFullYear()-1;
+}
+function currentAcademicYear(){return academicYearFromDate(new Date());}
+function normalizePlan(p,seen){
+  p=(p&&typeof p==="object")?p:{};
+  if(!p.id||seen&&seen[p.id])p.id=makePlanId("p");
+  if(seen)seen[p.id]=true;
+  if(p.annual_update&&typeof p.annual_update!=="object")delete p.annual_update;
+  if(p.school_year==null){
+    var inferredYear=0,cm=String(p.code||"").match(/^S-(\d{4})-/);
+    if(cm)inferredYear=Number(cm[1]);
+    if(!inferredYear&&p.data&&p.data.written_date)inferredYear=academicYearFromDate(p.data.written_date);
+    if(!inferredYear&&p.created)inferredYear=academicYearFromDate(p.created);
+    p.school_year=inferredYear||currentAcademicYear();
+  }
+  p.school_year=Number(p.school_year)||currentAcademicYear();
+  if(!p.code)p.code="S-"+p.school_year+"-001";
+  if(p.grade==null)p.grade="";
+  if(p.class_type==null)p.class_type="特別支援学級";
+  if(p.school==null)p.school="";
+  if(p.record_status!=="archived"&&p.record_status!=="active")p.record_status="active";
+  if(p.archived_at!=null)p.archived_at=Number(p.archived_at)||0;
+  if(p.archive_reason!=null)p.archive_reason=String(p.archive_reason);
+  if(!p.status)p.status="draft";
+  if(typeof p.updated!=="number")p.updated=Date.now();
+  if(!p.created)p.created=p.updated;
+  if(p.annual_update&&typeof p.annual_update==="object"){
+    if(p.annual_update.fromPlanId!=null)p.annual_update.fromPlanId=String(p.annual_update.fromPlanId);
+    if(p.annual_update.fromSchoolYear!=null)p.annual_update.fromSchoolYear=Number(p.annual_update.fromSchoolYear)||0;
+    if(p.annual_update.createdAt!=null)p.annual_update.createdAt=Number(p.annual_update.createdAt)||0;
+    if(p.annual_update.fromCode!=null)p.annual_update.fromCode=String(p.annual_update.fromCode);
+    if(p.annual_update.rootPlanId!=null)p.annual_update.rootPlanId=String(p.annual_update.rootPlanId);
+    if(p.annual_update.lineageDepth!=null)p.annual_update.lineageDepth=Math.max(1,Number(p.annual_update.lineageDepth)||1);
+  }
+  if(!p.data||typeof p.data!=="object"||Array.isArray(p.data))p.data={};
+  if(typeof p.memo!=="string")p.memo="";
+  /* 旧版・中間版の表形式も、本体が使う table/table2 に吸収する。 */
+  if(!Array.isArray(p.table)&&Array.isArray(p.tablePre))p.table=p.tablePre;
+  if(!Array.isArray(p.table2)&&Array.isArray(p.tablePost))p.table2=p.tablePost;
+  function normTable(arr){
+    if(!Array.isArray(arr))return tblRows();
+    var out=arr.map(function(r,i){
+      r=(r&&typeof r==="object")?r:{};
+      return {name:typeof r.name==="string"&&r.name?r.name:(ROW_LABELS[i]||("領域"+(i+1))),
+        fact:r.fact==null?"":String(r.fact),goal:r.goal==null?"":String(r.goal),
+        method:r.method==null?"":String(r.method),eval:r.eval==null?"":String(r.eval)};
+    });
+    while(out.length<ROW_LABELS.length)out.push(blankTableRow(ROW_LABELS[out.length]));
+    return out;
+  }
+  p.table=normTable(p.table);p.table2=normTable(p.table2);
+  return p;
+}
+function migrateState(raw){
+  var st=(raw&&typeof raw==="object"&&!Array.isArray(raw))?raw:{};
+  var sourceVersion=Number(st.schemaVersion)||1, changed=sourceVersion!==APP_SCHEMA_VERSION;
+  if(!Array.isArray(st.plans))st.plans=[];
+  st.plans.forEach(function(p){
+    if(!p||typeof p!=="object")return;
+    if(p.table==null&&Array.isArray(p.tablePre)){p.table=p.tablePre;changed=true;}
+    if(p.table2==null&&Array.isArray(p.tablePost)){p.table2=p.tablePost;changed=true;}
+    if(p.class_name!=null&&p.class_type==null){p.class_type=String(p.class_name);changed=true;}
+    if(p.annual_update&&typeof p.annual_update!=="object"){delete p.annual_update;changed=true;}
+    if(p.record_status!=="active"&&p.record_status!=="archived"){p.record_status="active";changed=true;}
+    if(p.archive_reason!=null)p.archive_reason=String(p.archive_reason);
+    if(p.school_year==null){
+      var cm=String(p.code||"").match(/^S-(\d{4})-/),iy=cm?Number(cm[1]):0;
+      if(!iy&&p.data&&p.data.written_date)iy=academicYearFromDate(p.data.written_date);
+      if(!iy&&p.created)iy=academicYearFromDate(p.created);
+      p.school_year=iy||currentAcademicYear();changed=true;
+    }
+    if(p.child_code!=null&&(!p.code||p.code==="S-"+new Date().getFullYear()+"-001")){p.code=String(p.child_code);changed=true;}
+    if(p.data&&typeof p.data==="object")
+      Object.keys({written_date:"written_date",entry_date:"written_date",writer:"writer"}).forEach(function(k){
+        var target={written_date:"written_date",entry_date:"written_date",writer:"writer"}[k];
+        if(k!==target&&p.data[k]!=null&&p.data[target]==null){p.data[target]=p.data[k];changed=true;}
+      });
+  });
+  st.schemaVersion=APP_SCHEMA_VERSION;
+  if(sourceVersion!==APP_SCHEMA_VERSION)changed=true;
+  return {state:st,changed:changed,sourceVersion:sourceVersion};
+}
+function normalizeState(raw){
+  var st=(raw&&typeof raw==="object"&&!Array.isArray(raw))?raw:{};
+  var out={};Object.keys(EMPTY_STATE).forEach(function(k){
+    var v=st[k];
+    if(v!==undefined){out[k]=v;return;}
+    if(k==="plans"||k==="sort"||k==="templates")out[k]=[];
+    else if(k==="maps")out[k]={};
+    else if(k==="soft")out[k]={in:"",out:null};
+    else out[k]=EMPTY_STATE[k];
+  });
+  if(!Array.isArray(out.plans))out.plans=[];
+  var seen={};out.plans=out.plans.map(function(p){return normalizePlan(p,seen);});
+  if(out.cur&&!seen[out.cur])out.cur=out.plans.length?out.plans[0].id:null;
+  if(!out.cur&&out.plans.length)out.cur=out.plans[0].id;
+  if(typeof out.step!=="number"||!isFinite(out.step))out.step=0;
+  out.step=Math.max(0,Math.min(STEPS.length-1,Math.floor(out.step)));
+  if(!Array.isArray(out.sort))out.sort=[];
+  if(!Array.isArray(out.templates))out.templates=[];
+  if(!out.maps||typeof out.maps!=="object"||Array.isArray(out.maps))out.maps={};
+  if(!out.soft||typeof out.soft!=="object")out.soft={in:"",out:null};
+  out.schemaVersion=APP_SCHEMA_VERSION;
+  return out;
+}
+function nextPlanCode(prefix){prefix=prefix||("S-"+currentAcademicYear()+"-");var used={};(typeof S!=="undefined"&&S&&Array.isArray(S.plans)?S.plans:[]).forEach(function(p){if(p&&p.code)used[String(p.code)]=true;});for(var i=1;i<=9999;i++){var c=prefix+String(i).padStart(3,"0");if(!used[c])return c;}return prefix+Date.now();}
+function createAnnualCopy(source){
+  var c=JSON.parse(JSON.stringify(source||{}));
+  var sourceYear=Number(source&&source.school_year)||currentAcademicYear();
+  var sourceLineage=source&&source.annual_update&&Number(source.annual_update.lineageDepth)||0;
+  var rootId=(source&&source.annual_update&&source.annual_update.rootPlanId)||String(source&&source.id||"");
+  c.id=makePlanId("p");
+  c.school_year=sourceYear+1;
+  c.code=nextPlanCode("S-"+c.school_year+"-");
+  c.annual_update={fromPlanId:String(source&&source.id||""),fromSchoolYear:sourceYear,fromCode:String(source&&source.code||""),rootPlanId:String(rootId),lineageDepth:sourceLineage+1,createdAt:Date.now()};
+  c.status="draft";
+  c.record_status="active";
+  delete c.archived_at; delete c.archive_reason;
+  c.updated=Date.now();
+  c.created=Date.now();
+  if(!c.data||typeof c.data!=="object"||Array.isArray(c.data))c.data={};
+  ["written_date","writer","consent_date","guardian_name_confirm","period_note","eval_handover","conference_memo"].forEach(function(k){delete c.data[k];});
+  ["table","table2"].forEach(function(t){
+    if(Array.isArray(c[t]))c[t]=c[t].map(function(r){r=(r&&typeof r==="object")?r:{};return {name:r.name||"",fact:r.fact||"",goal:r.goal||"",method:r.method||"",eval:""};});
+  });
+  c.data.guardian_confirmed=false;
+  return normalizePlan(c);
+}
+function knownStorageKeys(){return [LSKEY,LAST_GOOD_RECOVERY_KEY,CORRUPT_RECOVERY_KEY,MIGRATION_RECOVERY_KEY,LSKEY+"_corrupt_marker","kobetsu_col_map"];}
+
+function clearAllAppStorage(){
+  var failed=[];
+  knownStorageKeys().forEach(function(key){
+    try{localStorage.removeItem(key);if(localStorage.getItem(key)!==null)failed.push(key);}
+    catch(e){failed.push(key);}
+  });
+  return {ok:failed.length===0,failed:failed};
+}
+function backupPrivacyStatus(meta){
+  if(!meta||typeof meta!=="object")return "unknown";
+  if(meta.format!=="kobetsu-support-backup"||Number(meta.version)!==2)return "unknown";
+  if(meta.containsPii===true)return "pii";
+  if(meta.containsPii===false)return "safe";
+  return "unknown";
+}
+function newPlan(o){o=o||{};var now=Date.now();return normalizePlan({id:makePlanId("p"),code:o.code||nextPlanCode(),
+  school_year:Number(o.school_year)||currentAcademicYear(),grade:o.grade||"",class_type:o.class_type||"特別支援学級",school:o.school||"",status:"draft",updated:now,created:now,
+  data:{profile_strengths:"見通しがあると集中できる",profile_needs:"急な変更に不安"},table:tblRows(),table2:tblRows(),memo:""});}
+function isUsableStateObject(st){
+  if(!st||typeof st!=="object"||Array.isArray(st))return false;
+  if(!Array.isArray(st.plans))return false;
+  if(st.plans.length>1000)return false;
+  for(var i=0;i<st.plans.length;i++){
+    var p=st.plans[i];
+    if(!p||typeof p!=="object"||Array.isArray(p))return false;
+    if(p.id!=null&&typeof p.id!=="string")return false;
+    if(p.data!=null&&(typeof p.data!=="object"||Array.isArray(p.data)))return false;
+    if(p.table!=null&&!Array.isArray(p.table))return false;
+    if(p.table2!=null&&!Array.isArray(p.table2))return false;
+  }
+  return true;
+}
+function findRecoveryState(){
+  var keys=[CORRUPT_RECOVERY_KEY,LAST_GOOD_RECOVERY_KEY,MIGRATION_RECOVERY_KEY];
+  for(var i=0;i<keys.length;i++){
+    try{
+      var txt=localStorage.getItem(keys[i]);
+      if(!txt)continue;
+      var obj=JSON.parse(txt);
+      if(isUsableStateObject(obj)){
+        return {key:keys[i],text:txt,state:normalizeState(migrateState(obj).state)};
+      }
+    }catch(e){console.warn("復旧候補を確認できませんでした",keys[i],e);}
+  }
+  return null;
+}
+function load(){
+  try{
+    var rawText=localStorage.getItem(LSKEY);
+    if(!rawText)return null;
+    var parsed=JSON.parse(rawText);
+    if(!isUsableStateObject(parsed))throw new Error("保存データの構造が不正です");
+    var migrated=migrateState(parsed);
+    var normalized=normalizeState(migrated.state);
+    if(migrated.changed){
+      try{
+        localStorage.setItem(MIGRATION_RECOVERY_KEY,rawText);
+        MIGRATION_PENDING={sourceVersion:migrated.sourceVersion,backupBytes:rawText.length};
+      }catch(backupErr){
+        console.warn("旧データの移行前退避に失敗しました。自動移行保存を停止します",backupErr);
+        MIGRATION_PENDING=null;
+        return normalized;
+      }
+    }
+    return normalized;
+  }catch(e){
+    console.warn("保存データの読み込みに失敗しました。上書きせず復旧候補を確認します",e);
+    RECOVERY_PENDING=findRecoveryState();
+    if(!RECOVERY_PENDING){
+      RECOVERY_BLOCKED=true;
+      RECOVERY_BLOCK_REASON="保存データが破損しており、復旧候補も見つかりませんでした。元データを保護するため通常保存を停止しています。";
+    }
+    return RECOVERY_PENDING?RECOVERY_PENDING.state:null;
+  }
+}
+var saveTimer=null,queuedSaveTimer=null,saveQueued=false;
+function setSaveStatus(kind,title){var d=document.getElementById("savedot");if(!d)return;d.classList.remove("busy","save-error");if(kind==="busy")d.classList.add("busy");if(kind==="error")d.classList.add("save-error");var msg=title||"保存済み";d.title=msg;d.setAttribute("aria-label",msg);}
+function storageUsageBytes(){
+  try{var total=0;for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i),v=localStorage.getItem(k)||"";total+=(k?k.length:0)+v.length;}return total*2;}
+  catch(e){return 0;}
+}
+function storageUsageNotice(bytes){
+  var mb=bytes/(1024*1024);
+  if(mb>=8)return "保存容量がかなり大きくなっています（約"+mb.toFixed(1)+"MB）。バックアップを書き出してから整理してください。";
+  if(mb>=5)return "保存容量が増えています（約"+mb.toFixed(1)+"MB）。年度ごとのバックアップを別途保管してください。";
+  return "";
+}
+function validateStateForSave(st){
+  /* 保存前に必ず正規化し、JSON化できることまで確認する。
+     ここで失敗した場合はlocalStorageを上書きしない。 */
+  if(!st||typeof st!=="object"||Array.isArray(st))throw new Error("状態データが不正です");
+  if(!Array.isArray(st.plans))throw new Error("計画一覧が不正です");
+  if(st.plans.length>1000)throw new Error("計画件数が上限を超えています");
+  st.plans.forEach(function(p,i){
+    if(!p||typeof p!=="object"||Array.isArray(p))throw new Error("計画"+(i+1)+"の形式が不正です");
+    if(typeof p.id!=="string"||!p.id)throw new Error("計画"+(i+1)+"のIDが不正です");
+    if(!p.data||typeof p.data!=="object"||Array.isArray(p.data))throw new Error("計画"+(i+1)+"の入力データが不正です");
+    if(!Array.isArray(p.table)||!Array.isArray(p.table2))throw new Error("計画"+(i+1)+"の指導表が不正です");
+  });
+  var raw=JSON.stringify(st);
+  if(typeof raw!=="string"||!raw)throw new Error("保存データをJSON化できません");
+  return raw;
+}
+function save(quiet){
+  if(RECOVERY_BLOCKED){
+    setSaveStatus("error","復旧確認が必要です。元データ保護のため保存を停止しています。");
+    if(!quiet)toast("保存を停止しています。データ復旧または新規開始を確認してください。");
+    return false;
+  }
+  try{
+    var normalized=normalizeState(S);
+    var raw=validateStateForSave(normalized);
+    /* 永続保存に成功する前にSを差し替えない。さらに、現在の正常データを
+       直前の復旧用スナップショットとして保持し、次回起動時の復旧経路を強化する。 */
+    var previousRaw=null;
+    try{previousRaw=localStorage.getItem(LSKEY);}catch(readErr){previousRaw=null;}
+    if(previousRaw && previousRaw!==raw){
+      try{localStorage.setItem(LAST_GOOD_RECOVERY_KEY,previousRaw);}catch(backupErr){
+        console.warn("直前バックアップの保存に失敗しました",backupErr);
+      }
+    }
+    localStorage.setItem(LSKEY,raw);
+    S=normalized;
+    UNSAVED_CHANGES=false;
+    var usageNotice=storageUsageNotice(storageUsageBytes());
+    if(usageNotice)console.warn(usageNotice);
+  }catch(e){
+    console.warn("保存に失敗しました",e);
+    setSaveStatus("error","保存に失敗しました。既存の保存データは上書きしていません。データ量や入力内容を確認してください。");
+    if(!quiet)toast("保存できへんかった。既存データは保持しています。");
+    return false;
+  }
+  var d=document.getElementById("savedot");
+  if(d){setSaveStatus("busy","保存中…");clearTimeout(saveTimer);saveTimer=setTimeout(function(){setSaveStatus("ok","保存済み");},420);}
+  return true;
+}
+function cur(){if(!S.cur&&S.plans.length)S.cur=S.plans[0].id;return S.plans.filter(function(p){return p.id===S.cur;})[0]||null;}
+function flushQueuedSave(){if(!saveQueued)return true;clearTimeout(queuedSaveTimer);queuedSaveTimer=null;saveQueued=false;return save(true);}
+function queueSave(){saveQueued=true;clearTimeout(queuedSaveTimer);queuedSaveTimer=setTimeout(function(){saveQueued=false;queuedSaveTimer=null;save(true);},350);}
+function touch(){var p=cur();if(p)p.updated=Date.now();UNSAVED_CHANGES=true;queueSave();}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},2100);}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+/* ===== ナビ ===== */
+function go(name){
+  if(typeof flushQueuedSave==="function"){
+    var flushed=flushQueuedSave();
+    if(!flushed||UNSAVED_CHANGES){
+      toast("保存できなかったため、画面を移動していません。まず保存状態を確認してください。");
+      return false;
+    }
+  }
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.toggle("active",s.id==="s-"+name);});
+  document.querySelectorAll("#nav button").forEach(function(b){
+    if(b.dataset.go===name)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(name==="home")renderHome();
+  if(name==="wizard")renderWizard();
+  if(name==="sort")renderSort();
+  if(name==="check")paintCheck();
+  if(name==="preview")renderPaper();
+  if(name==="data")renderData();
+  if(name==="form")renderForm();
+  if(name==="soften")renderSoften();
+  if(name==="library")renderLibrary();
+}
+document.addEventListener("click",function(e){var b=e.target.closest?e.target.closest("[data-go]"):null;if(b)go(b.dataset.go);});
+document.addEventListener("keydown",function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){
+    e.preventDefault();
+    flushQueuedSave();
+    if(save())toast("保存しました");
+  }
+});
+window.addEventListener("beforeunload",function(e){if(UNSAVED_CHANGES||saveQueued){e.preventDefault();e.returnValue="";}});
+
+/* ===== ホーム ===== */
+function demoFallbackForYear(y){return [
+ {code:"S-"+y+"-001",school_year:y,grade:"小4",status:"draft",pct:62,next:"手立てと評価を入れる"},
+ {code:"S-"+y+"-003",school_year:y,grade:"小2",status:"review",pct:88,next:"提出前チェックを通す"},
+ {code:"S-"+y+"-005",school_year:y,grade:"小6",status:"approved",pct:100,next:"引継ぎ資料を出力"}
+];}
+function renderHome(){
+  var box=$("planRows");box.innerHTML="";
+  /* ホームは「現在の仕事」だけを表示する。過年度・保管済みはデータ管理で確認する。 */
+  var currentYear=schoolYearForDate(new Date());
+  var activePlans=S.plans.filter(function(p){return !planIsArchived(p);});
+  var currentPlans=activePlans.filter(function(p){return !p.school_year||Number(p.school_year)===currentYear;});
+  var previousPlans=activePlans.filter(function(p){return Number(p.school_year)>0&&Number(p.school_year)!==currentYear;});
+  var archivedPlans=S.plans.filter(planIsArchived);
+  var list=currentPlans.length?currentPlans:null;
+  $("planEmpty").hidden=!!list;
+  (list||demoFallbackForYear(currentYear)).forEach(function(p){
+    var pct=list?completeness(p):p.pct;var st=p.status;
+    var r=el("div","planrow");
+    r.innerHTML='<span class="code">'+esc(p.code)+'</span><span class="small">'+esc(list?((p.school_year||currentYear)+"年度／"+(p.grade||"学年未設定")):p.grade)+'</span>'
+      +'<span class="badge '+st+'">'+({draft:"下書き",review:"提出中",approved:"承認済"}[st]||st)+'</span>'
+      +'<span class="bar"><span style="width:'+pct+'%"></span></span>'
+      +'<span class="next">次の一手：'+esc(list?(pct>=100?"出力・提出":nextHint(p)):p.next)+'</span>'
+      +(list?'<button class="b-brand b-sm" data-open="'+p.id+'">開く</button>':'<button class="b-ghost b-sm" data-demo="1">サンプルで試す</button>');
+    box.appendChild(r);
+  });
+  box.querySelectorAll("[data-open]").forEach(function(b){b.onclick=function(){S.cur=b.dataset.open;save();go("wizard");};});
+  box.querySelectorAll("[data-demo]").forEach(function(b){b.onclick=function(){seed();go("wizard");};});
+
+  var p=cur(),pct=p?completeness(p):0,c=2*Math.PI*50;
+  if($("ringVal")){$("ringVal").style.strokeDashoffset=String(c*(1-pct/100));$("ringVal").setAttribute("stroke-dasharray",String(c));}
+  if($("ringTxt"))$("ringTxt").textContent=pct+"%";
+  if($("ringFacts")){
+    if(!p)$("ringFacts").innerHTML="計画を選ぶと、ここに進み具合が出るで。";
+    else{var req=requiredKeys(),done=req.filter(function(k){return String(fieldVal(p,k)||"").trim();}).length;
+      var warn=collectIssues(p).length;
+      $("ringFacts").innerHTML='必須 <b>'+done+"/"+req.length+'</b> 項目<br>気になる表現 <b>'+warn+'</b> 箇所<br><span class="small">タブの色が濃い＝入力済みや</span>';}
+  }
+
+  var hs=$("homeSummaryBody");
+  if(hs){
+    var msg='<div class="row" style="gap:.55rem;flex-wrap:wrap">'+
+      '<span class="chip">'+currentYear+'年度：<b>'+currentPlans.length+'件</b></span>'+
+      '<span class="chip">過年度：<b>'+previousPlans.length+'件</b></span>'+
+      '<span class="chip">保管済み：<b>'+archivedPlans.length+'件</b></span></div>';
+    if(previousPlans.length||archivedPlans.length){
+      msg+='<p style="margin:.55rem 0 0">ホームには現在年度の在籍中計画だけを表示しています。過年度・保管済みの記録は「データ」から確認できます。</p>';
+    }else{
+      msg+='<p style="margin:.55rem 0 0">現在年度の計画をここから確認できます。過去の記録を残したまま、新年度の計画を追加できます。</p>';
+    }
+    hs.innerHTML=msg;
+  }
+
+  var al=$("alertBody");al.innerHTML="";var made=false;
+  currentPlans.forEach(function(p2){if(p2.status!=="approved"&&p2.updated&&(Date.now()-p2.updated)>1000*60*60*24*14){
+    al.appendChild(el("span","chip",'<span class="catdot" style="background:var(--stamp)"></span>更新から2週間：'+esc(p2.code)));made=true;}});
+  if(!made)al.appendChild(el("span","small muted","いまアラートはないで。順調やな。"));
+}
+function nextHint(p){var d=p.data||{};
+  if(!d.profile_strengths||!d.profile_needs)return "実態（好き・得意／苦手）を入れる";
+  if(!d.short_goal_1)return "短期目標を入れる";
+  if(!d.supports)return "手立てを入れる";
+  if(!d.eval_method)return "評価方法を入れる";
+  return "様式に差し込む";
+}
+function requiredKeys(){return ["child_code","grade","class_type","profile_strengths","profile_needs","guardian_wish","support_long_goal","guidance_long_goal","short_goal_1","supports","eval_method"];}
+function completeness(p){
+  var keys=requiredKeys().concat(["child_wish","short_goal_2","start_ease","history","school_support"]);
+  var done=0;keys.forEach(function(k){if(String(fieldVal(p,k)||"").trim())done++;});
+  if((p.table||[]).some(hasTblRow))done+=2;
+  if((p.table2||[]).some(hasTblRow))done+=1;
+  return Math.min(100,Math.round(done/(keys.length+2)*100));
+}
+function seed(){
+  if(!S.plans.length){var sy=schoolYearForDate(new Date());S.plans=[newPlan({code:"S-"+sy+"-001",school_year:sy,grade:"小4"}),newPlan({code:"S-"+sy+"-003",school_year:sy,grade:"小2"}),newPlan({code:"S-"+sy+"-005",school_year:sy,grade:"小6"})];
+    S.plans[1].status="review";S.plans[2].status="approved";}
+  S.cur=S.plans[0].id;save();toast("サンプルの計画を入れたで");renderHome();
+}
+$("btnSeed").onclick=function(){seed();renderHome();};
+document.querySelectorAll("[data-go=form]").forEach(function(){});
+
+/* ===== メモ ===== */
+var memoBox=$("memoBox");memoBox.value=S.memo||"";
+function memoCount(){$("memoCount").textContent=memoBox.value.split("\n").filter(function(l){return l.trim();}).length+" 行";}
+memoBox.oninput=function(){S.memo=memoBox.value;queueSave();memoCount();};
+memoCount();
+$("btnSample").onclick=function(){
+  memoBox.value=["・見通しがあると集中できる","・急な予定変更が苦手で、固まってしまう","・電車と時刻表が好き",
+   "・本人は友だちと一緒に活動したいと思っている","・保護者は、自分で身支度できるようになってほしい",
+   "・予定表を見て5分で支度するのが目標","・切り替えはタイマーと声かけで支援","・できたことを一緒に振り返って記録する"].join("\n");
+  S.memo=memoBox.value;save(true);memoCount();toast("サンプルを入れたで");
+};
+$("btnSampleNeg").onclick=function(){
+  memoBox.value=["・問題行動が多く、注意しても無視する","・落ち着きがなく、授業中に立ち歩く","・こだわりが強くて、予定変更でパニックになる",
+   "・発達障害のため、集団行動ができないことが多い","・やる気がなく、取りかかりが遅い","・好きな電車の図鑑は細かいところまで熱心に見ている"].join("\n");
+  S.memo=memoBox.value;save(true);memoCount();toast("困りごとのある例を入れたで");
+};
+$("btnClearMemo").onclick=function(){memoBox.value="";S.memo="";save(true);memoCount();};
+var CHIPS=["見通しがあると集中できる","急な変更に不安がある","予定表を見て5分で支度する","タイマーで切り替え","できたことを一緒に振り返る"];
+CHIPS.forEach(function(c){var b=el("button","chip","＋ "+c);b.type="button";
+  b.onclick=function(){memoBox.value=(memoBox.value?memoBox.value+"\n":"")+"・"+c;S.memo=memoBox.value;save(true);memoCount();};
+  $("quickChips").appendChild(b);});
+
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var btnMic=$("btnMic"),micHint=$("micHint"),micLevel=$("micLevel"),rec=null,recOn=false,baseText="";
+if(!SR){btnMic.disabled=true;micHint.textContent="この環境は音声入力に未対応や（Chrome/Edgeで試してな）";}
+btnMic.onclick=function(){
+  if(!SR)return;
+  if(recOn){try{rec.stop();}catch(e){}return;}
+  rec=new SR();rec.lang="ja-JP";rec.continuous=true;rec.interimResults=true;baseText=memoBox.value;
+  rec.onstart=function(){recOn=true;btnMic.classList.add("rec");btnMic.querySelector(".dot").hidden=false;
+    btnMic.lastChild.textContent=" 停止";micHint.textContent="聞き取り中… ふつうに話してな";};
+  rec.onresult=function(ev){var txt="";for(var i=ev.resultIndex;i<ev.results.length;i++)txt+=ev.results[i][0].transcript;
+    memoBox.value=(baseText?baseText+"\n":"")+"・"+txt;S.memo=memoBox.value;save(true);memoCount();
+    if(micLevel)micLevel.style.width=Math.min(100,20+txt.length*3)+"%";};
+  rec.onerror=function(e){micHint.textContent="聞き取れへんかった（"+e.error+"）。マイクの許可を確認してな";};
+  rec.onend=function(){recOn=false;btnMic.classList.remove("rec");btnMic.querySelector(".dot").hidden=true;
+    btnMic.lastChild.textContent=" 音声で入力";if(micLevel)micLevel.style.width="0%";
+    if(micHint.textContent.indexOf("聞き取り中")===0)micHint.textContent="止めたで。内容を確認して、要らん所は直してな";};
+  try{rec.start();}catch(e){micHint.textContent="マイクを開始でけへんかった";}
+};
+
+/* ===== 配慮の変換ロジック ===== */
+function softShare(text){
+  var out=text||"",applied=[];
+  SOFT.forEach(function(pair){if(out.indexOf(pair[0])>=0){out=out.split(pair[0]).join(pair[1]);applied.push(pair[0]+" → "+pair[1]);}});
+  for(var term in JARGON){if(term==="障害")continue;if(out.indexOf(term)>=0){out=out.split(term).join(JARGON[term]);applied.push(term+" → "+JARGON[term]);}}
+  return {text:out,applied:applied};
+}
+function softRecord(text){
+  // 事実の記録：表現は残しつつ、断定をやわらげて注記
+  var out=text||"",notes=[];
+  ["いつも","絶対に","絶対","必ず","全部","まったく","全然"].forEach(function(w){
+    if(out.indexOf(w)>=0){notes.push("「"+w+"」は断定。頻度や回数（例：〜のことが多い）に置き換えると正確になるで");}});
+  return {text:out,notes:notes};
+}
+function softSupport(text){
+  var t=text||"",out=[];
+  out.push("① 事実：いつ・どこで・どんなときに起きるかを書く（例：グループ活動のとき）");
+  out.push("② 背景の仮説：見通し・ことばの理解・感覚の感じ方などから考える");
+  if(/手立て|支援|工夫|声かけ|カード|タイマー|予定表|構造化|視覚/.test(t))
+    out.push("③ 手立て：メモにある支援を、目標とセットで書く（→もう書けてるで）");
+  else
+    out.push("③ 手立て：「見通しを伝える」「視覚的な手がかりを使う」など、できそうな支援を1つ足す");
+  out.push("④ できていること：うまくいくときの条件（例：予定表があると落ち着く）を1行足す");
+  if(/できた|好き|得意|熱心|集中でき/.test(t))out.push("⑤ 強みがメモに入ってるで。共有する文面の冒頭に置くと、前向きに伝わる");
+  return out;
+}
+function negFind(text){for(var i=0;i<NEG_RAW.length;i++){if((text||"").indexOf(NEG_RAW[i])>=0)return NEG_RAW[i];}return "";}
+
+/* ===== 振り分け ===== */
+function classify(line){for(var i=0;i<RULES.length;i++){if(RULES[i][0].test(line))return RULES[i][1];}return "none";}
+function buildSort(text){S.sort=text.split("\n").map(function(l){return l.replace(/^[\s・\-*●○.,、]+/,"").trim();})
+  .filter(Boolean).map(function(t){return {text:t,cat:classify(t)};});save(true);}
+function renderSort(){
+  if(!S.sort.length&&S.memo)buildSort(S.memo);
+  var box=$("sortRows");box.innerHTML="";
+  var counts={};S.sort.forEach(function(r){counts[r.cat]=(counts[r.cat]||0)+1;});
+  var parts=[];Object.keys(counts).forEach(function(k){if(k==="none")return;
+    parts.push('<b style="color:'+(CATCOLOR[k]||"#555")+'\">'+esc(CAT(k))+"</b> "+counts[k]+"件");});
+  $("sortSummary").innerHTML='メモ '+S.sort.length+' 行 → '+(parts.join("、")||"（未分類）")+(counts.none?"　※未分類 "+counts.none+"件は下で選んでな":"");
+  $("sortHint").textContent=counts.none?"未分類がまだあるで":"全部の行に項目がついたで！";
+  S.sort.forEach(function(r,i){
+    var row=el("div","srow");
+    var opts=CATS.map(function(c){return '<option value="'+c[0]+'"'+(c[0]===r.cat?" selected":"")+">"+esc(c[1])+"</option>";}).join("");
+    var neg=negFind(r.text);
+    row.innerHTML='<div><label class="f"><span class="catdot" style="background:'+(CATCOLOR[r.cat])+'\"></span>振り分け先</label>'
+      +'<select class="catsel" aria-label="振り分け先">'+opts+'</select>'+(neg?'<div class="small" style="color:var(--stamp);margin-top:.25rem">⚠ 配慮が必要：「'+esc(neg)+'」</div>':"")+"</div>"
+      +'<textarea class="txt" aria-label="メモ行">'+esc(r.text)+"</textarea>"
+      +'<textarea class="ai" aria-label="補足メモ" placeholder="補足メモ（任意）">'+esc(r.note||"")+"</textarea>"
+      +'<button class="b-ghost b-sm del" title="削除" aria-label="この行を削除">✕</button>';
+    row.querySelector(".catsel").onchange=function(e){r.cat=e.target.value;save(true);renderSort();};
+    row.querySelector(".txt").oninput=function(e){r.text=e.target.value;queueSave();};
+    row.querySelector(".ai").oninput=function(e){r.note=e.target.value;queueSave();};
+    row.querySelector(".del").onclick=function(){S.sort.splice(i,1);save(true);renderSort();};
+    box.appendChild(row);
+  });
+}
+$("btnToSort").onclick=function(){if(!memoBox.value.trim()){toast("まずメモを書いてな");return;}S.memo=memoBox.value;buildSort(S.memo);go("sort");};
+$("btnAddRow").onclick=function(){S.sort.push({text:"",cat:"none"});save(true);renderSort();};
+$("btnSortSoften").onclick=function(){
+  var n=0;S.sort.forEach(function(r){if(negFind(r.text)){r.text=softShare(r.text).text;n++;}});
+  save(true);renderSort();toast(n?("配慮した文面に整えたで（"+n+"行）"):"否定的な表現は見つからへんかったで");
+};
+$("btnToWizard").onclick=function(){
+  var p=cur();if(!p){p=newPlan({});S.plans.push(p);S.cur=p.id;}
+  S.sort.forEach(function(r){if(r.cat==="none"||!r.text.trim())return;
+    var add=r.text.trim()+(r.note?"（"+r.note.trim()+"）":"");
+    p.data[r.cat]=p.data[r.cat]?p.data[r.cat]+"\n"+add:add;});
+  S.step=0;save();go("wizard");toast("メモの内容を項目に入れたで");
+};
+
+/* ===== 配慮文面の画面 ===== */
+function renderSoften(){
+  var s=S.soft||{in:"",out:null};
+  var ta=$("softIn");if(ta&&ta.value!==s.in)ta.value=s.in||"";
+  paintSoften();
+}
+function paintSoften(){
+  var box=$("softLayers"),ap=$("softApplied");
+  var o=(S.soft&&S.soft.out)||null;
+  var layers=box.querySelectorAll(".layer .txt");
+  if(!o){layers[0].innerHTML='<span class="muted">まだ変換してへんで。</span>';
+    layers[1].innerHTML='<span class="muted">まだ変換してへんで。</span>';
+    layers[2].innerHTML='<span class="muted">まだ変換してへんで。</span>';
+    ap.innerHTML="";return;}
+  layers[0].innerHTML=esc(o.record)||'<span class="muted">（空）</span>';
+  layers[1].innerHTML=esc(o.share)||'<span class="muted">（空）</span>';
+  layers[2].innerHTML=o.support.map(function(x){return "・"+esc(x);}).join("<br>");
+  ap.innerHTML="";
+  if(o.applied.length)ap.appendChild(el("div","notice","言い換えた言葉："+o.applied.map(function(x){return '<span class="softtag">'+esc(x)+"</span>";}).join("")));
+  if(o.notes&&o.notes.length)ap.appendChild(el("div","notice mt",o.notes.map(esc).join("<br>")));
+}
+$("btnSoftSample").onclick=function(){$("softIn").value="問題行動が多く、注意しても無視する。落ち着きがなく、指示が通らない。こだわりが強くて予定変更でパニックになる。発達障害のため集団行動ができないことが多い。";};
+$("btnSoftGo").onclick=function(){
+  var t=$("softIn").value.trim();
+  if(!t){toast("元のメモを入れてな");return;}
+  var sh=softShare(t),rec=softRecord(t),sup=softSupport(t);
+  S.soft={in:t,out:{record:rec.text,share:sh.text,support:sup,applied:sh.applied,notes:rec.notes}};
+  save(true);paintSoften();toast("3つの層に分けたで（下の層ほど共有向けや）");
+};
+var dictBuilt=false;
+$("btnToggleDict").onclick=function(){
+  var b=$("dictBox");
+  if(!dictBuilt){
+    var h='<div class="section-head"><span class="eyebrow">Jargon</span><h3 style="margin:0">専門用語の言い換え</h3></div>';
+    for(var k in JARGON)h+='<div class="dictrow"><span class="from">'+esc(k)+'</span><span>'+esc(JARGON[k])+"</span></div>";
+    h+='<div class="section-head mt2"><span class="eyebrow">Care</span><h3 style="margin:0">否定的な表現の配慮</h3></div>';
+    SOFT.forEach(function(p){h+='<div class="dictrow"><span class="from">'+esc(p[0])+"</span><span>"+esc(p[1])+"</span></div>";});
+    b.innerHTML=h;dictBuilt=true;
+  }
+  b.hidden=!b.hidden;
+};
+$("btnSoftToField").onclick=function(){
+  var p=cur();if(!p){toast("計画を起こしてな");return;}
+  var o=S.soft&&S.soft.out;if(!o){toast("先に変換してな");return;}
+  p.data.profile_needs=o.share;touch();toast("「苦手・配慮点」に入れたで（要確認・修正）");
+};
+$("btnSoftPrint").onclick=function(){window.print();};
+
+/* ===== ウィザード ===== */
+function stepFilled(p,s){
+  if(s.id==="seiro_setup")return !!(p.data&&(p.data.child_name||p.data.child_wish||p.data.seiro_strengthen));
+  if(s.id==="table")return (p.table||[]).some(hasTblRow);
+  if(s.id==="table2")return (p.table2||[]).some(hasTblRow);
+  return s.keys.some(function(k){
+    if(BASIC_KEYS.indexOf(k)>=0)return (p.code||"").length>0;
+    return (p.data[k]||"").trim().length>0;});
+}
+function fieldVal(p,k){
+  if(k==="school_year")return p.school_year||"";if(k==="child_code")return p.code||"";if(k==="grade")return p.grade||"";
+  if(k==="class_type")return p.class_type||"";if(k==="school")return p.school||"";
+  return p.data[k]||"";
+}
+function renderWizard(){
+  var p=cur();
+  if(!p){$("wizBody").innerHTML='<h3>まだ計画がないで</h3><p class="lead">まず計画を起こそう。ホームの「新しい計画」か、メモから作るのが早いで。</p><button class="b-primary" id="wizCreate">＋ 新しい計画を起こす</button>';
+    $("tabrail").innerHTML="";$("wizMeta").textContent="";
+    var c=$("wizCreate");if(c)c.onclick=function(){var np=newPlan({});S.plans.push(np);S.cur=np.id;save();renderWizard();};return;}
+  normalizeTable(p);
+  if(S.step>=STEPS.length)S.step=STEPS.length-1;
+  $("wizMeta").innerHTML='<b>'+esc(p.code)+'</b>／入力率 '+completeness(p)+'%'+
+    '　<span class="small">次：'+esc(completeness(p)>=100?"最終確認・出力":nextHint(p))+'</span>';
+  var rail=$("tabrail");rail.innerHTML="";
+  STEPS.forEach(function(s,i){
+    var filled=stepFilled(p,s);
+    var b=el("button",(i===S.step?"now ":i<S.step?"done ":"")+(filled?"filled":""),
+      '<span class="n">'+(i<S.step&&filled?"✓":(i+1))+"</span>"+esc(s.t));
+    b.onclick=function(){S.step=i;save(true);renderWizard();};
+    rail.appendChild(b);
+  });
+  var st=STEPS[S.step],body=$("wizBody");body.innerHTML="";
+  if(st.id==="seiro_setup"){renderSeiroStep(body,p);return;}
+  if(st.id==="table"){renderTable(body,p,"前期");return;}
+  if(st.id==="table2"){renderTable(body,p,"後期");return;}
+  if(st.id==="personal")body.appendChild(el("div","piinote","🔒 ここは個人情報や。印刷のときだけ使って、AIには送らへん。"));
+  else body.appendChild(el("p","lead","タブで移動できるで。空欄のままでも保存できるから、分かる所から埋めていこか。"));
+  st.keys.forEach(function(k){
+    var long=LONG_KEYS.indexOf(k)>=0;
+    var val=fieldVal(p,k),fid="fld-"+k;
+    var d=el("div","field");
+    d.innerHTML='<label class="f" for="'+fid+'">'+esc(FM[k]||k)
+      +(GOAL_KEYS.indexOf(k)>=0?' <span class="tag">／基準（回数・時間など）を入れると具体化できるで</span>':"")+"</label>"
+      +(long?'<textarea id="'+fid+'" rows="3" placeholder="例）">'+esc(val)+"</textarea>"
+            :'<input type="text" id="'+fid+'" value="'+esc(val)+'">')
+      +(long?'<div class="airow"><button class="b-soft b-sm" data-ai="'+k+'">✨ 文例を出す</button>'
+            +'<button class="b-ghost b-sm" data-soft="'+k+'">配慮して言い換え</button>'
+            +'<button class="b-ghost b-sm" data-send="'+k+'">配慮した文面の画面へ</button>'
+            +'<button class="b-ghost b-sm" data-lib="'+k+'">🔍 文例を探す</button>'
+            +'<span class="warnline" id="w-'+k+'"></span></div>'
+            +'<div class="draftbox" id="draft-'+k+'" hidden></div>':"");
+    body.appendChild(d);
+    var inp=d.querySelector("#"+fid);
+    inp.oninput=function(){
+      if(k==="school_year"){var y=parseInt(inp.value,10);if(y>=2000&&y<=9999)p.school_year=y;}else if(k==="child_code")p.code=inp.value;else if(k==="grade")p.grade=inp.value;
+      else if(k==="class_type")p.class_type=inp.value;else if(k==="school")p.school=inp.value;
+      else p.data[k]=inp.value;
+      touch();if(long)liveWarn(k,inp.value);
+    };
+    if(long)liveWarn(k,val);
+  });
+  body.querySelectorAll("[data-ai]").forEach(function(b){
+    b.onclick=function(){
+      var k=b.dataset.ai,txt=AI_SAMPLES[k]||"・（文例：実際のアプリでは匿名化した情報から生成します）";
+      var box=$("draft-"+k);box.hidden=false;
+      box.innerHTML="<b>文例（保護者・委員会に見せられる表現）</b><br>"+esc(txt)
+        +'<div style="margin-top:.5rem"><button class="b-primary b-sm" data-apply="'+k+'">この文例を反映</button> <span class="small muted">そのまま使わず、自分の言葉に直してな</span></div>';
+      box.querySelector("[data-apply]").onclick=function(){p.data[k]=txt;$("fld-"+k).value=txt;touch();liveWarn(k,txt);toast("文例を反映したで（要確認・修正）");};
+    };
+  });
+  body.querySelectorAll("[data-soft]").forEach(function(b){
+    b.onclick=function(){
+      var k=b.dataset.soft,v=p.data[k]||"",box=$("draft-"+k);box.hidden=false;
+      if(!v.trim()){box.innerHTML='<span class="small muted">まだ何も入ってへんで。先に書くか、文例を出してみて。</span>';return;}
+      var sh=softShare(v);
+      if(!sh.applied.length){box.innerHTML='<span class="small muted">配慮が必要な表現は見つからへんかったで。このままでも大丈夫や。</span>';return;}
+      box.innerHTML="<b>配慮した文面（"+sh.applied.length+"箇所）</b><br>"+esc(sh.text)
+        +'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="ap-'+k+'">この文面を反映</button></div>';
+      $("ap-"+k).onclick=function(){p.data[k]=sh.text;$("fld-"+k).value=sh.text;touch();liveWarn(k,sh.text);toast("配慮した文面に整えたで（意味を確認してな）");};
+    };
+  });
+  body.querySelectorAll("[data-lib]").forEach(function(b){
+    b.onclick=function(){LIBF={q:"",dis:{},scene:{},stage:{},field:b.dataset.lib};save(true);go("library");};
+  });
+  body.querySelectorAll("[data-send]").forEach(function(b){
+    b.onclick=function(){var k=b.dataset.send;S.soft={in:p.data[k]||"",out:null};save(true);go("soften");
+      if((p.data[k]||"").trim())setTimeout(function(){$("btnSoftGo").click();},60);};
+  });
+  $("btnNext").textContent=(S.step>=STEPS.length-1)?"確認してチェックへ →":"次へ →";
+}
+function liveWarn(k,val){
+  var node=$("w-"+k);if(!node)return;node.textContent="";if(!val||!val.trim())return;
+  var w=[];
+  if(val.split(/[。\n]/).some(function(s){return s.trim().length>60;}))w.push("1文が長めやで");
+  var nj=Object.keys(JARGON).filter(function(t){return val.indexOf(t)>=0;});
+  if(nj.length)w.push("「"+nj[0]+"」は言い換え候補");
+  var nw=negFind(val);if(nw)w.push("「"+nw+"」は配慮して言い換えを");
+  if(GOAL_KEYS.indexOf(k)>=0&&!CONCRETE.some(function(h){return val.indexOf(h)>=0;}))w.push("基準を入れるとええで");
+  node.textContent=w.length?("⚠ "+w.join("／")):"";
+}
+function renderTable(body,p,period){
+  normalizeTable(p);
+  var isPost=(period==="後期");
+  var arr=isPost?p.table2:p.table;
+  body.appendChild(el("div","tablenote","実態→目標→指導・支援方法→評価 の4列や。行の名前（日常生活・対人・自立活動・国語・算数など）は変えられるで。使う行だけ埋めればOK。"));
+  var g=el("div","gridtable");
+  arr.forEach(function(r,i){
+    var t=el("div","trow");
+    t.innerHTML='<div class="rn"><input type="text" class="rnin" value="'+esc(r.name||ROW_LABELS[i]||"")+'" aria-label="領域名" placeholder="領域（日常生活 など）"></div>'
+      +'<textarea data-r="'+i+'" data-c="fact" placeholder="実態">'+esc(r.fact||"")+"</textarea>"
+      +'<textarea data-r="'+i+'" data-c="goal" placeholder="目標">'+esc(r.goal||"")+"</textarea>"
+      +'<textarea data-r="'+i+'" data-c="method" placeholder="指導・支援方法">'+esc(r.method||"")+"</textarea>"
+      +'<textarea data-r="'+i+'" data-c="eval" placeholder="評価">'+esc(r.eval||"")+"</textarea>";
+    g.appendChild(t);
+  });
+  body.appendChild(g);
+  var bar=el("div","row mt");
+  bar.innerHTML='<button class="b-ghost b-sm" id="addT">＋ 行を追加</button>'+(arr.length>1?'<button class="b-ghost b-sm" id="delT">最後の行を消す</button>':"");
+  body.appendChild(bar);
+  g.querySelectorAll(".rnin").forEach(function(inp){inp.oninput=function(){arr[+inp.closest(".trow").querySelector("textarea").dataset.r].name=inp.value;touch();};});
+  g.querySelectorAll("textarea").forEach(function(ta){ta.oninput=function(){arr[+ta.dataset.r][ta.dataset.c]=ta.value;touch();};});
+  $("addT").onclick=function(){if(arr.length>=9){toast("9行までやで");return;}arr.push({name:"",fact:"",goal:"",method:"",eval:""});save(true);renderWizard();};
+  if($("delT"))$("delT").onclick=function(){arr.pop();save(true);renderWizard();};
+}
+$("btnNext").onclick=function(){if(S.step<STEPS.length-1){S.step++;save(true);renderWizard();window.scrollTo({top:0,behavior:"smooth"});}else{go("check");runCheck();}};
+$("btnPrev").onclick=function(){if(S.step>0){S.step--;save(true);renderWizard();}};
+$("btnSave").onclick=function(){flushQueuedSave();if(save())toast("下書きを保存しました");};
+$("btnJumpCheck").onclick=function(){go("check");runCheck();};
+
+/* ===== チェック ===== */
+var CHECKFILT="all",CHECKRESULT=null;
+function collectIssues(p){
+  var out=[];if(!p)return out;
+  requiredKeys().forEach(function(k){
+    if(!(p.data[k]||"").trim()&&BASIC_KEYS.indexOf(k)<0)
+      out.push({level:"err",rule:"必須",field:FM[k]||k,msg:"「"+(FM[k]||k)+"」が空欄や。提出前に埋めてな。"});
+  });
+  if(!p.data.guardian_confirmed)out.push({level:"warn",rule:"同意",msg:"保護者確認がまだや。了承日と確認を記録しといてな。"});
+  Object.keys(p.data).forEach(function(k){
+    var v=p.data[k];if(typeof v!=="string"||!v.trim())return;var lab=FM[k]||k;
+    Object.keys(JARGON).forEach(function(term){if(v.indexOf(term)>=0)
+      out.push({level:"info",rule:"やさしい日本語",field:lab,msg:"「"+term+"」は保護者に伝わりにくい場合があるで。例：「"+JARGON[term]+"」など具体的な言い方も検討してな。"});});
+    v.split(/[。\n]/).forEach(function(s){s=s.trim();if(s.length>60)
+      out.push({level:"warn",rule:"やさしい日本語",field:lab,msg:"1文が"+s.length+"字と長めや。2文に分けて短く区切ると読みやすいで（目安60字）。"});});
+    SOFT.forEach(function(pair){if(v.indexOf(pair[0])>=0)
+      out.push({level:"warn",rule:"配慮した表現",field:lab,msg:"「"+pair[0]+"」は共有の場で配慮がいる表現や。例：「"+pair[1]+"」のように、行動と手立てで書くと伝わりやすいで。"});});
+    if(GOAL_KEYS.indexOf(k)>=0){
+      if(!CONCRETE.some(function(h){return v.indexOf(h)>=0;}))
+        out.push({level:"info",rule:"目標の具体性",field:lab,msg:"目標に基準や条件（回数・時間・場面・「自分から」など）を入れると、達成の評価がしやすいで。"});
+      NEG_FOCUS.forEach(function(w){if(v.indexOf(w)>=0)
+        out.push({level:"warn",rule:"肯定的表現",field:lab,msg:"「"+w+"」より、目指す姿を肯定的に書くと子どもが見通しを持ちやすいで。"});});
+    }
+  });
+  var seen={},uniq=[];out.forEach(function(x){var key=x.rule+"|"+(x.field||"")+"|"+x.msg;if(!seen[key]){seen[key]=1;uniq.push(x);}});
+  var order={err:0,warn:1,info:2};
+  uniq.sort(function(a,b){return order[a.level]-order[b.level];});
+  return uniq;
+}
+function paintCheck(){
+  var p=cur(),list=$("issueList");
+  if(!CHECKRESULT){$("scoreBig").textContent="–";$("scoreLabel").innerHTML='<b>「チェックを実行」</b>を押してな。';$("scoreTags").innerHTML="";
+    list.innerHTML='<li class="info">まだチェックしてへんで。</li>';renderReady(p,null);return;}
+  var errs=CHECKRESULT.filter(function(x){return x.level==="err";}).length;
+  var warns=CHECKRESULT.filter(function(x){return x.level==="warn";}).length;
+  var infos=CHECKRESULT.filter(function(x){return x.level==="info";}).length;
+  var score=Math.max(0,100-errs*18-warns*6-infos*2);
+  $("scoreBig").textContent=score;
+  $("scoreBig").style.color=score>=85?"var(--ok)":score>=60?"var(--amber)":"var(--stamp)";
+  $("scoreLabel").innerHTML=errs?"<b>要修正 "+errs+" 件</b>があるで。赤い所から直していこか。":"<b>提出できそうや！</b> 大きな問題は見つからへんかったで。";
+  $("scoreTags").innerHTML='<span class="badge" style="background:var(--stamp)">要修正 '+errs+'</span>'
+    +'<span class="badge" style="background:var(--amber)">直すと良い '+warns+'</span>'
+    +'<span class="badge" style="background:var(--brand-2)">ヒント '+infos+'</span>';
+  var show=CHECKRESULT.filter(function(x){return CHECKFILT==="all"||x.level===CHECKFILT;});
+  list.innerHTML="";if(!show.length)list.appendChild(el("li","info","この分類の指摘はないで。"));
+  show.forEach(function(x){var li=el("li",x.level);
+    li.innerHTML='<span class="rule">'+esc(x.rule)+(x.field?"｜"+esc(x.field):"")+"</span>"+esc(x.msg);list.appendChild(li);});
+  renderReady(p,errs);
+}
+function renderReady(p,errs){
+  var grid=$("readyGrid");if(!grid)return;grid.innerHTML="";
+  var req=requiredKeys(),met=p?req.filter(function(k){return (p.data[k]||"").trim();}).length:0;
+  var items=[
+   ["必須項目が入っているか（"+met+"/"+req.length+"）",met===req.length],
+   ["実名・住所は個人情報欄だけに入っているか",true],
+   ["目標に基準（数字・回数）が入っているか",p?GOAL_KEYS.some(function(k){var v=p.data[k]||"";return CONCRETE.some(function(h){return v.indexOf(h)>=0;});}):false],
+   ["保護者の確認・了承日を記録したか",!!(p&&p.data.guardian_confirmed)],
+   ["配慮が必要な表現が残っていないか",errs!==null&&p?(!(p?CHECKRESULT:[]).some(function(x){return x.rule==="配慮した表現";})):false],
+   ["引継ぎ先と糊しろを書いたか",!!(p&&(p.data.handover_to||p.data.start_ease))]
+  ];
+  items.forEach(function(it){var c=el("div","chk "+(it[1]?"ok":"ng"));
+    c.innerHTML='<span class="st">'+(it[1]?"○":"×")+"</span><span>"+esc(it[0])+"</span>";grid.appendChild(c);});
+}
+function runCheck(){CHECKRESULT=collectIssues(cur());paintCheck();
+  var e=CHECKRESULT.filter(function(x){return x.level==="err";}).length;toast(e?("要修正 "+e+"件あるで"):"大きな問題は見つからへんで");}
+$("btnRunCheck").onclick=runCheck;
+document.querySelectorAll("[data-filt]").forEach(function(c){c.onclick=function(){
+  CHECKFILT=c.dataset.filt;document.querySelectorAll("[data-filt]").forEach(function(x){x.classList.toggle("on",x===c);});paintCheck();};});
+
+/* ===== プレビュー ===== */
+function renderPaper(){
+  var p=cur(),area=$("paperArea");
+  if(!p){area.innerHTML='<div class="card"><p class="lead">計画を選ぶと、ここに様式が出るで。</p></div>';return;}
+  normalizeTable(p);
+  var d=p.data;
+  function sec(t,keys){var h="<section><h3>"+esc(t)+"</h3>";
+    keys.forEach(function(k){var v=(d[k]||"").trim();
+      h+='<div style="margin-bottom:.5rem"><b class="small" style="color:var(--muted)">'+esc(FM[k]||k)+"</b>"
+        +'<div class="body">'+(v?esc(v):'<span class="muted">（未入力）</span>')+"</div></div>";});
+    return h+"</section>";}
+  function tbl(title,arr){
+    var rows=arr.filter(hasTblRow);if(!rows.length)return "";
+    var h='<section><h3>'+esc(title)+'</h3><table class="formtable"><thead><tr><th style="width:13%">領域</th><th style="width:26%">実態</th><th style="width:22%">目標</th><th style="width:24%">指導・支援方法</th><th style="width:15%">評価</th></tr></thead><tbody>';
+    arr.forEach(function(r,i){if(!hasTblRow(r))return;
+      h+="<tr><th style=\"width:13%\">"+esc(r.name||ROW_LABELS[i]||"")+"</th><td>"+esc(r.fact||"")+"</td><td>"+esc(r.goal||"")+"</td><td>"+esc(r.method||"")+"</td><td>"+esc(r.eval||"")+"</td></tr>";});
+    return h+"</tbody></table></section>";
+  }
+  var h='<div class="paper"><h2>個別の指導計画・教育支援計画</h2>'
+   +'<div class="meta"><span><b>管理番号</b>'+esc(p.code||"")+"</span><span><b>学年</b>"+esc(p.grade||"")
+   +"</span><span><b>在籍形態</b>"+esc(p.class_type||"")+"</span><span><b>学校名</b>"+esc(p.school||"")+"</span></div>";
+  h+=sec("1　実態と願い",["profile_strengths","profile_needs","history","edu_history","dev_test","life","child_wish","guardian_wish","wish","seiro_strengthen","seiro_complement"]);
+  h+=sec("2　目標",["support_long_goal","guidance_long_goal","short_goal_1","short_goal_2"]);
+  h+=sec("3　手立てと評価",["supports","eval_method","school_support","eval_handover"]);
+  h+=tbl("4　指導表（前期）",p.table);
+  h+=tbl("5　指導表（後期）",p.table2);
+  h+=sec("6　引継ぎ・関係機関",["support_history","related_agencies","selfcare","speech","academics","family_support","community_support","welfare_support","medical_support","handover_to","start_ease","effective_supports","episode","period_note"]);
+  h+='<div class="sign"><span>了承日：'+esc((d.consent_date||"").trim()||"　　　年　　月　　日")+"</span><span>保護者署名：──────────</span></div>";
+  h+='<div class="hash">内容ハッシュ（参考）：'+hashStr(JSON.stringify(d)+JSON.stringify(p.table)+JSON.stringify(p.table2))+"</div></div>";
+  area.innerHTML=h;
+}
+function hashStr(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return ("00000000"+(h>>>0).toString(16)).slice(-8);}
+$("btnPrint").onclick=function(){window.print();};
+
+/* ===== 様式・差し込み ===== */
+function allTemplates(){return TEMPLATES.concat(S.templates||[]);}
+function tplById(id){var a=allTemplates();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return a[0];}
+function mapKey(id){return "m_"+id;}
+function getMap(tpl){var mk=mapKey(tpl.id);S.maps=S.maps||{};
+  if(!S.maps[mk]){var o={};tpl.rows.forEach(function(r){o[r[0]]=r[1]||null;});S.maps[mk]=o;}
+  tpl.rows.forEach(function(r){if(!(r[0] in S.maps[mk]))S.maps[mk][r[0]]=r[1]||null;});
+  return S.maps[mk];}
+function autoMap(tpl){
+  var m=getMap(tpl);
+  tpl.rows.forEach(function(r){
+    if(m[r[0]])return;
+    var label=String(r[0]).replace(/[【】〈〉（）()：:・\s]/g,"");
+    var best=null,bestLen=0;
+    Object.keys(FM).forEach(function(fid){
+      var fl=FM[fid].replace(/[【】〈〉（）()：:・\s]/g,"");
+      if(fl&&(label.indexOf(fl)>=0||fl.indexOf(label)>=0)&&fl.length>bestLen){best=fid;bestLen=fl.length;}
+    });
+    if(best)m[r[0]]=best;
+  });
+  return m;
+}
+function valueFor(p,fid){
+  if(!fid)return "";
+  if(fid==="table"||fid==="table_pre")return tableText(p,"前期");
+  if(fid==="table_post")return tableText(p,"後期");
+  if(fid==="table_all")return tableAllText(p);
+  if(fid==="table_seiro")return tableText(p,"前期");
+  if(fid==="child_code")return p.code||"";if(fid==="grade")return p.grade||"";
+  if(fid==="class_type")return p.class_type||"";if(fid==="school")return p.school||"";
+  return (p.data&&p.data[fid])||"";
+}
+function renderForm(){
+  var sel=$("formSelect"),a=allTemplates();
+  sel.innerHTML=a.map(function(t){return '<option value="'+t.id+'"'+(t.id===S.formId?" selected":"")+">"+esc(t.name)+"</option>";}).join("");
+  var tpl=tplById(S.formId);S.formId=tpl.id;
+  var p=cur();
+  $("formMeta").textContent=(p?("計画："+p.code):"計画を選んでな");
+  var m=getMap(tpl),box=$("mapRows");box.innerHTML="";
+  tpl.rows.forEach(function(r){
+    var fid=m[r[0]]||"";
+    var opts='<option value=""'+(fid?"":" selected")+">（差し込みなし）</option>";
+    Object.keys(FM).forEach(function(k){opts+='<option value="'+k+'"'+(k===fid?" selected":"")+">"+esc(FM[k])+"</option>";});
+    var pv=p?(valueFor(p,fid)||""):"";
+    var row=el("div","maprow"+(fid?"":" unset"));
+    row.innerHTML='<span class="rlabel">'+esc(r[0])+"</span>"
+      +'<select class="msel" aria-label="差し込み先">'+opts+"</select>"
+      +'<span class="pv" title="'+esc(pv)+'">'+(pv?esc(pv.slice(0,44))+(pv.length>44?"…":""):'<span class="muted">（空欄）</span>')+"</span>";
+    row.querySelector(".msel").onchange=function(e){m[r[0]]=e.target.value||null;save(true);renderForm();};
+    box.appendChild(row);
+  });
+  renderFormPaper(tpl,m,p);
+}
+function renderFormPaper(tpl,m,p){
+  var area=$("formPaperArea");
+  if(!p){area.innerHTML='<div class="card"><p class="lead">計画を選ぶと、様式に差し込んだ状態が出るで。</p></div>';return;}
+  var h='<div class="paper"><h2>'+esc(tpl.name)+"</h2>";
+  h+='<table class="formtable"><tbody>';
+  h+='<tr class="sec"><td colspan="2">差し込み結果（プレビュー）</td></tr>';
+  var blanks=0;
+  tpl.rows.forEach(function(r){
+    var fid=m[r[0]]||"",v=fid?valueFor(p,fid):"";
+    var blank=!String(v||"").trim();if(blank)blanks++;
+    h+='<tr><th>'+esc(r[0])+"</th><td"+(blank?' class="empty"':'')+">"
+      +(blank?(fid?'（対応する項目が未入力）':'（差し込み先が未割当）'):esc(v))+"</td></tr>";
+  });
+  h+="</tbody></table>";
+  h+='<p class="small muted" style="margin-top:.6rem">空欄 '+blanks+' 個。空欄は計画の入力不足か、差し込み先の未割当やで。</p></div>';
+  area.innerHTML=h;
+  var note=$("mapHint");if(note)note.textContent="空欄 "+blanks+" 個。黄色の行は差し込み先が未割当や。";
+}
+$("formSelect").onchange=function(){S.formId=this.value;save(true);renderForm();};
+$("btnMapAuto").onclick=function(){autoMap(tplById(S.formId));save(true);renderForm();toast("欄名から候補を割り当てたで。確認して直してな");};
+$("btnFillBlank").onclick=function(){
+  var tpl=tplById(S.formId),m=getMap(tpl),p=cur(),miss=[];
+  tpl.rows.forEach(function(r){var fid=m[r[0]]||"";if(fid&&p&&!String(valueFor(p,fid)||"").trim())miss.push(r[0]);});
+  toast(miss.length?("未入力："+miss.slice(0,4).join("、")+(miss.length>4?" 他"+(miss.length-4)+"件":"")):"空欄はないで！");
+};
+$("btnFormAdd").onclick=function(){
+  var name=$("formNewName").value.trim()||"自校の様式";
+  var lines=$("formNewCols").value.split(/\r?\n/).map(function(s){return s.replace(/^[\s\u3000,"]+|[\s\u3000,"]+$/g,"");}).filter(Boolean);
+  if(!lines.length){toast("欄名を1行ずつ入れてな");return;}
+  var tpl={id:"custom_"+Date.now(),name:name,custom:true,rows:lines.map(function(l){return [l,null];})};
+  S.templates=(S.templates||[]).concat([tpl]);S.formId=tpl.id;save();
+  autoMap(tpl);save();renderForm();toast("様式を登録したで（"+lines.length+"欄）");
+  $("formNewCols").value="";$("formNewName").value="";
+};
+$("btnFormDel").onclick=function(){
+  var tpl=tplById(S.formId);
+  if(!tpl.custom){toast("初期搭載の様式は消せへんで");return;}
+  if(!confirm("この様式を消すで。ええか？"))return;
+  S.templates=S.templates.filter(function(t){return t.id!==tpl.id;});S.formId="mext_support";save();renderForm();
+};
+$("formFile").onchange=function(e){
+  var f=e.target.files[0];if(!f)return;var rd=new FileReader();
+  rd.onload=function(){
+    var txt=String(rd.result);
+    var lines=txt.split(/\r?\n/).map(function(l){return l.split(/[,\t]/)[0].replace(/^[\s"']+|[\s"']+$/g,"");}).filter(Boolean);
+    if(lines.length&&/ふりがな|氏名|様式|計画/.test(lines[0])&&lines.length>1)lines=lines.slice(1);
+    $("formNewCols").value=lines.join("\n");if(!$("formNewName").value)$("formNewName").value=f.name.replace(/\.[^.]+$/,"");
+    toast("欄名を読み込んだで（"+lines.length+"行）。登録ボタンを押してな");
+  };
+  rd.readAsText(f);e.target.value="";
+};
+$("btnFormPrint").onclick=function(){window.print();};
+$("btnFormExcel").onclick=function(){exportForm("xlsx");};
+$("btnFormCsv").onclick=function(){exportForm("csv");};
+function exportForm(kind){
+  var tpl=tplById(S.formId),m=getMap(tpl),p=cur();
+  if(!p){toast("計画を選んでな");return;}
+  var rows=[["様式",tpl.name],["管理番号",p.code||""]];
+  tpl.rows.forEach(function(r){var fid=m[r[0]]||"";rows.push([r[0],fid?valueFor(p,fid):""]);});
+  if(kind==="csv"){download((p.code||"plan")+"_"+tpl.id+".csv",new Blob(["\ufeff"+csvFrom(rows)],{type:"text/csv;charset=utf-8"}));toast("様式CSVを書き出したで");return;}
+  try{download((p.code||"plan")+"_"+tpl.id+".xlsx",xlsxBlob(rows));toast("様式Excelを書き出したで");}
+  catch(e){download((p.code||"plan")+"_"+tpl.id+".csv",new Blob(["\ufeff"+csvFrom(rows)],{type:"text/csv;charset=utf-8"}));toast("ExcelにできへんかったのでCSVにしたで");}
+}
+
+var LIB=[["ASD", "切り替え,学習", "小低", "profile_needs", "見通しをもてない活動では不安が高まり、次に何をするのか分からず席を立つことがあります"], ["ASD", "切り替え", "共通", "profile_needs", "急な予定変更が苦手で、気持ちが高ぶって動けなくなることがあります"], ["ASD", "対人,集団", "小低", "profile_needs", "相手の気持ちを想像することが難しく、思ったことをそのまま伝えてしまうことがあります"], ["ASD", "感覚,集団", "小低", "profile_needs", "大きな音や人混みが苦手で、疲れやすく、気持ちが落ち着きにくいことがあります"], ["ASD", "ことば,対人", "小高", "profile_needs", "ことばの裏の意味や冗談を理解することが難しく、会話がかみ合わないことがあります"], ["ASD", "対人,集団", "共通", "profile_needs", "自分から友達に声をかけることが少なく、ひとりで過ごすことが多いです"], ["ASD", "生活,切り替え", "共通", "profile_strengths", "決まったやり方や手順があると安心し、最後まで落ち着いて取り組むことができます"], ["ASD", "学習", "共通", "profile_strengths", "見通しのある活動には集中して取り組み、細かいところまで丁寧に仕上げることができます"], ["ASD", "学習,ことば", "小高", "profile_strengths", "興味のある分野（電車・生き物・地図など）の知識が豊富で、自信をもって話すことができます"], ["ASD", "学習", "小低", "profile_strengths", "絵や図、具体物があると内容をよく理解し、覚えることができます"], ["ASD", "生活,身辺自立", "共通", "profile_strengths", "決まった係の仕事や日課を、正確にやり遂げることができます"], ["ASD", "切り替え", "小低", "short_goal_1", "次の活動の予定表を見て、自分で切り替えることができる"], ["ASD", "感情", "共通", "short_goal_1", "気持ちが高ぶったとき、自分から落ち着ける場所を選んだり、支援者に合図を出したりできる"], ["ASD", "対人,ことば", "小高", "short_goal_1", "自分の気持ちや希望を、ことばで伝えることができる"], ["ASD", "対人", "共通", "short_goal_2", "友達の話を最後まで聞いてから、自分の考えを伝えることができる"], ["ASD", "集団", "小高", "guidance_long_goal", "集団の中で、自分の役割を理解して活動に参加することができる"], ["ASD", "生活", "共通", "support_long_goal", "見通しをもって生活し、困ったときは自分から助けを求めることができる"], ["ASD", "切り替え", "共通", "supports", "活動の前に予定表を一緒に確認し、見通しをもてるようにする"], ["ASD", "学習", "共通", "supports", "手順表や絵カードを使い、やることが目で分かるようにする"], ["ASD", "対人,ことば", "小低", "supports", "ことばでのやりとりが難しいときは、教師が仲立ちして橋渡しをする"], ["ASD", "感覚", "共通", "supports", "落ち着ける場所を確保し、本人の意思を確認してから移動できるようにする"], ["ASD", "感覚", "小低", "supports", "イヤーマフや仕切りなど、感覚の負担を減らす道具を用意する"], ["ASD", "切り替え", "共通", "supports", "変更があるときは事前に知らせ、代わりの予定を一緒に確認する"], ["ASD", "学習,対人", "小高", "supports", "小集団のゲームなどで、教師が仲立ちしながら気持ちを表現するきっかけをつくる"], ["ASD", "感情", "共通", "supports", "気持ちに名前をつけて整理する練習を、具体的な場面で繰り返す"], ["ASD", "切り替え", "共通", "eval_method", "予定表を自分で見て切り替えられる場面が増えました。週1回の記録で見取ります"], ["ASD", "感情", "共通", "eval_handover", "気持ちが高ぶったとき、自分から合図を出せるようになりました。この合図の決め方を次の担任に引き継ぎます"], ["ASD", "共通", "共通", "family_support", "家庭でも、予定を前もって伝え、本人の気持ちを聞いてから活動を進めています"], ["ASD", "集団", "小低", "start_ease", "4月は、得意な図鑑や絵カードから始め、安心して活動に入れるようにします"], ["ADHD", "学習", "共通", "profile_needs", "気が散りやすく、必要な持ち物を忘れたり、なくしたりすることがあります"], ["ADHD", "学習,集団", "小低", "profile_needs", "授業中、体を動かしたくて席を離れたり、手いたずらが続いたりすることがあります"], ["ADHD", "対人,ことば", "共通", "profile_needs", "思いついたことをすぐ言ってしまい、話の途中で口をはさんでしまうことがあります"], ["ADHD", "生活", "小高", "profile_needs", "提出物や時間の管理が苦手で、後回しにしてしまうことがあります"], ["ADHD", "学習", "共通", "profile_strengths", "興味のあることには、驚くほど集中して取り組むことができます"], ["ADHD", "学習,運動", "共通", "profile_strengths", "体を動かして体験する学習だと、よく理解し、力を発揮できます"], ["ADHD", "学習", "小低", "short_goal_1", "指示を最後まで聞いてから、取りかかることができる"], ["ADHD", "生活", "小高", "short_goal_1", "持ち物や提出物を、決めた場所で自分で管理することができる"], ["ADHD", "ことば,対人", "共通", "short_goal_2", "話している人を最後まで見て、順番を待つことができる"], ["ADHD", "学習", "小低", "short_goal_2", "まずは5分、着席して課題に取り組むことができる"], ["ADHD", "学習", "共通", "supports", "指示は短く簡潔に、一度に一つずつ伝える"], ["ADHD", "学習", "共通", "supports", "フローチャートやチェックリストなど、視覚的な情報を使う"], ["ADHD", "学習,集団", "共通", "supports", "掲示物を減らし、集中しやすい座席や環境をつくる"], ["ADHD", "学習", "共通", "supports", "できた行動を具体的に伝え、自分で気づける声かけをする（セルフモニタリングを育てる）"], ["ADHD", "生活", "共通", "supports", "宿題や持ち物は、決まった場所と決まった手順で確認する習慣をつくる"], ["ADHD", "運動,学習", "共通", "supports", "体を動かす活動や役割を適度に取り入れ、発散できる場をつくる"], ["ADHD", "感情", "共通", "supports", "気持ちが高ぶったときの落ち着き方を、あらかじめ本人と決めておく"], ["ADHD", "対人,集団", "中高", "supports", "アンガーマネジメントやストレス対処の方法を、個別に練習する"], ["ADHD", "生活", "小高", "eval_method", "持ち物チェック表を使う日が増えました。帰りの会で本人と振り返り、記録します"], ["ADHD", "学習", "共通", "school_support", "活動の前にルールを確かめ、適切な行動を穏やかに伝える"], ["ADHD", "集団", "共通", "school_support", "友達が自然に支えられるよう、クラスでの関わり方を全体に伝える"], ["ADHD", "学習", "共通", "eval_handover", "席の位置や指示の出し方など、うまくいった条件をそのまま次年度に引き継ぎます"], ["ADHD", "家庭", "共通", "family_support", "家庭でも、指示は一つずつ短く伝え、できたらすぐほめるようにしています"], ["SLD", "読み書き", "小低", "profile_needs", "音読がたどたどしく、読み間違えることがあります（読字の困難）"], ["SLD", "読み書き", "小高", "profile_needs", "漢字の書きが苦手で、細かい部分が抜けたり、字形が乱れたりします（書字の困難）"], ["SLD", "計算", "小高", "profile_needs", "文章題で数の関係を理解することが難しく、途中で分からなくなってしまうことがあります"], ["SLD", "読み書き", "中高", "profile_needs", "板書を写すのに時間がかかり、ノートを取りきれないことがあります"], ["SLD", "学習", "共通", "profile_strengths", "聞いて理解することは得意で、話し合いや発表では力を発揮できます"], ["SLD", "学習", "共通", "profile_strengths", "絵や図、具体物を使うと、考えを整理して理解することができます"], ["SLD", "読み書き", "小低", "short_goal_1", "定規をあてるなどの工夫を使い、文章を読み進めることができる"], ["SLD", "読み書き", "小高", "short_goal_1", "書く量を調整しながら、考えたことを書き表すことができる"], ["SLD", "計算", "小高", "short_goal_2", "絵や図を使い、数の関係を考えて問題を解くことができる"], ["SLD", "読み書き", "共通", "supports", "読みやすい工夫（定規をあてる、2〜3行だけ見える窓のあるシート、カラーフィルター）を紹介し、本人に合う方法を一緒に見つける"], ["SLD", "読み書き", "共通", "supports", "板書の量を減らし、プリントやタブレットを併用する"], ["SLD", "読み書き", "共通", "supports", "書く量を調整し、口頭での確認や選択式の課題も取り入れる"], ["SLD", "読み書き", "共通", "supports", "タブレットや音声読み上げなど、読み書きを支える道具を活用する"], ["SLD", "計算", "小高", "supports", "問題に取りかかる前に、絵や図で数字の関係を一緒に整理する"], ["SLD", "読み書き", "共通", "supports", "間違いを責めず、できたところを具体的に伝えて自信を支える"], ["SLD", "読み書き", "共通", "eval_method", "定規をあてて読む方法が身につき、読み間違いが減りました。学期末に読字の様子を記録します"], ["SLD", "読み書き", "共通", "eval_handover", "タブレットと定規の併用が有効でした。この方法を次の学年にも引き継ぎます"], ["SLD", "家庭", "共通", "family_support", "家庭でも、読むときは横について待ち、書く量は減らして負担を軽くしています"], ["DCD", "運動", "共通", "profile_needs", "縄跳びやボール運動など、体を協調して動かすことが苦手で、運動を避けることがあります"], ["DCD", "読み書き", "小低", "profile_needs", "字の大きさがそろわず、筆圧が強すぎたり弱すぎたりして、書くのに疲れてしまいます"], ["DCD", "身辺自立", "共通", "profile_needs", "ボタン・ファスナー・靴ひもなど、身のまわりの手作業に時間がかかります"], ["DCD", "運動,学習", "共通", "profile_needs", "工作でハサミや定規を使うことが苦手で、完成までに時間がかかります"], ["DCD", "身辺自立", "共通", "profile_strengths", "時間をかけて取り組むことができ、できるようになりたい活動には粘り強く挑戦します"], ["DCD", "運動", "共通", "profile_needs", "運動がうまくできず、自信をなくしている様子が見られます"], ["DCD", "運動", "共通", "short_goal_1", "動きを分けて練習し、できるようになりたい運動に挑戦することができる"], ["DCD", "読み書き,身辺自立", "共通", "short_goal_2", "使いやすい道具を使い、書くことや身支度の負担を減らすことができる"], ["DCD", "運動", "共通", "support_long_goal", "できないことを責めず、自分のペースで活動に参加し、できた喜びを味わうことができる"], ["DCD", "運動", "共通", "supports", "動きを細かく分け、成功しやすい課題から始める"], ["DCD", "運動", "共通", "supports", "動きを見てから行う、事前に練習しておくなど、見通しをもたせる"], ["DCD", "読み書き", "共通", "supports", "鉛筆ホルダー、滑り止めの定規、滑り止めマットなど、道具を工夫する"], ["DCD", "運動", "共通", "supports", "運動の結果だけでなく、取り組み方や本人なりの成長をほめる"], ["DCD", "身辺自立", "共通", "supports", "扱いやすい衣服や食具を選び、時間に余裕をもてるようにする"], ["DCD", "運動", "共通", "eval_method", "動きを分けて練習することで、少しずつできるようになりました。本人の気づきを記録します"], ["DCD", "運動", "共通", "eval_handover", "体育の予習と道具の工夫が有効でした。次年度の体育の内容に合わせて引き継ぎます"], ["DCD", "家庭", "共通", "family_support", "家庭でも、着替えや食事に時間の余裕をもち、できたことを一緒に喜んでいます"], ["知的", "学習", "共通", "profile_needs", "ことばでの説明だけでは理解が難しく、具体物や絵があると分かりやすいです"], ["知的", "生活,切り替え", "共通", "profile_needs", "新しいことへの不安が強く、慣れるまで時間がかかることがあります"], ["知的", "生活,身辺自立", "共通", "profile_strengths", "係の仕事や決まった活動を、喜んで取り組むことができます"], ["知的", "学習", "共通", "profile_strengths", "繰り返し経験したことは、よく覚えて実行することができます"], ["知的", "身辺自立", "共通", "short_goal_1", "手順表を見て、自分で支度を進めることができる"], ["知的", "生活", "共通", "short_goal_2", "困ったときに、自分から支援者に助けを求めることができる"], ["知的", "学習,生活", "共通", "support_long_goal", "日常生活に必要なことを、自分でできるようにしていく"], ["知的", "学習", "共通", "supports", "活動を小さなステップに分け、できたことをその都度ほめる"], ["知的", "学習", "共通", "supports", "具体物や実物、絵カードを使い、目で見て分かるようにする"], ["知的", "生活", "共通", "supports", "生活単元や遊びを通して、繰り返し経験できる場をつくる"], ["知的", "身辺自立", "共通", "supports", "手順表やシールを使い、できたことが見えるようにする"], ["知的", "学習", "共通", "eval_method", "手順表を見て自分で支度できる日が増えました。日々の様子から記録します"], ["知的", "生活", "共通", "eval_handover", "できたことを支えている手順や環境を、次の担任に具体的に引き継ぎます"], ["知的", "家庭", "共通", "family_support", "家庭でも、同じ手順表を使い、できたことを一緒にほめています"], ["吃音", "ことば", "共通", "profile_needs", "話し始めにことばが出にくく、どもることがあります。急かされると話すことに緊張します"], ["吃音", "ことば", "共通", "profile_strengths", "歌や音読など、リズムのある活動では、比較的スムーズに話すことができます"], ["吃音", "ことば,対人", "共通", "short_goal_1", "話すことを急がされず、自分のペースで伝えることができる"], ["吃音", "ことば", "共通", "supports", "話し終えるまで急かさずに待ち、伝わった内容に応じる"], ["吃音", "ことば,行事", "共通", "supports", "話す時間に余裕をもたせ、発表の方法は本人の希望を確認する"], ["吃音", "ことば", "共通", "supports", "話しやすく伝わる方法（書き出してから話すなど）も一緒に考える"], ["吃音", "ことば", "共通", "eval_method", "自分のペースで最後まで話せる場面が増えました。発言の様子を記録します"], ["吃音", "ことば", "共通", "eval_handover", "急かさない対応を、教科担任を含めて引き継ぎます"], ["吃音", "家庭", "共通", "family_support", "家庭でも、話し終えるまで待ち、言い直しを求めないようにしています"], ["情緒", "感情,学習", "共通", "profile_needs", "間違いを強く恐れ、自信のなさから課題への取り組みが消極的になることがあります"], ["情緒", "感情", "共通", "profile_needs", "注意されると、自分を責めて落ち込んでしまうことがあります"], ["情緒", "感情,集団", "小高", "profile_needs", "気持ちの切り替えに時間がかかり、かんしゃくとして表れることがあります"], ["情緒", "感情,進路", "中高", "profile_needs", "学校生活への不安から、登校が難しくなる時期がありました"], ["情緒", "学習", "共通", "profile_strengths", "決まった活動や得意なことには、自分のペースで自信をもって取り組めます"], ["情緒", "学習", "共通", "short_goal_1", "失敗しても、もう一度やってみようとすることができる"], ["情緒", "感情", "共通", "short_goal_2", "気持ちが高ぶったとき、自分なりの落ち着く方法を使うことができる"], ["情緒", "進路", "中高", "support_long_goal", "自分のよさや得意なことに気づき、見通しをもって生活できる"], ["情緒", "感情,学習", "共通", "supports", "できていることや小さな兆しを見つけ、具体的に伝える（個人内評価）"], ["情緒", "学習", "共通", "supports", "目標をスモールステップに分け、成功体験を積み重ねる"], ["情緒", "感情", "共通", "supports", "気持ちを整理する時間や場所を確保する"], ["情緒", "進路", "中高", "supports", "得意なことを生かせる活動や役割を通して、自己肯定感を育てる"], ["情緒", "感情", "共通", "supports", "気持ちの高ぶりには、落ち着いてから話を聞き、事実と気持ちを分けて整理する"], ["情緒", "感情", "共通", "eval_method", "失敗したあとに、自分からもう一度取り組めることが増えました。個人内の変化を記録します"], ["情緒", "進路", "中高", "eval_handover", "安心できる条件と、不安が高まる場面を、支援会議で共有して引き継ぎます"], ["情緒", "家庭", "共通", "family_support", "家庭でも、できたことに目を向け、本人の気持ちを聞いてから話をするようにしています"], ["共通", "対人", "共通", "child_wish", "友達と一緒に活動したい"], ["共通", "学習", "共通", "child_wish", "勉強で分かるようになりたい"], ["共通", "生活", "共通", "child_wish", "自分でできることを増やしたい"], ["共通", "対人,集団", "共通", "guardian_wish", "同年齢の友達ともっと関わりをもってほしい"], ["共通", "生活,身辺自立", "共通", "guardian_wish", "自分で身のまわりのことをできるようになってほしい"], ["共通", "学習,感情", "共通", "guardian_wish", "自信をつけて、楽しく学校生活を送ってほしい"], ["共通", "対人", "共通", "guardian_wish", "トラブルを減らし、友達と仲良く過ごしてほしい"], ["共通", "進路", "中高", "guardian_wish", "得意なことを生かして、進路を選んでほしい"], ["共通", "集団,行事", "共通", "school_support", "活動の前に見通しを伝え、参加の仕方や休憩の取り方を本人と確認する"], ["共通", "集団", "共通", "school_support", "ことばだけでなく、絵カードや手順表を合わせて使う"], ["共通", "感情", "共通", "school_support", "きまりと違う行動は、行動そのものを責めず、背景を考える"], ["共通", "対人,集団", "共通", "school_support", "周りの友達が自然に支えられるよう、関わり方を全体に伝え、いじめを防ぐ"], ["共通", "学習", "共通", "support_long_goal", "自分の力で考え、生活や学習の見通しをもって行動できる"], ["共通", "感情", "共通", "support_long_goal", "感情を自分でコントロールし、人と関わることができる"], ["共通", "感情", "共通", "supports", "感情やストレスを自分でコントロールする方法を、個別に練習する"], ["共通", "生活", "共通", "supports", "本人が選べる場面を増やし、決定できる経験を積む"], ["共通", "集団", "共通", "supports", "できたことを認め、ほめる場面をあらかじめ計画しておく"], ["共通", "共通", "共通", "eval_method", "本人の変容（できるようになったこと）と兆しを、学期ごとに複数の目で見取る"], ["共通", "生活", "共通", "eval_handover", "新しい環境で不安を減らすため、うまくいった条件と4月のスタートの課題を具体的に引き継ぐ"], ["共通", "共通", "共通", "start_ease", "前年度までのおさらいや得意なことから始め、信頼関係を築く"], ["共通", "共通", "共通", "effective_supports", "見通しを伝えること、視覚的な手がかり、できたことをすぐほめること"], ["共通", "対人", "共通", "speech", "気持ちが高ぶったときは、ことばで伝えにくいことがあります。絵カードがあると伝えやすいです"], ["共通", "学習", "共通", "academics", "得意な面から学び直し、できたことを積み重ねながら進めています"], ["共通", "読み書き", "小高", "seiro_strengthen", "発表会の練習などでセリフを覚え、堂々と話すことができるようにする"], ["共通", "感情", "共通", "seiro_complement", "強い言い方が減り、相手を考えた言葉が増えてほしい"], ["共通", "共通", "共通", "period_note", "前期は落ち着いて話せる場面が増えました。後期は自分から気持ちを伝える機会をふやします"], ["共通", "対人", "共通", "profile_needs", "思いが通らないと、相手をかばうことばが出にくく、トラブルになりやすいことがあります"], ["共通", "学習", "共通", "profile_needs", "難しいと感じると、取りかかるまでに時間がかかることがあります"], ["共通", "感情", "共通", "profile_needs", "自分に自信がもてず、できていても「無理」と答えてしまうことがあります"]];
+
+/* ===== 文例ライブラリ ===== */
+var DIS_CODES=["ASD","ADHD","SLD","DCD","知的","吃音","情緒","共通"];
+var DIS_LABEL={ASD:"ASD（自閉スペクトラム）",ADHD:"ADHD（注意・多動）",SLD:"SLD（学びの困難・LD）",DCD:"DCD（不器用）",知的:"知的障害",吃音:"吃音",情緒:"情緒・不安・二次障害",共通:"共通"};
+var STAGE_CODES=["小低","小高","中高","共通"];
+var STAGE_LABEL={"小低":"小学校低学年","小高":"小学校高学年","中高":"中学・高校","共通":"校種を問わず"};
+var LIBLEFT_FIELDS=["profile_strengths","profile_needs","child_wish","guardian_wish","support_long_goal","guidance_long_goal","short_goal_1","short_goal_2","supports","eval_method","school_support","eval_handover","start_ease","effective_supports","speech","academics","seiro_strengthen","seiro_complement","period_note","family_support"];
+var LIB_SCENES=(function(){var s={};LIB.forEach(function(e){e[1].split(",").forEach(function(t){t=t.trim();if(t)s[t]=1;});});return Object.keys(s).sort();})();
+var LIBF={q:"",dis:{},scene:{},stage:{},field:""};
+function libFilter(){
+  var q=LIBF.q.trim();
+  return LIB.filter(function(e){
+    var dis=e[0],scene=e[1],stage=e[2],field=e[3],text=e[4];
+    var disSel=Object.keys(LIBF.dis).filter(function(kk){return LIBF.dis[kk];});
+    if(disSel.length&&dis!=="共通"&&!LIBF.dis[dis])return false;
+    var scSel=Object.keys(LIBF.scene).filter(function(kk){return LIBF.scene[kk];});
+    if(scSel.length){var hit=scene.split(",").some(function(t){return LIBF.scene[t.trim()];});if(!hit)return false;}
+    var stSel=Object.keys(LIBF.stage).filter(function(kk){return LIBF.stage[kk];});
+    if(stSel.length&&stage!=="共通"&&!LIBF.stage[stage])return false;
+    if(LIBF.field&&field!==LIBF.field)return false;
+    if(q){var hay=(text+" "+scene+" "+(FM[field]||"")+" "+(DIS_LABEL[dis]||"")).toLowerCase();
+      if(hay.indexOf(q.toLowerCase())<0)return false;}
+    return true;
+  });
+}
+function chipThemed(label,on,handler){
+  var b=el("span","chip"+(on?" on":""),esc(label));b.addEventListener("click",handler);return b;
+}
+function renderLibrary(){
+  var dbox=$("libDis");dbox.innerHTML="";
+  DIS_CODES.forEach(function(c){dbox.appendChild(chipThemed(DIS_LABEL[c]||c,!!LIBF.dis[c],function(){LIBF.dis[c]=!LIBF.dis[c];renderLibrary();}));});
+  var sbox=$("libScene");sbox.innerHTML="";
+  LIB_SCENES.forEach(function(c){sbox.appendChild(chipThemed(c,!!LIBF.scene[c],function(){LIBF.scene[c]=!LIBF.scene[c];renderLibrary();}));});
+  var tbox=$("libStage");tbox.innerHTML="";
+  STAGE_CODES.forEach(function(c){tbox.appendChild(chipThemed(STAGE_LABEL[c]||c,!!LIBF.stage[c],function(){LIBF.stage[c]=!LIBF.stage[c];renderLibrary();}));});
+  var fs=$("libField");
+  if(!fs.dataset.built){
+    fs.innerHTML='<option value="">欄：すべて</option>'+LIBLEFT_FIELDS.map(function(kk){return '<option value="'+kk+'">'+esc(FM[kk]||kk)+"</option>";}).join("");
+    fs.dataset.built="1";
+  }
+  fs.value=LIBF.field;
+  var res=libFilter();
+  $("libCount").textContent=res.length+" 件／全 "+LIB.length+" 件";
+  var box=$("libResults");box.innerHTML="";
+  if(!res.length){box.appendChild(el("div","card","<p class='lead'>条件に合う文例が見つからへんかったで。キーワードを短くするか、条件をリセットしてみてな。</p>"));return;}
+  var byField={};res.forEach(function(e){(byField[e[3]]=byField[e[3]]||[]).push(e);});
+  Object.keys(byField).forEach(function(f){
+    var grp=el("div","card");
+    grp.innerHTML='<div class="section-head"><span class="eyebrow">'+(FM[f]||f)+'</span><h3 style="margin:0">'+(FM[f]||f)+'</h3><span class="small muted" style="margin-left:auto">'+byField[f].length+'件</span></div>';
+    byField[f].forEach(function(e){
+      var c=el("div","libcard");
+      var tags=e[1].split(",").map(function(t){return '<span class="ltag">'+esc(t.trim())+"</span>";}).join("")
+        +(e[0]!=="共通"?'<span class="ltag dis">'+esc(DIS_LABEL[e[0]]||e[0])+"</span>":"")
+        +(e[2]!=="共通"?'<span class="ltag stage">'+esc(STAGE_LABEL[e[2]]||e[2])+"</span>":"");
+      c.innerHTML='<div class="libtext">'+esc(e[4])+"</div>"
+       +'<div class="libtags">'+tags+"</div>"
+       +'<div class="row" style="margin-top:.4rem">'
+       +'<button class="b-primary b-sm use">この欄に入れる</button>'
+       +'<button class="b-ghost b-sm copy">コピー</button>'
+       +'<span class="small muted okmsg"></span></div>';
+      c.querySelector(".use").onclick=function(){
+        var p=cur();
+        if(!p){var np=newPlan({});S.plans.push(np);S.cur=np.id;p=np;}
+        var v=(p.data[f]||"");
+        p.data[f]=v?v+"\n"+e[4]:e[4];
+        touch();
+        c.querySelector(".okmsg").textContent="「"+(FM[f]||f)+"」に入れたで";
+        toast("「"+(FM[f]||f)+"」に入れたで（自分の言葉に直してな）");
+      };
+      c.querySelector(".copy").onclick=function(){
+        if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(e[4]).then(function(){toast("コピーしたで");},function(){toast("コピーできへんかった");});
+        else toast("この環境はコピーに未対応や");
+      };
+      grp.appendChild(c);
+    });
+    box.appendChild(grp);
+  });
+}
+$("libSearch").oninput=function(){LIBF.q=this.value;renderLibrary();};
+$("libField").onchange=function(){LIBF.field=this.value;renderLibrary();};
+$("libReset").onclick=function(){LIBF={q:"",dis:{},scene:{},stage:{},field:""};if($("libSearch"))$("libSearch").value="";renderLibrary();};
+
+/* ===== 出力ユーティリティ ===== */
+function csvFrom(rows){return rows.map(function(r){return r.map(function(c){c=String(c==null?"":c);return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(",");}).join("\r\n");}
+function download(name,blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1500);}
+function xlsxBlob(rows){
+  var e2=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");};
+  var sheet='<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+  function excelCol(n){var s="";n=Number(n)+1;while(n>0){var r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26);}return s;}
+  rows.forEach(function(r,ri){sheet+='<row r="'+(ri+1)+'">';
+    r.forEach(function(c,ci){var col=excelCol(ci);
+      sheet+='<c r="'+col+(ri+1)+'" t="inlineStr"><is><t xml:space="preserve">'+e2(c)+"</t></is></c>";});
+    sheet+="</row>";});
+  sheet+="</sheetData></worksheet>";
+  var wb='<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="計画" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  var rels='<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  var wbrels='<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  var ct='<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  return zipStore([["[Content_Types].xml",ct],["_rels/.rels",rels],["xl/workbook.xml",wb],["xl/_rels/workbook.xml.rels",wbrels],["xl/worksheets/sheet1.xml",sheet]]);
+}
+function crc32(b){var c,t=[];for(var n=0;n<256;n++){c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c;}
+  var crc=0xFFFFFFFF;for(var i=0;i<b.length;i++)crc=t[(crc^b[i])&255]^(crc>>>8);return (crc^0xFFFFFFFF)>>>0;}
+function zipStore(files){
+  var parts=[],central=[],offset=0;
+  files.forEach(function(f){
+    var name=new TextEncoder().encode(f[0]),data=new TextEncoder().encode(f[1]),crc=crc32(data);
+    var local=new Uint8Array(30+name.length),dv=new DataView(local.buffer);
+    dv.setUint32(0,0x04034b50,true);dv.setUint16(4,20,true);dv.setUint16(6,0x0800,true);dv.setUint16(8,0,true);
+    dv.setUint16(10,0,true);dv.setUint16(12,0,true);dv.setUint32(14,crc,true);dv.setUint32(18,data.length,true);
+    dv.setUint32(22,data.length,true);dv.setUint16(26,name.length,true);dv.setUint16(28,0,true);local.set(name,30);
+    parts.push(local,data);
+    var cen=new Uint8Array(46+name.length),cv=new DataView(cen.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);
+    cv.setUint16(10,0,true);cv.setUint16(12,0,true);cv.setUint16(14,0,true);cv.setUint32(16,crc,true);
+    cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,name.length,true);
+    cv.setUint32(42,offset,true);cen.set(name,46);central.push(cen);offset+=local.length+data.length;
+  });
+  var cdSize=central.reduce(function(a,b){return a+b.length;},0);
+  var end=new Uint8Array(22),ev=new DataView(end.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+  ev.setUint32(12,cdSize,true);ev.setUint32(16,offset,true);
+  var all=parts.concat(central,[end]),total=all.reduce(function(a,b){return a+b.length;},0),out=new Uint8Array(total),pos=0;
+  all.forEach(function(p){out.set(p,pos);pos+=p.length;});
+  return new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+function planRowsForExport(dropPii){
+  var p=cur();if(!p)return [];var rows=[["項目","内容"]];
+  /* 指導表はFMに複数の別名キーがあるため、Object.keys(FM)の中で処理すると
+     同じ表を何度も出力してしまう。表ブロックはここで一度だけ出力する。
+     また、独自追加された領域名は、4項目すべて空でも名前を保持する。 */
+  function pushTable(arr,period){
+    (Array.isArray(arr)?arr:[]).forEach(function(r,i){
+      r=(r&&typeof r==="object")?r:{};
+      var nm=String(r.name||ROW_LABELS[i]||("領域"+(i+1))).trim();
+      var custom=i>=ROW_LABELS.length;
+      var has=hasTblRow(r);
+      if(!has&&!custom)return;
+      rows.push(["指導表("+period+") "+(i+1)+" "+nm+" 実態",r.fact||""]);
+      rows.push(["指導表("+period+") "+(i+1)+" "+nm+" 目標",r.goal||""]);
+      rows.push(["指導表("+period+") "+(i+1)+" "+nm+" 方法",r.method||""]);
+      rows.push(["指導表("+period+") "+(i+1)+" "+nm+" 評価",r.eval||""]);
+    });
+  }
+  pushTable(p.table,"前期");
+  pushTable(p.table2,"後期");
+  Object.keys(FM).forEach(function(k){
+    if(k==="table"||k==="table_pre"||k==="table_post"||k==="table_all"||k==="table_seiro")return;
+    if(dropPii&&PII.indexOf(k)>=0)return;
+    var v=valueFor(p,k);if(String(v||"").trim())rows.push([FM[k],v]);
+  });
+  return rows;
+}
+$("btnExcel").onclick=function(){var p=cur();if(!p){toast("計画を選んでな");return;}
+  try{download((p.code||"plan")+".xlsx",xlsxBlob(planRowsForExport(false)));toast("Excelを書き出したで");}
+  catch(e){download((p.code||"plan")+".csv",new Blob(["\ufeff"+csvFrom(planRowsForExport(false))],{type:"text/csv;charset=utf-8"}));toast("CSVにしたで");}};
+$("btnCsv").onclick=function(){var p=cur();if(!p){toast("計画を選んでな");return;}
+  download((p.code||"plan")+".csv",new Blob(["\ufeff"+csvFrom(planRowsForExport(false))],{type:"text/csv;charset=utf-8"}));toast("CSVを書き出したで");};
+
+/* ===== データ管理 ===== */
+var PLAN_SCOPE="current",PLAN_QUERY="";
+function planSearchText(p){
+  var d=p&&p.data&&typeof p.data==="object"?p.data:{};
+  return [p.code,p.school_year,p.grade,p.class_type,p.school,p.record_status,
+    d.child_name,d.student_name,d.name,d.児童生徒氏名,d.児童生徒名].filter(Boolean).join(" ").toLowerCase();
+}
+function planIsArchived(p){return p&&p.record_status==="archived";}
+function archivePlan(p,reason){
+  if(!p)return false;
+  var before={record_status:p.record_status,archived_at:p.archived_at,archive_reason:p.archive_reason,updated:p.updated};
+  p.record_status="archived";p.archived_at=Date.now();p.archive_reason=reason||"在籍終了";p.updated=Date.now();
+  if(save())return true;
+  p.record_status=before.record_status;
+  if(before.archived_at==null)delete p.archived_at;else p.archived_at=before.archived_at;
+  if(before.archive_reason==null)delete p.archive_reason;else p.archive_reason=before.archive_reason;
+  p.updated=before.updated;
+  return false;
+}
+function restorePlan(p){
+  if(!p)return false;
+  var before={record_status:p.record_status,archived_at:p.archived_at,archive_reason:p.archive_reason,updated:p.updated};
+  p.record_status="active";delete p.archived_at;delete p.archive_reason;p.updated=Date.now();
+  if(save())return true;
+  p.record_status=before.record_status;
+  if(before.archived_at==null)delete p.archived_at;else p.archived_at=before.archived_at;
+  if(before.archive_reason==null)delete p.archive_reason;else p.archive_reason=before.archive_reason;
+  p.updated=before.updated;
+  return false;
+}
+function renderData(){
+  var box=$("dataRows");box.innerHTML="";
+  var q=(PLAN_QUERY||"").trim().toLowerCase();
+  var visible=S.plans.filter(function(p){
+    if(PLAN_SCOPE==="current"&&planIsArchived(p))return false;
+    if(PLAN_SCOPE==="archived"&&!planIsArchived(p))return false;
+    return !q||planSearchText(p).indexOf(q)>=0;
+  }).sort(function(a,b){return (Number(b.school_year)||0)-(Number(a.school_year)||0)||(Number(b.updated)||0)-(Number(a.updated)||0);});
+  var active=S.plans.filter(function(p){return !planIsArchived(p);}).length,arch=S.plans.length-active;
+  $("planScopeSummary").textContent="在籍中 "+active+"件 ／ 保管済み "+arch+"件"+(q?" ／ 検索結果 "+visible.length+"件":"");
+  if(!visible.length){box.innerHTML='<p class="small muted">該当する計画がありません。検索条件や表示範囲を確認してください。</p>';return;}
+  visible.forEach(function(p){
+    var r=el("div","planrow");
+    var recordBadge=planIsArchived(p)?'<span class="badge">保管済み</span>':'';
+    var buttons='<button class="b-ghost b-sm" data-o="'+p.id+'">開く</button>'
+      +(!planIsArchived(p)?'<button class="b-ghost b-sm" data-d="'+p.id+'">次年度へ</button><button class="b-ghost b-sm" data-a="'+p.id+'">保管</button>':'<button class="b-ghost b-sm" data-r="'+p.id+'">在籍中に戻す</button>')
+      +'<button class="b-stamp b-sm" data-x="'+p.id+'">削除</button>';
+    r.innerHTML='<span class="code">'+esc(p.code)+'</span><span class="small">'+esc((p.school_year||"")+"年度／"+(p.grade||""))+'</span>'
+      +'<span class="badge '+p.status+'">'+({draft:"下書き",review:"提出中",approved:"承認済"}[p.status]||"状態未設定")+'</span>'+recordBadge
+      +'<span class="bar"><span style="width:'+completeness(p)+'%"></span></span>'
+      +'<span class="next">'+esc(p.class_type||"")+ (p.archive_reason?"／"+esc(p.archive_reason):"")+'</span>'
+      +'<span class="row">'+buttons+'</span>';
+    box.appendChild(r);
+  });
+  box.querySelectorAll("[data-o]").forEach(function(b){b.onclick=function(){S.cur=b.dataset.o;save();go("wizard");};});
+  box.querySelectorAll("[data-d]").forEach(function(b){b.onclick=function(){
+    var sp=S.plans.filter(function(x){return x.id===b.dataset.d;})[0];if(!sp)return;
+    var targetYear=(Number(sp.school_year)||currentAcademicYear())+1;
+    if(!confirm((sp.school_year||"前年度")+"年度の計画から、"+targetYear+"年度の新しい計画を作成します。\n前年度の評価・同意・確認は引き継ぎません。続けますか？"))return;
+    var c=createAnnualCopy(sp);S.plans.push(c);
+    if(save()){renderData();toast("年度更新用に複製しました（"+(sp.school_year||"")+"年度→"+(c.school_year||"")+"年度）");}
+    else{S.plans=S.plans.filter(function(x){return x.id!==c.id;});toast("保存できなかったため、複製を取り消しました");}};});
+  box.querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){
+    var sp=S.plans.filter(function(x){return x.id===b.dataset.a;})[0];if(!sp)return;
+    var reason=prompt("保管理由を入力してください。例：卒業、転出、在籍終了", "卒業");if(reason===null)return;reason=reason.trim()||"在籍終了";
+    if(!confirm("この計画を保管します。\nデータは削除されませんが、ホームの現在年度一覧からは外れます。よろしいですか？"))return;
+    var before=sp.record_status,oldAt=sp.archived_at,oldReason=sp.archive_reason;
+    if(archivePlan(sp,reason)){renderData();toast("保管しました。データは削除せず残しています");}
+    else{sp.record_status=before;sp.archived_at=oldAt;sp.archive_reason=oldReason;toast("保存できなかったため、保管処理を取り消しました");}
+  };});
+  box.querySelectorAll("[data-r]").forEach(function(b){b.onclick=function(){
+    var sp=S.plans.filter(function(x){return x.id===b.dataset.r;})[0];if(!sp)return;
+    if(!confirm("この計画を在籍中の一覧に戻します。よろしいですか？"))return;
+    if(restorePlan(sp)){renderData();toast("在籍中に戻しました");}else toast("保存できなかったため、変更していません");
+  };});
+  box.querySelectorAll("[data-x]").forEach(function(b){b.onclick=function(){
+    var target=S.plans.filter(function(x){return x.id===b.dataset.x;})[0];if(!target)return;
+    var label=(target.code||"この計画");
+    if(!confirm("「"+label+"」を完全に削除します。\n保管済みの計画も含め、元に戻せません。先にJSONバックアップを保存しておくことをおすすめします。\n\n続けますか？"))return;
+    if(target.status==="approved"||planIsArchived(target)){
+      var typed=prompt("重要な計画の完全削除です。確認のため「削除」と入力してください。","");
+      if(typed!=="削除"){toast("削除を取り消しました");return;}
+    }
+    var beforePlans=S.plans.slice(),beforeCur=S.cur;S.plans=S.plans.filter(function(x){return x.id!==b.dataset.x;});
+    if(S.cur===b.dataset.x)S.cur=S.plans.length?S.plans[0].id:null;
+    if(save()){renderData();toast("削除しました");}else{S.plans=beforePlans;S.cur=beforeCur;renderData();toast("保存できなかったため、削除を取り消しました");}
+  };});
+}
+$("planSearch").addEventListener("input",function(){PLAN_QUERY=this.value;renderData();});
+$("planScope").addEventListener("change",function(){PLAN_SCOPE=this.value;renderData();});
+
+$("btnExportJson").onclick=function(){
+  var incPii=$("incPii").checked,copy=JSON.parse(JSON.stringify(S));
+  /* バックアップ形式を明示し、匿名化版ではPIIキーそのものを削除する。
+     「除外」という文字列を保存すると、復元時に実データとして残ってしまうため。 */
+  copy.backupMeta={format:"kobetsu-support-backup",version:2,exportedAt:new Date().toISOString(),containsPii:!!incPii};
+  if(!incPii)copy.plans.forEach(function(p){if(p&&p.data&&typeof p.data==="object")PII.forEach(function(k){delete p.data[k];});});
+  download("kobetsu-plans-"+new Date().toISOString().slice(0,10)+(incPii?"-full":"-private-safe")+".json",new Blob([JSON.stringify(copy,null,2)],{type:"application/json"}));
+  toast(incPii?"個人情報込みでバックアップを書き出しました（取扱いに注意してください）":"個人情報を含まない共有用データを書き出しました");
+};
+$("btnExportCsv").onclick=function(){
+  var rows=[["年度","管理番号","学年","在籍形態","学校名","状態","在籍状況","保管理由","入力率","好き・得意","苦手・配慮点","短期目標1","年度更新元年度","年度更新元管理番号","系譜の深さ"]];
+  S.plans.forEach(function(p){rows.push([p.school_year,p.code,p.grade,p.class_type,p.school,p.status,p.record_status||"active",p.archive_reason||"",completeness(p)+"%",p.data.profile_strengths||"",p.data.profile_needs||"",p.data.short_goal_1||"",p.annual_update&&p.annual_update.fromSchoolYear?p.annual_update.fromSchoolYear:"",p.annual_update&&p.annual_update.fromCode?p.annual_update.fromCode:"",p.annual_update&&p.annual_update.lineageDepth?p.annual_update.lineageDepth:0]);});
+  download("kobetsu-list.csv",new Blob(["\ufeff"+csvFrom(rows)],{type:"text/csv;charset=utf-8"}));toast("一覧CSVを書き出したで");
+};
+$("fileImport").onchange=function(e){
+  var f=e.target.files[0];if(!f)return;var rd=new FileReader();
+  rd.onload=function(){try{var j=JSON.parse(rd.result);if(!j||!Array.isArray(j.plans))throw new Error("バックアップ形式が正しくありません");
+    if(j.plans.length>1000)throw new Error("一度に読み込める計画は1000件までです");
+    var privacy=backupPrivacyStatus(j.backupMeta);
+    var msg="現在の内容に、読み込んだ "+j.plans.length+" 件を追加します。";
+    if(privacy==="safe")msg+="\n\nこのファイルは、アプリが出力した『個人情報を含まない共有用データ』として確認できます。";
+    else if(privacy==="pii")msg+="\n\nこのファイルには個人情報が含まれるバックアップとして記録されています。取り扱いに注意してください。";
+    else msg+="\n\nこのファイルは旧形式または出所不明のバックアップです。個人情報の有無を自動判定できないため、内容を確認してから読み込んでください。";
+    if(!confirm(msg+"\n\n続けますか？"))return;
+    var seen={};var seenCodes={};S.plans.forEach(function(p){seen[p.id]=true;if(p.code)seenCodes[String(p.code)]=true;});
+    var imported=j.plans.map(function(raw){var cp=normalizePlan(raw,seen);if(cp.code&&seenCodes[String(cp.code)])cp.code=nextPlanCode("S-"+(Number(cp.school_year)||currentAcademicYear())+"-");while(cp.code&&seenCodes[String(cp.code)])cp.code=nextPlanCode("S-"+(Number(cp.school_year)||currentAcademicYear())+"-");if(cp.code)seenCodes[String(cp.code)]=true;return cp;});
+    S.plans=S.plans.concat(imported);
+    if(imported.length)S.cur=imported[0].id;
+    S.step=0;
+    if(!save()){
+      S.plans=S.plans.slice(0,S.plans.length-imported.length);
+      if(imported.length&&S.cur===imported[0].id)S.cur=S.plans.length?S.plans[0].id:null;
+      S.step=0;
+      throw new Error("保存容量を超えたため、JSONの読み込みを取り消しました");
+    }
+    renderData();toast("読み込んだで（"+imported.length+"件）");}
+    catch(err){toast("読み込めへんかった："+err.message);}};
+  rd.readAsText(f);e.target.value="";
+};
+$("btnWipe").onclick=function(){
+  if(!confirm("このブラウザに保存された計画データ・復旧用コピー・取り込み設定をすべて消します。取り消しできません。\nまずJSONバックアップを保存しましたか？\n\n続けますか？"))return;
+  var wipeWord=prompt("最終確認です。消去を実行するには「すべて消す」と入力してください。","");
+  if(wipeWord!=="すべて消す"){toast("完全削除を取り消しました");return;}
+  clearTimeout(queuedSaveTimer);queuedSaveTimer=null;saveQueued=false;
+  var result=clearAllAppStorage();
+  if(!result.ok){
+    console.warn("保存データの完全削除に失敗しました",result.failed);
+    setSaveStatus("error","一部の保存データを削除できませんでした。再試行してください。");
+    toast("完全削除に失敗しました。残っている保存データがあります。");
+    return;
+  }
+  RECOVERY_PENDING=null;RECOVERY_BLOCKED=false;RECOVERY_BLOCK_REASON="";MIGRATION_PENDING=null;
+  S=normalizeState(JSON.parse(JSON.stringify(EMPTY_STATE)));
+  memoBox.value="";memoCount();go("home");toast("計画・復旧用コピー・取り込み設定をすべて削除しました");
+};
+
+/* ===== 文字サイズ・キー ===== */
+$("btnFs").onclick=function(){var o=["md","lg","xl"],i=o.indexOf(S.fs||"md");S.fs=o[(i+1)%o.length];applyFs();save(true);
+  toast("文字サイズ："+({md:"標準",lg:"大きめ",xl:"もっと大きい"}[S.fs]));};
+function applyFs(){document.documentElement.setAttribute("data-fs",S.fs||"md");}
+document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();flushQueuedSave();if(save())toast("保存しました");}});
+
+
+/* ===== 初期化 ===== */
+applyFs();setSaveStatus("ok","保存済み");renderHome();
+if(RECOVERY_PENDING){
+  var _recoveryInfo=RECOVERY_PENDING;
+  RECOVERY_PENDING=null;
+  var _recoveryMsg="保存データに問題があったため、元データを上書きせず復旧候補を読み込みました。\n\n復旧元："+_recoveryInfo.key+"\n\n内容を確認してから保存してください。";
+  setSaveStatus("error","復旧データを確認中です。内容を確認してから保存してください。");
+  setTimeout(function(){
+    toast("保存データの復旧候補を読み込みました。内容を確認してください。");
+    try{alert(_recoveryMsg);}catch(e){}
+    var _useRecovered=false;
+    try{_useRecovered=confirm("復旧候補を読み込みました。内容を確認しましたか？\n\n「OK」なら通常保存を再開します。「キャンセル」なら保存を停止します。");}catch(e){}
+    RECOVERY_BLOCKED=!_useRecovered;
+    RECOVERY_BLOCK_REASON=_useRecovered?"":"復旧候補の確認が完了していないため保存を停止しています。";
+    if(_useRecovered){setSaveStatus("ok","復旧データを確認済み。保存できます。");toast("復旧データを確認済みです。保存できます。");}
+  },80);
+} else if(RECOVERY_BLOCKED){
+  setSaveStatus("error","保存データの復旧確認が必要です。");
+  setTimeout(function(){
+    var ok=false;
+    try{ok=confirm(RECOVERY_BLOCK_REASON+"\n\n復旧データがないため、新しい空のデータとして開始することを明示的に確認しますか？");}catch(e){}
+    if(ok){
+      try{localStorage.setItem(LSKEY+"_corrupt_marker",JSON.stringify({time:Date.now(),reason:RECOVERY_BLOCK_REASON}));}catch(e){}
+      RECOVERY_BLOCKED=false;RECOVERY_BLOCK_REASON="";S=normalizeState(EMPTY_STATE);save(true);renderHome();toast("新規データとして開始しました。元の破損データは上書きせず残しています。");
+    }
+  },120);
+}
+if(MIGRATION_PENDING){
+  var _migrationInfo=MIGRATION_PENDING;
+  MIGRATION_PENDING=null;
+  if(save(true)){toast("旧バージョンの保存データを安全に移行しました（旧データの退避も保持しています）");}
+  else{toast("旧データは読み込みましたが、新形式への保存に失敗しました。退避データは保持しています。");}
+}
+
+/* ===== Excel取り込み：実帳票対応版／操作性強化 =====
+   目的：
+   - 聖籠町様式の「見出し内サブ項目」を正しく分解
+   - 結合セル・空セルを考慮して表を読む
+   - 前期の指導表を p.table に格納し、後期編集へそのまま引き継ぐ
+   - 国語・算数など追加領域も保持
+   - 学級・学年を可能な範囲で分離
+*/
+var DEFAULT_COL_MAP={
+  "児童生徒氏名":"child_name","氏名":"child_name","名前":"child_name",
+  "（記入日）":"written_date","(記入日)":"written_date","記入日":"written_date",
+  "（記入者）":"writer","(記入者)":"writer","記入者":"writer",
+  "性別":"gender","生年月日":"birth_date","住所":"address","電話番号":"tel",
+  "学級":"class_name","学年":"grade","保護者氏名":"guardian_name","緊急連絡先":"emergency_tel",
+  "療育":"therapy_history","教育歴":"education_history","発達検査":"development_test",
+  "得意なこと":"strengths","苦手なこと":"needs","本人の願い":"child_wish",
+  "保護者の願い":"guardian_wish","長期目標":"support_long_goal",
+  "学校における支援":"school_support","評価・引継ぎ事項":"eval_handover",
+  "家庭":"family_support","福祉":"welfare_support","地域":"community_support","医療":"medical_support",
+  "伸ばしたい力":"strengthen","補いたい力":"complement",
+  "好き・得意（強み）":"profile_strengths","苦手・配慮点":"profile_needs",
+  "本人の願い":"child_wish","保護者の願い":"guardian_wish",
+  "これまでの支援":"support_history","関係機関":"related_agencies",
+  "支援・長期目標（3年）":"support_long_goal","指導・長期目標（1年）":"guidance_long_goal",
+  "短期目標1":"short_goal_1","短期目標2":"short_goal_2",
+  "具体的支援・手立て":"supports","評価方法・時期":"eval_method",
+  "評価・引継ぎ事項":"eval_handover",
+  "前期の評価・後期の見通し":"period_note",
+  "日常生活（身辺自立）":"selfcare","言葉・コミュニケーション":"speech",
+  "学習（国語・算数）":"academics",
+  "引継ぎ先":"handover_to","有効だった工夫と条件":"effective_supports",
+  "対応エピソード":"episode"
+};
+var USER_COL_MAP={};
+try{
+  var _savedColMap=localStorage.getItem("kobetsu_col_map");
+  if(_savedColMap){
+    var _parsedColMap=JSON.parse(_savedColMap);
+    if(_parsedColMap&&typeof _parsedColMap==="object"&&!Array.isArray(_parsedColMap))USER_COL_MAP=_parsedColMap;
+  }
+}catch(e){
+  console.warn("取り込み設定の読み込みをスキップしました",e);
+  USER_COL_MAP={};
+}
+function colMap(){return Object.assign({},DEFAULT_COL_MAP,USER_COL_MAP);}
+var IMPORT_FILES=[],IMPORT_PARSED=[],IMPORT_PREVIEW=[];
+
+(function setupDropZone(){
+  var dz=document.getElementById("dropZone"),input=document.getElementById("excelFiles");
+  if(!dz||!input)return;
+  var summary=document.getElementById("excelFileSummary");
+  function updateSummary(){
+    if(!summary)return;
+    if(!IMPORT_FILES.length){summary.innerHTML='<span class="small muted">まだファイルが選ばれていません</span>';var pb=document.getElementById("btnParseExcel");if(pb)pb.disabled=true;var ib=document.getElementById("btnImportExcel");if(ib)ib.disabled=true;return;}
+    var names=IMPORT_FILES.slice(0,3).map(function(f){return esc(f.name);});
+    if(IMPORT_FILES.length>3)names.push("ほか"+(IMPORT_FILES.length-3)+"件");
+    summary.innerHTML='<span class="chip on">✓ '+IMPORT_FILES.length+'ファイル選択済み</span>'+names.map(function(n){return '<span class="small">'+n+'</span>';}).join('');
+  }
+  dz.addEventListener("click",function(){input.click();});
+  dz.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();input.click();}});
+  input.addEventListener("change",function(){handleFiles(this.files);});
+  ["dragenter","dragover"].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();dz.classList.add("drop-active");});});
+  ["dragleave","drop"].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();dz.classList.remove("drop-active");});});
+  dz.addEventListener("drop",function(e){handleFiles(e.dataTransfer.files);});
+  window.__updateExcelFileSummary=updateSummary;
+  updateSummary();
+})();
+
+function handleFiles(fileList){
+  var files=Array.from(fileList||[]);
+  IMPORT_FILES=files.filter(function(f){return /\.xlsx$/i.test(f.name);});
+  if(window.__updateExcelFileSummary)window.__updateExcelFileSummary();
+  if(!IMPORT_FILES.length){toast("Excelファイル（.xlsx）を選んでください");return;}
+  if(files.length!==IMPORT_FILES.length)toast("Excel以外のファイルは除外しました");
+  document.getElementById("btnParseExcel").disabled=false;
+  parseExcelFiles();
+}
+function cleanCell(v){
+  /* SheetJS の cellDates:true では、日付セルが Date 型になる場合がある。
+     そのまま String(Date) にすると英語の長い日時表記になり、帳票への再利用時に
+     読みにくくなるため、日本語環境でも安定した YYYY/MM/DD に正規化する。 */
+  if(v instanceof Date && !isNaN(v.getTime())){
+    var y=v.getFullYear();
+    var m=String(v.getMonth()+1).padStart(2,"0");
+    var d=String(v.getDate()).padStart(2,"0");
+    return y+"/"+m+"/"+d;
+  }
+  return String(v==null?"":v).replace(/\r/g,"").trim();
+}
+function nonEmptyCells(row){
+  var a=[];
+  (row||[]).forEach(function(v,i){var s=cleanCell(v);if(s)a.push({i:i,v:s});});
+  return a;
+}
+function stripHeading(s){
+  return cleanCell(s).replace(/^＜[^＞]+＞/,"").replace(/^[:：]\s*/,"").trim();
+}
+function subValue(text,headingRegex){
+  var s=cleanCell(text);
+  var m=s.match(headingRegex);
+  if(!m)return "";
+  var rest=s.slice(m.index+m[0].length);
+  rest=rest.replace(/^[:：\s]*/,"").trim();
+  /* 次の ＜見出し＞ が同じセルにあればそこで切る */
+  rest=rest.split(/＜[^＞]+＞/)[0].trim();
+  return rest;
+}
+function firstRightValue(row,ci,mapKeys){
+  for(var j=ci+1;j<row.length;j++){
+    var cand=cleanCell(row[j]);
+    if(!cand)continue;
+    /* 同じ文字列のダミー値も保持する。ただし、現在の欄から1セル以上離れた
+       次の欄名は「値」ではない。これで「住所」→「緊急連絡先」の誤取得を防ぐ。
+       例：F8「緊急連絡先」→G8「緊急連絡先」は値として採用。
+       一方、B8「住 所」→F8「緊急連絡先」は次の欄名なので停止。 */
+    if(cand.charAt(0)==="＜")break;
+    var isExactLabel=mapKeys.some(function(k){return cand===k;});
+    var isLabelLike=mapKeys.some(function(k){return cand.indexOf(k)===0;});
+    if((isExactLabel||isLabelLike) && (j-ci)>1)break;
+    return cand;
+  }
+  return "";
+}
+function splitClassGrade(value){
+  /* 「４年」のような全角数字も自治体様式で実際に使われるため、
+     学年抽出前に数字だけ半角へ正規化する。 */
+  var s=cleanCell(value).replace(/[０-９]/g,function(ch){return String.fromCharCode(ch.charCodeAt(0)-0xFEE0);});
+  var grade="";
+  var m=s.match(/(\d+)\s*年(?:生)?/);
+  if(m)grade=m[1]+"年";
+  var cls=s;
+  if(m)cls=s.slice(0,m.index).trim().replace(/[　\s]+$/,'');
+  return {className:cls,grade:grade};
+}
+function putField(plan,key,val,row,col){
+  val=cleanCell(val);
+  if(!val)return;
+  if(plan.fields[key] && plan.fields[key]!==val){
+    plan.fields[key]+="\n"+val;
+  }else plan.fields[key]=val;
+  plan.rawRows.push({row:row,col:col,key:key,val:val,mapped:true});
+}
+function parseSupportNested(plan,text,row,col){
+  var patterns=[
+    {re:/＜(?:得意なこと・好きなこと・興味関心のあること)＞/g,key:"profile_strengths"},
+    {re:/＜(?:苦手なこと・困っていること)＞/g,key:"profile_needs"},
+    {re:/＜本人＞/g,key:"child_wish"},
+    {re:/＜保護者＞/g,key:"guardian_wish"},
+    {re:/＜療育＞/g,key:"therapy_history"},
+    {re:/＜教育歴＞/g,key:"education_history"},
+    {re:/＜発達検査＞/g,key:"development_test"},
+    {re:/＜家庭＞/g,key:"family_support"},
+    {re:/＜福祉＞/g,key:"welfare_support"},
+    {re:/＜医療＞/g,key:"medical_support"}
+  ];
+  patterns.forEach(function(p){
+    var re=new RegExp(p.re.source,p.re.flags);
+    var m=re.exec(text);
+    if(m){
+      var rest=text.slice(m.index+m[0].length);
+      var next=rest.search(/＜[^＞]+＞/);
+      if(next>=0)rest=rest.slice(0,next);
+      rest=rest.replace(/^[\s:：]+/,"").trim();
+      if(rest)putField(plan,p.key,rest,row,col);
+    }
+  });
+}
+function parseBasicRows(json,plan,map){
+  var keys=Object.keys(map).sort(function(a,b){return b.length-a.length;});
+  json.forEach(function(row,ri){
+    if(!row)return;
+    row.forEach(function(cell,ci){
+      var key=cleanCell(cell);if(!key)return;
+      /* セル内の見出しから分解できる情報を先に拾う */
+      parseSupportNested(plan,key,ri+1,ci+1);
+      /* 聖籠町様式の「学級・学年」は1つの欄なので、まず右隣の値を取得する */
+      if(/^[\s　]*学級[・･]学年[\s　]*$/.test(key)){
+        if(!plan.fields.class_name){
+          var combinedVal=firstRightValue(row,ci,keys);
+          if(combinedVal)putField(plan,"class_name",combinedVal,ri+1,ci+1);
+        }
+        return;
+      }
+      keys.some(function(mk){
+        /* 長い本文中の「学級」「名前」等を欄名と誤認しない */
+        var compact=key.replace(/[\s　\r\n]+/g,"");
+        var looksLikeLabel=(compact.length<=32 &&
+          !/[・。！？]/.test(compact) &&
+          (compact===mk.replace(/[\s　]+/g,"") || compact.indexOf(mk)>=0));
+        if(!looksLikeLabel)return false;
+        var dest=map[mk];
+        /* 同じ基本欄が署名欄などに再登場しても、最初の値を保持する */
+        if(plan.fields[dest])return true;
+        var val=firstRightValue(row,ci,keys);
+        if(val)putField(plan,dest,val,ri+1,ci+1);
+        return true;
+      });
+    });
+  });
+  /* 学級・学年が一つのセルに入る様式 */
+  var combined=plan.fields.class_name||"";
+  if(combined){
+    var sg=splitClassGrade(combined);
+    if(sg.grade && !plan.fields.grade)plan.fields.grade=sg.grade;
+    if(sg.className)plan.fields.class_name=sg.className;
+  }
+}
+function validateAppExportRows(json){
+  var rows=Array.isArray(json)?json:[];
+  var header=false,pre={},post={},labels={};
+  rows.forEach(function(row){
+    if(!row||row.length<2)return;
+    var a=cleanCell(row[0]),b=cleanCell(row[1]);
+    if(a==="項目"&&b==="内容")header=true;
+    var m=a.match(/^指導表\((前期|後期)\)\s*(\d+)\s*(.+?)\s+(実態|目標|方法|評価)$/);
+    if(m){var key=m[1]+":"+m[2]+":"+m[3];(m[1]==="前期"?pre:post)[key]=(m[4]);}
+    if(a&&!/^指導表\(/.test(a)&&a!=="項目")labels[a]=true;
+  });
+  return {header:header,preCount:Object.keys(pre).length,postCount:Object.keys(post).length,labelCount:Object.keys(labels).length};
+}
+
+function parseAppExportRows(json,plan){
+  /* アプリ自身のExcel出力（A:項目 / B:内容）を再取り込みする。
+     自治体様式とは構造が違うため、通常の表解析とは分離する。
+     重要：元の自治体様式にも A列「児童生徒氏名」/B列「氏名」のような行が
+     存在するため、ラベルが一致しただけではアプリ出力と判定しない。
+     「項目／内容」という出力固有のヘッダーを必ず確認してから解析する。 */
+  var hasAppHeader=false;
+  (json||[]).some(function(row){
+    if(!row||row.length<2)return false;
+    var a=cleanCell(row[0]),b=cleanCell(row[1]);
+    if(a==="項目" && b==="内容"){hasAppHeader=true;return true;}
+    return false;
+  });
+  if(!hasAppHeader)return false;
+
+  var labelToKey={};
+  Object.keys(FM).forEach(function(k){
+    var label=FM[k];
+    if(label&&!/^指導表/.test(label))labelToKey[label]=k;
+  });
+  var imported=0;
+  json.forEach(function(row,ri){
+    if(!row||row.length<2)return;
+    var label=cleanCell(row[0]), val=cleanCell(row[1]);
+    if(!label||!val||ri===0&&label==="項目")return;
+    var m=label.match(/^指導表\((前期|後期)\)\s*(\d+)\s*(.+?)\s+(実態|目標|方法|評価)$/);
+    if(m){
+      var period=m[1], idx=parseInt(m[2],10)-1, name=m[3], col=m[4];
+      var arr=period==="前期"?plan.tablePre:plan.tablePost;
+      if(!arr[idx])arr[idx]={name:name,fact:"",goal:"",method:"",eval:""};
+      var ck={"実態":"fact","目標":"goal","方法":"method","評価":"eval"}[col];
+      if(ck)arr[idx][ck]=val;
+      imported++;return;
+    }
+    var key=labelToKey[label];
+    if(key){
+      if(key==="grade")plan.fields.grade=val;
+      else if(key==="class_type")plan.fields.class_name=val;
+      else if(key==="school")plan.fields.school=val;
+      else plan.fields[key]=val;
+      plan.rawRows.push({row:ri+1,col:1,key:key,val:val,mapped:true});
+      imported++;return;
+    }
+    /* 古い/手動編集された出力でラベルに余分な空白がある場合 */
+    var compact=label.replace(/[\s　]+/g,"");
+    Object.keys(labelToKey).some(function(lb){
+      if(lb.replace(/[\s　]+/g,"")!==compact)return false;
+      var k=labelToKey[lb];
+      if(k==="grade")plan.fields.grade=val;
+      else if(k==="class_type")plan.fields.class_name=val;
+      else if(k==="school")plan.fields.school=val;
+      else plan.fields[k]=val;
+      plan.rawRows.push({row:ri+1,col:1,key:k,val:val,mapped:true});
+      imported++;return true;
+    });
+  });
+  /* 出力時は空欄の行を省略するため、行番号が飛ぶ場合がある。
+     登録処理でnullが混じらないよう、最大行まで空行オブジェクトを補完する。 */
+  [plan.tablePre,plan.tablePost].forEach(function(arr){
+    var last=-1;
+    for(var i=0;i<arr.length;i++)if(arr[i])last=i;
+    for(var j=0;j<=last;j++){
+      if(!arr[j])arr[j]={name:(typeof ROW_LABELS!=="undefined"&&ROW_LABELS[j])?ROW_LABELS[j]:("領域"+(j+1)),fact:"",goal:"",method:"",eval:""};
+    }
+  });
+  if(imported){
+    plan.type="combined";
+    plan.debugInfo.push("アプリ出力Excelとして認識: "+imported+"項目");
+    return true;
+  }
+  return false;
+}
+
+function detectGuidanceType(sheetName){
+  var n=sheetName.toLowerCase();
+  var isPost=n.indexOf("後期")>=0;
+  var isGuidance=(n.indexOf("指導計画")>=0||n.indexOf("指導")>=0);
+  var isSupport=(n.indexOf("支援計画")>=0||n.indexOf("支援")>=0)&&!isGuidance;
+  if(isSupport)return "support";
+  if(isGuidance)return isPost?"guidance_post":"guidance_pre";
+  return "";
+}
+function extractTable(json,plan,isPost){
+  /* 表見出しを確認してから、領域名を基準に格納する。
+     重要：空白の領域が途中にあっても、後続領域を前へ詰めない。
+     これにより「対人が空欄でも自立活動が3番目」の対応関係を保持する。 */
+  var rows=[],extraRows=[],started=false,cols={fact:-1,goal:-1,method:-1,eval:-1};
+  var known=typeof ROW_LABELS!=="undefined"?ROW_LABELS:[];
+  function normLabel(s){return cleanCell(s).replace(/[\s　]+/g,"");}
+  function rowIndex(label){
+    var n=normLabel(label);
+    for(var i=0;i<known.length;i++){if(n===normLabel(known[i]))return i;}
+    return -1;
+  }
+  json.forEach(function(row){
+    if(!row||!row.length)return;
+    var cells=(row||[]).map(cleanCell);
+    var joined=cells.join(" ");
+    if(!started){
+      cells.forEach(function(x,i){
+        if(x==="実態")cols.fact=i;
+        else if(x==="目標")cols.goal=i;
+        else if(x==="指導・支援方法")cols.method=i;
+        else if(x==="評価")cols.eval=i;
+      });
+      if(cols.fact>=0&&cols.goal>=0&&cols.method>=0&&cols.eval>=0)started=true;
+      return;
+    }
+    var label=cleanCell(row[0]);
+    if(!label)return;
+    if(/学習指導上の工夫|伸ばしたい力|補いたい力/.test(joined))return;
+    var fact=cols.fact>=0?cleanCell(row[cols.fact]):"";
+    var goal=cols.goal>=0?cleanCell(row[cols.goal]):"";
+    var method=cols.method>=0?cleanCell(row[cols.method]):"";
+    var ev=cols.eval>=0?cleanCell(row[cols.eval]):"";
+    if(!(fact||goal||method||ev))return;
+    var idx=rowIndex(label);
+    if(idx>=0){
+      if(!rows[idx])rows[idx]={name:known[idx],fact:"",goal:"",method:"",eval:""};
+      rows[idx].fact=fact;rows[idx].goal=goal;rows[idx].method=method;rows[idx].eval=ev;
+    }else{
+      extraRows.push({name:label,fact:fact,goal:goal,method:method,eval:ev});
+    }
+    plan.debugInfo.push("表: "+label+" / 実態="+(fact?"○":"－")+" 目標="+(goal?"○":"－")+" 方法="+(method?"○":"－")+" 評価="+(ev?"○":"－"));
+  });
+  /* 既知の5領域は常に5行にそろえ、空欄領域を消さない。 */
+  if(known.length){
+    var fixed=known.map(function(name,i){return rows[i]||{name:name,fact:"",goal:"",method:"",eval:""};});
+    fixed=fixed.concat(extraRows);
+    rows=fixed;
+  }
+  if(isPost)plan.tablePost=rows;else plan.tablePre=rows;
+}
+function extractFromWorkbook(wb,fileName){
+  var sheetPlans=[];
+  var map=colMap();
+  wb.SheetNames.forEach(function(sheetName){
+    if(sheetName.indexOf("記入例")>=0)return;
+    var ws=wb.Sheets[sheetName];
+    var json=ws&&ws.__rows?ws.__rows:[];
+    var type=detectGuidanceType(sheetName);
+    var plan={
+      fileName:fileName,sheetName:sheetName,type:type,fields:{},
+      tablePre:[],tablePost:[],rawRows:[],debugInfo:[]
+    };
+    /* シート名に依存しない「アプリ自身の出力」判定 */
+    var isAppExport=parseAppExportRows(json,plan);
+    if(isAppExport){
+      sheetPlans.push(plan);
+      console.log("アプリ出力Excel取り込み:",fileName,sheetName,plan);
+      return;
+    }
+    if(!type)return;
+    parseBasicRows(json,plan,map);
+
+    if(type==="guidance_pre"||type==="guidance_post"){
+      extractTable(json,plan,type==="guidance_post");
+      /* 前期の「伸ばしたい力」「補いたい力」はA/D列の見出し内 */
+      json.forEach(function(row,ri){
+        (row||[]).forEach(function(cell,ci){
+          var s=cleanCell(cell);
+          if(!s)return;
+          var a=subValue(s,/＜伸ばしたい力＞/);
+          var b=subValue(s,/＜補いたい力＞/);
+          if(a)putField(plan,"strengthen",a,ri+1,ci+1);
+          if(b)putField(plan,"complement",b,ri+1,ci+1);
+        });
+      });
+    }
+
+    /* データがほぼ空のシートは登録しない */
+    var hasData=Object.keys(plan.fields).length>0 ||
+      plan.tablePre.some(hasTblRow) || plan.tablePost.some(hasTblRow);
+    if(hasData){
+      sheetPlans.push(plan);
+      console.log("Excel取り込み:",fileName,sheetName,plan);
+    }
+  });
+  /* 1冊のExcelに「支援計画・前期・後期」が入っている場合は、1人分の1計画へ統合 */
+  if(sheetPlans.length<=1)return {fileName:fileName,plans:sheetPlans};
+  var merged={
+    fileName:fileName, sheetName:sheetPlans.map(function(x){return x.sheetName;}).join(" / "),
+    type:"combined", fields:{}, tablePre:[], tablePost:[], rawRows:[], debugInfo:[]
+  };
+  sheetPlans.forEach(function(sp){
+    Object.keys(sp.fields||{}).forEach(function(k){
+      var v=sp.fields[k];
+      if(!v)return;
+      /* 基本情報はシート間の重複を連結しない。最初に確認できた値を採用する。
+         前期と後期で学級・学年の表記が違っても「5年／4年」のようにはしない。 */
+      var basicMergeKeys=["child_name","gender","birth_date","address","tel","class_name","grade","guardian_name","emergency_tel","written_date","writer"];
+      if(basicMergeKeys.indexOf(k)>=0){
+        /* 様式に残るプレースホルダーは、後続シートの実データより優先しない。
+           特に「学級学年」のようなダミー値で前期の「なかよし1組」を
+           上書きしないようにする。 */
+        var placeholder=/^(学級[・･]?学年|学級学年|学年|記入日|記入者|住所|電話|電話番号|緊急連絡先|生年月日)$/.test(String(merged.fields[k]||"").trim());
+        if(!merged.fields[k] || placeholder)merged.fields[k]=v;
+        return;
+      }
+      if(!merged.fields[k])merged.fields[k]=v;
+      else if(merged.fields[k]!==v && merged.fields[k].indexOf(v)<0)merged.fields[k]+="\n"+v;
+    });
+    if(sp.tablePre&&sp.tablePre.length)merged.tablePre=merged.tablePre.concat(sp.tablePre);
+    if(sp.tablePost&&sp.tablePost.length)merged.tablePost=merged.tablePost.concat(sp.tablePost);
+    merged.rawRows=merged.rawRows.concat(sp.rawRows||[]);
+    merged.debugInfo=merged.debugInfo.concat(sp.debugInfo||[]);
+  });
+  return {fileName:fileName,plans:[merged]};
+}
+/* v36: 外部ライブラリなしで .xlsx を読み取る内蔵パーサー。
+   Excelの主要な帳票構造（workbook / relationships / worksheet / sharedStrings）を対象とし、
+   このアプリが必要とする「セル値の二次元配列」へ変換する。
+   旧式 .xls は対象外。必要な場合はExcelで .xlsx に保存してから取り込む。 */
+function u32(a,o){return (a[o]|(a[o+1]<<8)|(a[o+2]<<16)|(a[o+3]<<24))>>>0;}
+function u16(a,o){return a[o]|(a[o+1]<<8);}
+function bytesText(a){return new TextDecoder("utf-8").decode(a);}
+function sliceBytes(a,s,n){return a.slice(s,s+n);}
+async function inflateRaw(a){
+  if(typeof DecompressionStream==="undefined")throw new Error("このブラウザは.xlsxの内蔵展開機能に対応していません");
+  var ds=new DecompressionStream("deflate-raw");
+  var stream=new Blob([a]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function unzipXlsx(buf){
+  var a=buf instanceof Uint8Array?buf:new Uint8Array(buf),end=-1;
+  for(var i=a.length-22;i>=Math.max(0,a.length-65557);i--){if(u32(a,i)===0x06054b50){end=i;break;}}
+  if(end<0)throw new Error("xlsxのZIP終端を確認できません");
+  var cdSize=u32(a,end+12),cdOff=u32(a,end+16),pos=cdOff,files={};
+  while(pos<cdOff+cdSize){
+    if(u32(a,pos)!==0x02014b50)break;
+    var method=u16(a,pos+10),csize=u32(a,pos+20),usize=u32(a,pos+24),nl=u16(a,pos+28),xl=u16(a,pos+30),cl=u16(a,pos+32),off=u32(a,pos+42);
+    var name=bytesText(sliceBytes(a,pos+46,nl));
+    var lp=off;
+    if(u32(a,lp)!==0x04034b50)throw new Error("xlsxのZIPエントリを確認できません: "+name);
+    var lnl=u16(a,lp+26),lel=u16(a,lp+28),ds=lp+30+lnl+lel,comp=sliceBytes(a,ds,csize),out;
+    if(method===0)out=comp;else if(method===8)out=await inflateRaw(comp);else throw new Error("未対応の圧縮方式です: "+method);
+    if(usize&&out.length!==usize)throw new Error("xlsxデータの展開サイズが一致しません: "+name);
+    files[name]=out;pos+=46+nl+xl+cl;
+  }
+  return files;
+}
+function xmlDoc(bytes){var d=new DOMParser().parseFromString(bytesText(bytes),"application/xml");if(d.getElementsByTagName("parsererror").length)throw new Error("xlsx内部XMLを解析できません");return d;}
+function xmlText(el){return el?el.textContent||"":"";}
+function colNumber(ref){var m=String(ref||"").match(/^([A-Z]+)/i);if(!m)return 0;var n=0;for(var i=0;i<m[1].length;i++)n=n*26+(m[1].toUpperCase().charCodeAt(i)-64);return n-1;}
+function excelSerialToText(n){
+  n=Number(n);if(!isFinite(n))return String(n);
+  var d=new Date(Date.UTC(1899,11,30)+Math.round(n*86400000));
+  return d.getUTCFullYear()+"/"+String(d.getUTCMonth()+1).padStart(2,"0")+"/"+String(d.getUTCDate()).padStart(2,"0");
+}
+function parseSharedStrings(files){
+  var b=files["xl/sharedStrings.xml"];if(!b)return [];
+  var d=xmlDoc(b),arr=[];
+  Array.from(d.getElementsByTagName("si")).forEach(function(si){arr.push(Array.from(si.getElementsByTagName("t")).map(xmlText).join(""));});
+  return arr;
+}
+function parseStyles(files){
+  var b=files["xl/styles.xml"],ids=[],dateFmts={14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1};if(!b)return {ids:ids,dateFmts:dateFmts};
+  var d=xmlDoc(b),nf=d.getElementsByTagName("numFmts")[0];
+  if(nf)Array.from(nf.getElementsByTagName("numFmt")).forEach(function(x){
+    var id=Number(x.getAttribute("numFmtId")||0),fmt=String(x.getAttribute("formatCode")||"").toLowerCase();
+    /* yyyy/mm/dd, yy-mm-dd, m/d/yy 等、時刻を含む帳票の日付書式を判定する。
+       文字列リテラルや角括弧の時間書式だけでは日付と判定しない。 */
+    var normalized=fmt.replace(/\\./g,"").replace(/"[^"]*"/g,"").replace(/\[[^\]]*\]/g,"");
+    if(/[ymd]/.test(normalized) && !(/^[hms\s:./_-]+$/.test(normalized)))dateFmts[id]=1;
+  });
+  var xfs=d.getElementsByTagName("cellXfs")[0];if(!xfs)return {ids:ids,dateFmts:dateFmts};
+  Array.from(xfs.getElementsByTagName("xf")).forEach(function(x){ids.push(Number(x.getAttribute("numFmtId")||0));});
+  return {ids:ids,dateFmts:dateFmts};
+}
+function styleInfoDate(styleIds,sid,dateFmts){return !!(dateFmts&&dateFmts[styleIds[sid]||0]);}
+function parseSheetXml(bytes,shared,styleIds,dateFmts){
+  var d=xmlDoc(bytes),rows=[],sheetRows=d.getElementsByTagName("row");
+  Array.from(sheetRows).forEach(function(re){
+    var arr=[],cells=re.getElementsByTagName("c");
+    Array.from(cells).forEach(function(c){
+      var ref=c.getAttribute("r")||"",idx=colNumber(ref),type=c.getAttribute("t")||"",v=c.getElementsByTagName("v")[0],is=c.getElementsByTagName("is")[0],val="";
+      if(type==="inlineStr")val=is?Array.from(is.getElementsByTagName("t")).map(xmlText).join(""):"";
+      else if(type==="s")val=shared[Number(xmlText(v))]||"";
+      else if(type==="b")val=xmlText(v)==="1"?"TRUE":"FALSE";
+      else val=xmlText(v);
+      var sid=Number(c.getAttribute("s")||0),fmt=styleIds[sid]||0;
+      if(val!=="" && type!=="s" && type!=="inlineStr" && styleInfoDate(styleIds,sid,dateFmts))val=excelSerialToText(val);
+      arr[idx]=val;
+    });
+    rows[Number(re.getAttribute("r")||rows.length+1)-1]=arr;
+  });
+  return rows.map(function(r){return r||[];});
+}
+async function readXlsxOffline(buf){
+  var files=await unzipXlsx(buf),wb=xmlDoc(files["xl/workbook.xml"]),shared=parseSharedStrings(files),styleInfo=parseStyles(files),styles=styleInfo.ids,relsDoc=xmlDoc(files["xl/_rels/workbook.xml.rels"]),relMap={};
+  Array.from(relsDoc.getElementsByTagName("Relationship")).forEach(function(r){relMap[r.getAttribute("Id")]=r.getAttribute("Target");});
+  var names=[],sheets={};
+  Array.from(wb.getElementsByTagName("sheet")).forEach(function(sh){
+    var name=sh.getAttribute("name"),rid=sh.getAttribute("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")||sh.getAttribute("r:id"),target=relMap[rid];
+    if(!target)return;
+    target=target.replace(/^\//,"");
+    if(target.indexOf("../")===0)target=target.replace(/^\.\.\//,"");
+    if(target.indexOf("xl/")!==0)target="xl/"+target.replace(/^xl\//,"");
+    if(!files[target])throw new Error("Excelシートを見つけられません: "+target);
+    names.push(name);sheets[name]={};sheets[name].rows=parseSheetXml(files[target],shared,styles,styleInfo.dateFmts);
+  });
+  return {SheetNames:names,Sheets:Object.fromEntries(names.map(function(n){return [n,sheets[n].rows];}))};
+}
+function workbookSheetToJson(wb,sheetName){return wb.Sheets[sheetName]||[];}
+async function parseExcelFiles(){
+  if(!IMPORT_FILES.length)return;
+  IMPORT_PARSED=[];IMPORT_PREVIEW=[];
+  var pending=IMPORT_FILES.length;
+  IMPORT_FILES.forEach(function(file){
+    var reader=new FileReader();
+    reader.onload=async function(e){
+      try{
+        if(!/\.xlsx$/i.test(file.name))throw new Error("このアプリでは旧式 .xls は対象外です。Excelで .xlsx 形式に保存してから取り込んでください。");
+        var workbook=await readXlsxOffline(new Uint8Array(e.target.result));
+        /* extractFromWorkbook はSheetJS互換の最小構造だけを使用する。 */
+        IMPORT_PARSED.push(extractFromWorkbook({SheetNames:workbook.SheetNames,Sheets:Object.fromEntries(workbook.SheetNames.map(function(n){return [n,{__rows:workbook.Sheets[n]}];}))},file.name));
+      }catch(err){console.error(err);IMPORT_PARSED.push({fileName:file.name,error:err.message,plans:[]});}
+      pending--;if(pending===0)renderImportPreview();
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+function renderImportPreview(){
+  var box=document.getElementById("importPreview");
+  if(!box)return;
+  var all=[];
+  IMPORT_PARSED.forEach(function(fr){(fr.plans||[]).forEach(function(p){all.push(p);});});
+  /* 確認画面で編集した同じオブジェクトを、最終取り込みまで保持する。 */
+  IMPORT_PREVIEW=all;
+  if(!all.length){
+    var debug="";
+    IMPORT_PARSED.forEach(function(f){
+      debug+="<div class='card' style='margin-bottom:.5rem'><b>"+esc(f.fileName)+"</b><br>";
+      if(f.error)debug+="エラー: "+esc(f.error)+"<br>";
+      debug+="認識した計画: "+(f.plans||[]).length+"件</div>";
+    });
+    box.innerHTML='<div class="card"><p class="lead">取り込める計画データが見つからへんかったで。</p>'+
+      '<p class="small muted">Excelのシート名と帳票の配置を確認できます。下の情報は原因調査用です。</p>'+debug+'</div>';
+    document.getElementById("btnImportExcel").disabled=true;
+    return;
+  }
+  var html="";
+  all.forEach(function(plan,pi){
+    var typeLabel=plan.type==="support"?"教育支援計画":
+      plan.type==="guidance_pre"?"指導計画（前期）":
+      plan.type==="guidance_post"?"指導計画（後期）":"教育支援＋指導計画（前・後期）";
+    html+='<div class="card" style="margin-bottom:.8rem">';
+    html+='<div class="spread"><h3 style="margin:0">'+esc(plan.fields.child_name||"名前未設定")+
+      '</h3><span class="chip">'+typeLabel+'</span></div>';
+    html+='<div class="small muted">ファイル: '+esc(plan.fileName)+' / シート: '+esc(plan.sheetName)+
+      ' / 項目: '+plan.rawRows.length+'件 / 前期表: '+(plan.tablePre||[]).length+'行 / 後期表: '+(plan.tablePost||[]).length+'行</div>';
+    html+='<details class="mt"><summary>✏️ 取り込んだ内容を確認・修正</summary><div style="margin-top:.4rem">';
+    html+='<div style="font-weight:700;color:var(--brand);margin:.4rem 0">基本情報</div>';
+    html+='<div class="row" style="gap:.4rem;margin-bottom:.3rem">';
+    html+='<input type="text" class="import-field" data-plan="'+pi+'" data-key="child_name" value="'+esc(plan.fields.child_name||"")+'" placeholder="児童生徒氏名" style="flex:1">';
+    html+='<input type="text" class="import-field" data-plan="'+pi+'" data-key="grade" value="'+esc(plan.fields.grade||"")+'" placeholder="学年" style="width:90px">';
+    html+='<input type="text" class="import-field" data-plan="'+pi+'" data-key="class_name" value="'+esc(plan.fields.class_name||"")+'" placeholder="学級" style="width:180px">';
+    html+='</div>';
+    var editKeys=[
+      ["profile_strengths","得意なこと・好きなこと"],["profile_needs","苦手なこと・困っていること"],
+      ["child_wish","本人の願い"],["guardian_wish","保護者の願い"],
+      ["support_long_goal","長期目標"],["school_support","学校における支援"],["eval_handover","評価・引継ぎ事項"],
+      ["history","療育・これまでの生育歴"],["edu_history","教育歴"],["dev_test","発達検査"],
+      ["family_support","家庭"],["welfare_support","福祉"],["community_support","地域"],["medical_support","医療"],
+      ["seiro_strengthen","伸ばしたい力"],["seiro_complement","補いたい力"]
+    ];
+    editKeys.forEach(function(x){
+      html+='<label class="f" style="margin-top:.35rem">'+x[1]+'</label>'+
+        '<textarea class="import-field" data-plan="'+pi+'" data-key="'+x[0]+'" rows="2" style="width:100%;margin-bottom:.25rem">'+
+        esc(plan.fields[x[0]]||"")+'</textarea>';
+    });
+    if(plan.tablePre&&plan.tablePre.length){
+      html+='<div style="font-weight:700;color:var(--brand);margin:.6rem 0">指導表（前期）</div>';
+      plan.tablePre.forEach(function(r,di){
+        html+='<div style="border:1px solid var(--line);border-radius:9px;padding:.45rem;margin-bottom:.45rem">'+
+          '<b>'+esc(r.name)+'</b><div class="row" style="gap:.3rem;margin-top:.25rem">';
+        [["fact","実態"],["goal","目標"],["method","指導・支援方法"],["eval","評価"]].forEach(function(x){
+          html+='<div style="flex:1;min-width:180px"><div class="small muted">'+x[1]+'</div>'+
+            '<textarea class="import-table" data-plan="'+pi+'" data-di="'+di+'" data-ci="'+x[0]+'" rows="3" style="width:100%">'+
+            esc(r[x[0]]||"")+'</textarea></div>';
+        });
+        html+='</div></div>';
+      });
+    }
+    if(plan.tablePost&&plan.tablePost.length){
+      html+='<div style="font-weight:700;color:var(--brand);margin:.6rem 0">指導表（後期）</div>';
+      plan.tablePost.forEach(function(r,di){
+        html+='<div style="border:1px solid var(--line);border-radius:9px;padding:.45rem;margin-bottom:.45rem">'+
+          '<b>'+esc(r.name)+'</b><div class="row" style="gap:.3rem;margin-top:.25rem">';
+        [["fact","実態"],["goal","目標"],["method","指導・支援方法"],["eval","評価"]].forEach(function(x){
+          html+='<div style="flex:1;min-width:180px"><div class="small muted">'+x[1]+'</div>'+
+            '<textarea class="import-table-post" data-plan="'+pi+'" data-di="'+di+'" data-ci="'+x[0]+'" rows="3" style="width:100%">'+
+            esc(r[x[0]]||"")+'</textarea></div>';
+        });
+        html+='</div></div>';
+      });
+    }
+    html+='</div></details>';
+    if(plan.debugInfo.length){
+      html+='<details style="margin-top:.4rem"><summary>読み取りログ</summary><div class="small muted">'+
+        plan.debugInfo.map(esc).join("<br>")+'</div></details>';
+    }
+    html+='</div>';
+  });
+  box.innerHTML=html;
+  document.getElementById("btnImportExcel").disabled=false;
+
+  box.querySelectorAll(".import-field").forEach(function(inp){
+    inp.addEventListener("input",function(){
+      var p=all[parseInt(this.dataset.plan,10)];
+      if(p)p.fields[this.dataset.key]=this.value;
+    });
+  });
+  box.querySelectorAll(".import-table").forEach(function(inp){
+    inp.addEventListener("input",function(){
+      var p=all[parseInt(this.dataset.plan,10)],di=parseInt(this.dataset.di,10),ci=this.dataset.ci;
+      if(!p||!p.tablePre[di])return;
+      p.tablePre[di][ci]=this.value;
+    });
+  });
+  box.querySelectorAll(".import-table-post").forEach(function(inp){
+    inp.addEventListener("input",function(){
+      var p=all[parseInt(this.dataset.plan,10)],di=parseInt(this.dataset.di,10),ci=this.dataset.ci;
+      if(!p||!p.tablePost[di])return;
+      p.tablePost[di][ci]=this.value;
+    });
+  });
+}
+document.getElementById("btnParseExcel").onclick=parseExcelFiles;
+
+document.getElementById("btnImportExcel").onclick=function(){
+  flushQueuedSave();
+  /* 確認画面で先生が修正した内容を優先する。 */
+  var all=Array.isArray(IMPORT_PREVIEW)&&IMPORT_PREVIEW.length?IMPORT_PREVIEW:[];
+  if(!all.length){
+    IMPORT_PARSED.forEach(function(fr){(fr.plans||[]).forEach(function(p){all.push(p);});});
+  }
+  if(!all.length){alert("先にExcelを読み込んで、内容を確認してな");return;}
+  var count=0;
+  all.forEach(function(plan,idx){
+    var p={
+      id:makePlanId("p_"),
+      title:(plan.fields.child_name||"名前未設定")+" "+(plan.type==="support"?"支援計画":
+        plan.type==="guidance_post"?"指導計画(後期)":
+        plan.type==="guidance_pre"?"指導計画(前期)":"支援・指導計画"),
+      tmpl:"generic",data:{},memo:"",log:[],created:Date.now(),updated:Date.now()
+    };
+    Object.keys(plan.fields).forEach(function(k){
+      var v=plan.fields[k];
+      if(!v)return;
+      /* 基本情報はアプリ本体が参照するトップレベルへ、その他はdataへ */
+      if(k==="school_year"){var sy=Number(String(v).replace(/[^0-9.-]/g,""));if(sy>=2000&&sy<=9999)p.school_year=sy;return;}
+      if(k==="grade"){p.grade=v;return;}
+      if(k==="class_name"){p.class_type=v;return;}
+      if(k==="school"){p.school=v;return;}
+      if(k==="child_code"){p.code=v;return;}
+      var target={
+        therapy_history:"history",
+        education_history:"edu_history",
+        development_test:"dev_test",
+        strengths:"profile_strengths",
+        needs:"profile_needs",
+        emergency_tel:"emergency",
+        seiro_strengthen:"seiro_strengthen",
+        seiro_complement:"seiro_complement"
+      }[k]||k;
+      if(target==="edu_history"&&p.data[target])p.data[target]+="\n"+v;
+      else p.data[target]=v;
+    });
+
+    /* 最重要：Excel前期表をアプリ本体の「前期」に渡す */
+    if(plan.tablePre&&plan.tablePre.length){
+      p.table=plan.tablePre.map(function(r){
+        return {name:r.name||"",fact:r.fact||"",goal:r.goal||"",method:r.method||"",eval:r.eval||""};
+      });
+    }
+    if(plan.tablePost&&plan.tablePost.length){
+      p.table2=plan.tablePost.map(function(r){
+        return {name:r.name||"",fact:r.fact||"",goal:r.goal||"",method:r.method||"",eval:r.eval||""};
+      });
+    }
+    normalizeTable(p);
+    S.plans.push(p);
+    count++;
+  });
+  if(count){
+    /* 現在の計画を確定してから保存する。保存失敗時は今回の取り込みだけを取り消す。 */
+    var firstImported=S.plans.length-count;
+    var prevCur=S.cur,prevStep=S.step;
+    S.cur=S.plans[firstImported].id;
+    S.step=0;
+    if(save(true)){
+      renderHome();
+      toast(count+"件を登録しました。計画の入力から続けられます");
+    }else{
+      S.plans.splice(firstImported,count);
+      S.cur=prevCur;S.step=prevStep;
+      toast("保存できなかったため、今回のExcel取り込みを取り消しました");
+    }
+  }
+};
+
+document.getElementById("btnImportSettings").onclick=function(){
+  document.getElementById("importSettingsModal").style.display="flex";
+  renderMappingTable();
+};
+document.getElementById("btnCloseSettings").onclick=function(){
+  document.getElementById("importSettingsModal").style.display="none";
+};
+document.getElementById("btnSaveMapping").onclick=function(){
+  var inputs=document.querySelectorAll(".mapping-input"),newMap={};
+  inputs.forEach(function(inp){if(inp.value.trim())newMap[inp.dataset.excelCol]=inp.value.trim();});
+  try{
+    var rawMap=JSON.stringify(newMap);
+    localStorage.setItem("kobetsu_col_map",rawMap);
+    USER_COL_MAP=newMap;
+  }catch(e){
+    console.warn("取り込み設定の保存に失敗しました",e);
+    toast("設定を保存できませんでした。ブラウザの保存容量・設定を確認してください");
+    return;
+  }
+  document.getElementById("importSettingsModal").style.display="none";
+  toast("取り込み設定を保存しました");
+};
+document.getElementById("btnResetMapping").onclick=function(){
+  USER_COL_MAP={};
+  try{localStorage.removeItem("kobetsu_col_map");}catch(e){console.warn("取り込み設定の削除に失敗しました",e);}
+  renderMappingTable();
+  toast("取り込み設定をデフォルトに戻しました");
+};
+function renderMappingTable(){
+  var box=document.getElementById("mappingTable"),map=colMap();
+  var rows=[
+    ["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],["住所","address"],
+    ["電話番号","tel"],["学級","class_name"],["学年","grade"],["保護者氏名","guardian_name"],
+    ["緊急連絡先","emergency_tel"],["療育","therapy_history"],["教育歴","education_history"],
+    ["発達検査","development_test"],["得意なこと","strengths"],["苦手なこと","needs"],
+    ["本人の願い","child_wish"],["保護者の願い","guardian_wish"],["長期目標","support_long_goal"],
+    ["学校における支援","school_support"],["評価・引継ぎ事項","eval_handover"],
+    ["家庭","family_support"],["福祉","welfare_support"],["地域","community_support"],
+    ["医療","medical_support"],["伸ばしたい力","strengthen"],["補いたい力","complement"]
+  ];
+  var h='<table style="width:100%;font-size:.88rem;border-collapse:collapse"><tr style="background:var(--brand-soft)"><th style="text-align:left;padding:.4rem">Excelの欄名</th><th style="text-align:left;padding:.4rem">アプリの項目名</th></tr>';
+  rows.forEach(function(r){
+    var current="";
+    Object.keys(map).some(function(k){if(map[k]===r[1]){current=k;return true;}});
+    h+='<tr style="border-bottom:1px solid var(--line)"><td style="padding:.4rem"><input type="text" class="mapping-input" data-excel-col="'+esc(r[0])+'" value="'+esc(current)+'" placeholder="'+esc(r[0])+'" style="width:100%;font-size:.85rem"></td><td style="padding:.4rem">'+esc(r[1])+'</td></tr>';
+  });
+  h+='</table>';box.innerHTML=h;
+}
+var origGo=go;
+go=function(name){
+  if(name==="import"){renderImportPreview();}
+  origGo(name);
+};
+</script>
+
+
+</body>
+</html>
