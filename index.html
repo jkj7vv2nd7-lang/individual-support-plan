@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#193a63">
 <title>個別の支援・指導計画 ｜ 作成支援ツール</title>
-<meta name="excel-import-version" content="v46">
+<meta name="excel-import-version" content="v47">
 <style>
 
 
@@ -253,10 +256,10 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
 
 .mt{margin-top:1rem}
 .mt2{margin-top:1.6rem}
-.seiro-banner{display:flex;gap:.75rem;align-items:center;background:linear-gradient(135deg,var(--brand),#28517f);color:#fff;border-radius:13px;padding:.85rem 1.05rem}
-.seiro-banner b{font-family:var(--round)}
-.seiro-banner .small{color:#cfe0f5}
-.seiro-banner svg{color:#8fe3d6;flex:0 0 auto}
+.localfmt-banner{display:flex;gap:.75rem;align-items:center;background:linear-gradient(135deg,var(--brand),#28517f);color:#fff;border-radius:13px;padding:.85rem 1.05rem}
+.localfmt-banner b{font-family:var(--round)}
+.localfmt-banner .small{color:#cfe0f5}
+.localfmt-banner svg{color:#8fe3d6;flex:0 0 auto}
 .importbox{background:var(--paper);border:1px solid var(--line-2);border-radius:12px;padding:.85rem 1rem;margin-top:1rem}
 .importbox code{background:var(--brand-soft);color:var(--brand);padding:0 .3rem;border-radius:5px;font-size:.82rem}
 .dict{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -530,7 +533,7 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     <div class="spread">
       <div>
         <h1 style="margin-bottom:.1rem">📂 Excelを取り込む</h1>
-        <p class="lead" style="margin:0">聖籠町様式のExcel（.xlsx）を読み込んで、内容を確認・修正してから計画として登録できます。前期・後期が入った1冊のExcelも自動で1計画にまとめます。ネット接続なしでもExcel取込を行える内蔵方式です。</p>
+        <p class="lead" style="margin:0">自治体様式のExcel（.xlsx）を読み込んで、内容を確認・修正してから計画として登録できます。前期・後期が入った1冊のExcelも自動で1計画にまとめます。ネット接続なしでもExcel取込を行える内蔵方式です。</p>
       </div>
       <span class="small muted">🔒 ブラウザ内完結・外部送信なし</span>
     </div>
@@ -544,12 +547,12 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     <div class="card mt">
       <div style="font-weight:700;margin-bottom:.35rem">対応様式</div>
       <div class="tagrow">
-        <span class="chip on">聖籠町（令和5年度〜）</span>
+        <span class="chip on">自治体様式（内蔵）</span>
         <span class="chip">文科省参考様式</span>
         <span class="chip">新潟県様式</span>
         <span class="chip">その他（汎用）</span>
       </div>
-      <div class="small muted" style="margin-top:.4rem">※ 聖籠町様式は自動判定。他の様式は「取り込み設定」で欄名を手動マッピングできます。</div>
+      <div class="small muted" style="margin-top:.4rem">※ 内蔵の自治体様式は自動判定。他の様式は「取り込み設定」で欄名を手動マッピングできます。</div>
     </div>
     <div style="margin-top:.8rem">
       <button class="b-primary" id="btnParseExcel" disabled>🔍 取り込み内容を確認</button>
@@ -667,6 +670,25 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
       <div id="mapRows"></div>
     </div>
 
+    <div class="card noprint mt">
+      <div class="section-head"><span class="eyebrow">Template File</span><h3 style="margin:0">様式ファイルに差し込む（Excelテンプレート）</h3></div>
+      <p class="small muted">自治体・学校の様式ファイル（.xlsx）そのものを読み込むと、セル結合や罫線・印刷設定を保ったまま、計画の内容を差し込んで書き出せます。欄名から差し込み先を自動で探します。対応づけは「○○市様式」として保存でき、同じ様式なら次回から自動で使えます。</p>
+      <div class="row">
+        <label class="b-ghost" style="display:inline-flex;align-items:center;cursor:pointer;padding:.5rem .85rem;border-radius:10px;border:1px solid var(--line-2);font-family:var(--round);font-weight:700;font-size:.85rem">
+          ⬆ 様式ファイル（.xlsx）を選ぶ<input type="file" id="tplFile" accept=".xlsx" hidden>
+        </label>
+        <select id="tplSheet" style="max-width:260px" hidden></select>
+        <span class="small muted" id="tplFileName"></span>
+      </div>
+      <div id="tplMapArea" class="mt"></div>
+      <div class="row mt" id="tplActions" hidden>
+        <input type="text" id="tplProfileName" placeholder="様式の名前（例：○○市様式）" style="flex:1;min-width:200px">
+        <button class="b-ghost b-sm" id="btnTplSaveProfile">対応づけを保存</button>
+        <button class="b-primary b-sm" id="btnTplExport">⬇ この様式でExcelを書き出す</button>
+      </div>
+      <p class="small muted mt" id="tplMsg"></p>
+    </div>
+
     <div class="mt" id="formPaperArea"></div>
 
     <div class="footnav noprint">
@@ -719,6 +741,17 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
       <div id="dataRows"></div>
     </div>
     <div class="card mt">
+      <div class="section-head"><span class="eyebrow">AI Assist</span><h3 style="margin:0">AI入力支援（任意）</h3></div>
+      <p class="small muted">各項目の「🤖 AIで下書き」を使うときだけ、Google Gemini に文章の下書きを頼めます。使う場合は、無料で取得できる Gemini APIキーを入れてください。キーはこのブラウザの中だけに保存され、計画データのJSON書き出しには含まれません。</p>
+      <div class="row">
+        <input type="password" id="gemKeyInput" placeholder="Gemini APIキー" style="flex:1;min-width:240px" autocomplete="off">
+        <button class="b-primary b-sm" id="btnGemKeySave">キーを保存</button>
+        <button class="b-ghost b-sm" id="btnGemKeyClear">キーを消す</button>
+      </div>
+      <p class="small muted mt" id="gemKeyState"></p>
+      <p class="small muted">AIに送るのは、その項目の文脈（実態・願い・目標など）だけです。氏名などの個人情報欄は送りません。文中に氏名があれば「本児」に置き換えます。キーは <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a> で取得できます。</p>
+    </div>
+    <div class="card mt">
       <div class="section-head"><span class="eyebrow">Danger</span><h3 style="margin:0">リセット</h3></div>
       <p class="small muted">このブラウザに保存された内容を、すべて消すで。取り消しはできへんから気ぃつけてな。</p>
       <button class="b-stamp" id="btnWipe">すべて消す</button>
@@ -726,8 +759,8 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     <div class="card mt">
       <h3>このアプリについて</h3>
       <ul class="small muted" style="padding-left:1.2rem;margin:0">
-        <li>入力・音声・保存・様式の差し込みは、ブラウザの中だけで完結（外部に送信しません）</li>
-        <li>様式は、聖籠町（令和5年度〜）・文科省参考様式・新潟県様式・汎用を初期搭載。自校の欄名を貼り付ければ、そのまま差し込めるで</li>
+        <li>入力・音声・保存・様式の差し込みは、ブラウザの中だけで完結（外部に送信しません）。AI入力支援を使うときだけ、本人がキーを設定しボタンを押した場合に限り、項目の文脈が Gemini に送信されます</li>
+        <li>様式は、自治体様式（内蔵）・文科省参考様式・新潟県様式・汎用を初期搭載。自校の欄名を貼り付ければ、そのまま差し込めるで</li>
         <li>Excel出力は、内蔵方式で本物の.xlsxとして書き出すで</li>
         <li>やさしい日本語チェック・配慮した文面づくりは、本アプリ（新潟県ハンドブック準拠）と同じ観点を再現しとる</li>
         <li>文例ライブラリは、発達障害の特性ごとの信頼できる資料（文科省・自治体等）を参考に 155 文例を収録しとる</li>
@@ -738,7 +771,7 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     </div>
   </section>
 
-  <footer>正式リリース候補／v46／ 入力内容はこのブラウザ内にのみ保存されます。</footer>
+  <footer>正式リリース候補／v47／ 入力内容はこのブラウザ内にのみ保存されます。</footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -772,13 +805,13 @@ var FM={
  child_furigana:"児童生徒ふりがな",child_name:"児童生徒氏名",gender:"性別",birth_date:"生年月日",
  address:"住所",address2:"住所（続き）",
  guardian_furigana:"保護者ふりがな",guardian_name:"保護者氏名",tel:"電話番号",emergency:"緊急連絡先",
- consent_date:"了承日",guardian_name_confirm:"了承者氏名",table:"指導表",table_pre:"指導表（前期）",table_post:"指導表（後期）",table_seiro:"指導表",table_all:"指導表（前期・後期）",edu_history:"これまでの生育歴＜教育歴＞",dev_test:"これまでの生育歴＜発達検査＞",class_grade:"学級・学年",seiro_strengthen:"＜伸ばしたい力＞",seiro_complement:"＜補いたい力＞",selfcare:"日常生活（身辺自立）",speech:"言葉・コミュニケーション",academics:"学習（国語・算数）",period_note:"前期の評価・後期の見通し"
+ consent_date:"了承日",guardian_name_confirm:"了承者氏名",table:"指導表",table_pre:"指導表（前期）",table_post:"指導表（後期）",table_localfmt:"指導表",table_all:"指導表（前期・後期）",edu_history:"これまでの生育歴＜教育歴＞",dev_test:"これまでの生育歴＜発達検査＞",class_grade:"学級・学年",strengthen:"＜伸ばしたい力＞",complement:"＜補いたい力＞",selfcare:"日常生活（身辺自立）",speech:"言葉・コミュニケーション",academics:"学習（国語・算数）",period_note:"前期の評価・後期の見通し"
 };
 var PII=["child_furigana","child_name","gender","birth_date","address","address2","guardian_furigana","guardian_name","tel","emergency","guardian_name_confirm"];
 var LONG_KEYS=["profile_strengths","profile_needs","strengths","weaknesses","child_wish","guardian_wish","support_history","related_agencies",
  "support_long_goal","guidance_long_goal","short_goal_1","short_goal_2","supports","eval_method","school_support","eval_handover",
  "conference_memo","history","life","wish","family_support","community_support","welfare_support","medical_support",
- "start_ease","effective_supports","episode","handover_to","edu_history","dev_test","seiro_strengthen","seiro_complement","selfcare","speech","academics","period_note"];
+ "start_ease","effective_supports","episode","handover_to","edu_history","dev_test","strengthen","complement","selfcare","speech","academics","period_note"];
 var GOAL_KEYS=["support_long_goal","guidance_long_goal","short_goal_1","short_goal_2"];
 
 var CATS=[
@@ -787,19 +820,19 @@ var CATS=[
  ["support_long_goal","支援・長期目標(3年)"],["guidance_long_goal","指導・長期目標(1年)"],
  ["short_goal_1","短期目標1"],["short_goal_2","短期目標2"],["supports","具体的支援・手立て"],
  ["eval_method","評価方法・時期"],["school_support","学校における支援"],["life","生活の様子"],
- ["history","生育歴"],["start_ease","糊しろ"],["seiro_strengthen","伸ばしたい力"],["seiro_complement","補いたい力"],["selfcare","日常生活の実態"],["speech","言葉・コミュニケーション"],["academics","学習（国語・算数）"],["period_note","前期の評価・後期の見通し"],["none","（使わない）"]
+ ["history","生育歴"],["start_ease","糊しろ"],["strengthen","伸ばしたい力"],["complement","補いたい力"],["selfcare","日常生活の実態"],["speech","言葉・コミュニケーション"],["academics","学習（国語・算数）"],["period_note","前期の評価・後期の見通し"],["none","（使わない）"]
 ];
 function CAT(id){for(var i=0;i<CATS.length;i++){if(CATS[i][0]===id)return CATS[i][1];}return id;}
 var CATCOLOR={profile_strengths:"#0e8a7c",profile_needs:"#c0452f",child_wish:"#4b5fa6",guardian_wish:"#8b4f8d",
  support_history:"#5b6a7c",related_agencies:"#5b6a7c",support_long_goal:"#193a63",guidance_long_goal:"#193a63",
  short_goal_1:"#2b5790",short_goal_2:"#2b5790",supports:"#b0701a",eval_method:"#26794c",school_support:"#5b6a7c",
- life:"#8b4f8d",history:"#5b6a7c",start_ease:"#8b4f8d",seiro_strengthen:"#0e8a7c",seiro_complement:"#c0452f",selfcare:"#5b6a7c",speech:"#4b5fa6",academics:"#b0701a",period_note:"#26794c",none:"#9aa6b6"};
+ life:"#8b4f8d",history:"#5b6a7c",start_ease:"#8b4f8d",strengthen:"#0e8a7c",complement:"#c0452f",selfcare:"#5b6a7c",speech:"#4b5fa6",academics:"#b0701a",period_note:"#26794c",none:"#9aa6b6"};
 
 /* ===== ウィザードの区分 ===== */
 var STEPS=[
- {id:"seiro_setup",t:"自治体様式セットアップ",keys:[]},
+ {id:"localfmt_setup",t:"自治体様式セットアップ",keys:[]},
  {id:"basic",t:"基本情報",keys:["school_year","child_code","grade","class_type","school","class_grade"]},
- {id:"jittai",t:"実態と願い",keys:["profile_strengths","profile_needs","history","edu_history","dev_test","life","child_wish","guardian_wish","wish","seiro_strengthen","seiro_complement"]},
+ {id:"jittai",t:"実態と願い",keys:["profile_strengths","profile_needs","history","edu_history","dev_test","life","child_wish","guardian_wish","wish","strengthen","complement"]},
  {id:"goal",t:"目標",keys:["support_long_goal","guidance_long_goal","short_goal_1","short_goal_2"]},
  {id:"support",t:"手立て・評価",keys:["supports","eval_method","school_support","eval_handover"]},
  {id:"table",t:"指導表（前期）",keys:[]},
@@ -837,9 +870,9 @@ function tableAllText(p){
   return h;
 }
 
-/* ===== 聖籠町セットアップ ===== */
-var SEIRO_SVG='<svg width="54" height="54" viewBox="0 0 54 54" role="img" aria-label="様式の目印"><circle cx="27" cy="27" r="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.2"/><path d="M14 33c4-9 22-9 26 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="27" cy="19" r="4.4" fill="currentColor"/></svg>';
-var SEIRO_MAP=[
+/* ===== 自治体様式セットアップ ===== */
+var LF_SVG='<svg width="54" height="54" viewBox="0 0 54 54" role="img" aria-label="様式の目印"><circle cx="27" cy="27" r="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.2"/><path d="M14 33c4-9 22-9 26 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="27" cy="19" r="4.4" fill="currentColor"/></svg>';
+var LF_MAP=[
  ["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],["住所","address"],
  ["電話","tel"],["学級","class_grade"],["学年","class_grade"],["保護者氏名","guardian_name"],["緊急連絡先","emergency"],
  ["療育","history"],["教育歴","edu_history"],["発達検査","dev_test"],
@@ -847,11 +880,11 @@ var SEIRO_MAP=[
  ["本人","child_wish"],["保護者","guardian_wish"],
  ["長期目標","support_long_goal"],["学校における支援","school_support"],["評価・引継ぎ","eval_handover"],
  ["家庭","family_support"],["福祉","welfare_support"],["地域","community_support"],["医療","medical_support"],
- ["伸ばしたい力","seiro_strengthen"],["補いたい力","seiro_complement"],
+ ["伸ばしたい力","strengthen"],["補いたい力","complement"],
  ["言葉","speech"],["国語","academics"],["算数","academics"],["学習","academics"],
  ["記入日","written_date"],["記入者","writer"]
 ];
-function parseSeiro(text){
+function parseLocalFmt(text){
   var out={};
   String(text||"").split(/\r?\n/).forEach(function(line){
     var i=line.indexOf("：");if(i<0)i=line.indexOf(":");
@@ -861,21 +894,21 @@ function parseSeiro(text){
   });
   return out;
 }
-function applySeiroText(text,quiet){
+function applyLocalFmtText(text,quiet){
   var p=cur();if(!p){toast("計画を起こしてからにしてな");return;}
-  var kv=parseSeiro(text),n=0,un=[];
+  var kv=parseLocalFmt(text),n=0,un=[];
   Object.keys(kv).forEach(function(k){
     var hit=null;
-    for(var j=0;j<SEIRO_MAP.length;j++){if(k.indexOf(SEIRO_MAP[j][0])>=0){hit=SEIRO_MAP[j][1];break;}}
+    for(var j=0;j<LF_MAP.length;j++){if(k.indexOf(LF_MAP[j][0])>=0){hit=LF_MAP[j][1];break;}}
     if(!hit){un.push(k);return;}
     p.data[hit]=kv[k];n++;
   });
   touch();renderWizard();
-  var msg=document.getElementById("seiroPasteMsg");
+  var msg=document.getElementById("localFmtPasteMsg");
   if(msg)msg.textContent=n?("取り込んだで："+n+"項目"+(un.length?"（未対応："+un.slice(0,4).join("、")+(un.length>4?" 他":"")+"）":"")):"取り込めた項目がなかったで";
   if(!quiet)toast(n?("Excelの内容を取り込んだで（"+n+"項目）"):"取り込めた項目がなかったで（「項目名：内容」の形になってるか確認してな）");
 }
-var SEIRO_EX=[
+var LF_EX=[
  "＜療育＞：・児童発達支援センター「○○」　ソーシャルスキルの集団療育（H30・4月〜）2週間に1回",
  "＜教育歴＞：・通級指導教室（R4・9月〜R5・3月）　週1回 SST実施",
  "＜発達検査＞：・WISC-IV　FIQ90 VCI107 PRI82 WMI85 PSI81",
@@ -892,43 +925,43 @@ var SEIRO_EX=[
  "＜伸ばしたい力＞：・発表会でセリフを覚える。",
  "＜補いたい力＞：・乱暴な言葉遣いが減り、優しい言葉が増えてほしい。"
 ];
-function renderSeiroStep(body,p){
+function renderLocalFmtStep(body,p){
   body.innerHTML="";
-  var b=el("div","seiro-banner");
-  b.innerHTML=SEIRO_SVG+'<div><b>聖籠町の教育支援計画・指導計画（令和5年度〜）</b>'
+  var b=el("div","localfmt-banner");
+  b.innerHTML=LF_SVG+'<div><b>自治体様式の教育支援計画・指導計画（内蔵様式）</b>'
     +'<div class="small muted">Excelのシート構成：支援計画／支援計画記入例／指導計画（前期）／（後期）／指導計画記入例</div></div>';
   body.appendChild(b);
-  body.appendChild(el("p","lead","聖籠町のExcel様式に合わせて、このアプリの欄を自動で差し込むで。記入例の言葉づかいも、ボタンひとつで参考にできるわ。"));
+  body.appendChild(el("p","lead","この自治体様式に合わせて、このアプリの欄を自動で差し込むで。記入例の言葉づかいも、ボタンひとつで参考にできるわ。"));
   var box=el("div","importbox");
   box.innerHTML='<label class="f">Excelから既存の内容を取り込む（任意）</label>'
    +'<p class="small muted">Excelで <b>「項目名：内容」</b> の形にした行をコピーして、ここに貼ってな。上のセルでも下のセルでも、改行して貼ればええで（例：<code>長期目標：相手のことを考えた言葉を使う</code>）。</p>'
-   +'<textarea id="seiroPaste" rows="5" placeholder="例）\n児童生徒氏名：菅井　玲奈\n長期目標：相手のことを考えた優しい言葉を使うことができる。"></textarea>'
-   +'<div class="row mt"><button class="b-primary b-sm" id="btnSeiroPaste">貼り付けた内容を取り込む</button><span class="small muted" id="seiroPasteMsg"></span></div>';
+   +'<textarea id="localFmtPaste" rows="5" placeholder="例）\n児童生徒氏名：菅井　玲奈\n長期目標：相手のことを考えた優しい言葉を使うことができる。"></textarea>'
+   +'<div class="row mt"><button class="b-primary b-sm" id="btnLocalFmtPaste">貼り付けた内容を取り込む</button><span class="small muted" id="localFmtPasteMsg"></span></div>';
   body.appendChild(box);
   var ex=el("div","card mt");
   ex.innerHTML='<div class="section-head"><span class="eyebrow">例文</span><h3 style="margin:0">記入例の言葉づかいを入れる</h3></div>'
-   +'<p class="small muted">聖籠町の「支援計画記入例」「指導計画記入例」の文面やで。そのまま使わず、自分の言葉に直してな。</p>'
-   +'<div class="row"><button class="b-soft b-sm" id="btnSeiroExAll">記入例をまとめて入れる</button>'
-   +'<button class="b-ghost b-sm" id="btnSeiroExSupport">関係者による支援（家庭・福祉・医療）の例を入れる</button></div>';
+   +'<p class="small muted">この様式の「支援計画記入例」「指導計画記入例」の文面やで。そのまま使わず、自分の言葉に直してな。</p>'
+   +'<div class="row"><button class="b-soft b-sm" id="btnLocalFmtExAll">記入例をまとめて入れる</button>'
+   +'<button class="b-ghost b-sm" id="btnLocalFmtExSupport">関係者による支援（家庭・福祉・医療）の例を入れる</button></div>';
   body.appendChild(ex);
   var note=el("div","piinote mt","🔒 記入例の氏名（菅井　玲奈 など）は練習用のサンプルや。実在の児童の名前は入れんといてな。");body.appendChild(note);
   var det=el("div","card mt");
   det.innerHTML='<details><summary>記入例の中身を見る（反映される文面）</summary><div class="dict" style="margin-top:.5rem">'
-   +SEIRO_EX.map(function(x){return '<div class="dictrow"><span class="from">'+esc(x.split("：")[0])+"</span><span>"+esc(x.split("：").slice(1).join("："))+"</span></div>";}).join("")
+   +LF_EX.map(function(x){return '<div class="dictrow"><span class="from">'+esc(x.split("：")[0])+"</span><span>"+esc(x.split("：").slice(1).join("："))+"</span></div>";}).join("")
    +'</div></details>';
   body.appendChild(det);
-  $("btnSeiroPaste").onclick=function(){applySeiroText($("seiroPaste").value);};
-  $("btnSeiroExAll").onclick=function(){
+  $("btnLocalFmtPaste").onclick=function(){applyLocalFmtText($("localFmtPaste").value);};
+  $("btnLocalFmtExAll").onclick=function(){
     var p2=cur();if(!p2)return;
-    applySeiroText(SEIRO_EX.join("\n"),true);
-    p2.data.seiro_strengthen="・発表会でセリフを覚える。\n（得意なこと・好きなことから、さらに伸ばしたい力を書きます）";
-    p2.data.seiro_complement="・乱暴な言葉遣いが減り、優しい言葉が増えてほしい。\n（苦手なこと・困っていることから、補いたい力を書きます）";
+    applyLocalFmtText(LF_EX.join("\n"),true);
+    p2.data.strengthen="・発表会でセリフを覚える。\n（得意なこと・好きなことから、さらに伸ばしたい力を書きます）";
+    p2.data.complement="・乱暴な言葉遣いが減り、優しい言葉が増えてほしい。\n（苦手なこと・困っていることから、補いたい力を書きます）";
     p2.table=tblRows();p2.table[1]={name:"対人",fact:"友達とのトラブルで、相手に強い言葉を使ってしまうことがある。",goal:"相手のことを考えた言葉を選ぶことができる。",method:"落ち着いてから個別に話し、優しい言葉を使えたらすぐほめる。",eval:"同じことを繰り返さなくなった。帰りの会の自己評価カードで確認。"};
     touch();renderWizard();toast("記入例をまとめて入れたで（要確認・修正）");
   };
-  $("btnSeiroExSupport").onclick=function(){
+  $("btnLocalFmtExSupport").onclick=function(){
     var p2=cur();if(!p2)return;
-    applySeiroText(SEIRO_EX.slice(10,13).join("\n"),true);
+    applyLocalFmtText(LF_EX.slice(10,13).join("\n"),true);
     toast("支援計画の例の文面を入れたで（要確認・修正）");
   };
 }
@@ -1016,7 +1049,7 @@ var TEMPLATES=[
   ["評価・引継ぎ事項","eval_handover"],["指導表","table"],
   ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
  ]},
- {id:"seiro_support",name:"聖籠町 個別の教育支援計画（令和5年度〜）",rows:[
+ {id:"localfmt_support",name:"自治体様式 個別の教育支援計画（内蔵）",rows:[
   ["（記入日）","written_date"],["（記入者）","writer"],
   ["児童生徒氏名","child_name"],["性別","gender"],["生年月日","birth_date"],
   ["住所","address"],["電話番号","tel"],["学級・学年","class_grade"],
@@ -1031,25 +1064,25 @@ var TEMPLATES=[
   ["関係者による支援＜地域＞","community_support"],["関係者による支援＜医療＞","medical_support"],
   ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
  ]},
- {id:"seiro_guidance_pre",name:"聖籠町 個別の指導計画（前期）",rows:[
+ {id:"localfmt_guidance_pre",name:"自治体様式 個別の指導計画（前期）",rows:[
   ["（記入日）","written_date"],["（記入者）","writer"],
   ["児童生徒氏名","child_name"],["性別","gender"],["学級・学年","class_grade"],
-  ["＜伸ばしたい力＞","seiro_strengthen"],["＜補いたい力＞","seiro_complement"],
+  ["＜伸ばしたい力＞","strengthen"],["＜補いたい力＞","complement"],
   ["指導表（前期）","table_pre"],
   ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
  ]},
- {id:"seiro_guidance_post",name:"聖籠町 個別の指導計画（後期）",rows:[
+ {id:"localfmt_guidance_post",name:"自治体様式 個別の指導計画（後期）",rows:[
   ["（記入日）","written_date"],["（記入者）","writer"],
   ["児童生徒氏名","child_name"],["性別","gender"],["学級・学年","class_grade"],
-  ["＜伸ばしたい力＞","seiro_strengthen"],["＜補いたい力＞","seiro_complement"],
+  ["＜伸ばしたい力＞","strengthen"],["＜補いたい力＞","complement"],
   ["指導表（後期）","table_post"],
   ["前期の評価・後期の見通し","period_note"],
   ["了承日","consent_date"],["保護者氏名（了承）","guardian_name_confirm"]
  ]},
- {id:"seiro_both",name:"聖籠町 指導計画（前期＋後期 一括）",rows:[
+ {id:"localfmt_both",name:"自治体様式 指導計画（前期＋後期 一括）",rows:[
   ["（記入日）","written_date"],["（記入者）","writer"],
   ["児童生徒氏名","child_name"],["性別","gender"],["学級・学年","class_grade"],
-  ["＜伸ばしたい力＞","seiro_strengthen"],["＜補いたい力＞","seiro_complement"],
+  ["＜伸ばしたい力＞","strengthen"],["＜補いたい力＞","complement"],
   ["指導表（前期・後期）","table_all"]
  ]},
  {id:"generic",name:"汎用（自由様式・全項目）",rows:[
@@ -1088,13 +1121,97 @@ var AI_SAMPLES={
  medical_support:"・かかりつけ医に定期的に相談し、支援の方向を確認しています",
  edu_history:"・通級指導教室（R4・9月〜R5・3月）　週1回　SST（友だちとの関わりの練習）を行いました",
  dev_test:"・WISC-IV　FIQ90　VCI107　PRI82　WMI85　PSI81",
- seiro_strengthen:"・発表会でセリフを覚え、堂々と話すことができるようにする。\n（得意なこと・好きなことから、さらに伸ばしたい力を書きます）",
- seiro_complement:"・友達との関わりで、優しい言葉が増える。\n（苦手なこと・困っていることから、補いたい力を書きます）",
+ strengthen:"・発表会でセリフを覚え、堂々と話すことができるようにする。\n（得意なこと・好きなことから、さらに伸ばしたい力を書きます）",
+ complement:"・友達との関わりで、優しい言葉が増える。\n（苦手なこと・困っていることから、補いたい力を書きます）",
  selfcare:"・朝の支度は、予定表を見ながら進められることが増えました",
  speech:"・気持ちが高ぶったときは、ことばで伝えにくいことがあります。絵カードがあると伝えやすいです",
  academics:"・漢字の書きは、1年生の内容から復習しています。文章を読む力は伸びています",
- period_note:"・前期は、落ち着いて話せる場面が増えました。後期は、自分から気持ちを伝える機会をふやします"
+ period_note:"・前期は、落ち着いて話せる場面が増えました。後期は、自分から気持ちを伝える機会をふやします",
+ support_history:"・年長時に療育センターへ相談し、週1回の個別指導を受けてきました\n・小1から通級指導教室で、週1回ことばの指導を受けています",
+ related_agencies:"・療育センター（月1回・経過観察）\n・こどもクリニック（3か月に1回受診）\n・放課後等デイサービス（週2回利用）",
+ conference_memo:"・支援会議（○月○日）：切り替えの支援について、予定表の提示を学級と通級で統一することを確認しました",
+ community_support:"・地域の子ども会の活動に、保護者と一緒に参加しています\n・登下校は、見守り隊の声かけを受けながら安全に歩けています",
+ welfare_support:"・放課後等デイサービスを週2回利用し、集団活動や宿題に取り組んでいます\n・相談支援専門員と、学期ごとに支援の振り返りを行っています",
+ effective_supports:"・活動の前に予定表を示すことと、終わりをタイマーで知らせることが有効でした\n・できたことをその場で具体的にほめることで、次の活動への意欲につながりました",
+ episode:"・運動会の練習では、全体の見通しを先に伝えたことで、最後まで参加できました\n・友だちと行き違いがあった場面では、気持ちを聞き取ると落ち着いて話せました",
+ handover_to:"・次年度も、予定表による見通しの提示と、切り替え時のタイマー使用を継続してください\n・気持ちが高ぶったときは、落ち着ける場所を本人が選べるようにしてください"
 };
+
+/* ===== v47: 指導表セル用の記入例 ===== */
+var TABLE_SAMPLES={
+ fact:"・見通しのある活動には集中して取り組めます。急な変更があると不安が高まり、動けなくなることがあります",
+ goal:"・予定表を見て、自分で次の活動に切り替えることができる",
+ method:"・活動の前に予定表を一緒に確認します。変更があるときは、理由と代わりの予定を先に伝えます",
+ eval:"・予定表を見て切り替えられる場面が増えました。週1回の記録で見取ります"
+};
+
+/* ===== v47: AI入力支援（Gemini・任意） ===== */
+var GEM_KEY_LS="kobetsu_gemini_key";
+function gemKey(){try{return localStorage.getItem(GEM_KEY_LS)||"";}catch(e){return "";}}
+function setGemKey(v){try{if(v)localStorage.setItem(GEM_KEY_LS,v);else localStorage.removeItem(GEM_KEY_LS);}catch(e){}}
+function anonymizeText(text,p){
+  var t=String(text||"");if(!p||!p.data)return t;
+  [p.data.child_name,p.data.child_furigana].forEach(function(n){if(n&&String(n).trim())t=t.split(String(n)).join("本児");});
+  return t;
+}
+function planContextText(p){
+  var d=(p&&p.data)||{},lines=[];
+  [["profile_strengths","得意なこと・強み"],["profile_needs","苦手なこと・困難さ"],["child_wish","本人の願い"],["guardian_wish","保護者の願い"],["support_long_goal","支援の長期目標"],["guidance_long_goal","指導の長期目標"]].forEach(function(pr){
+    var v=String(d[pr[0]]||"").trim();if(v)lines.push("【"+pr[1]+"】"+v);
+  });
+  return anonymizeText(lines.join("\n"),p);
+}
+function aiPromptBase(){
+  return "あなたは特別支援教育に詳しいベテラン教師です。個別の教育支援計画・個別の指導計画の文章の下書きを作成してください。\n条件：保護者や支援委員会に見せられる、丁寧で具体的な文面にすること。否定的な表現は避け、事実と手立てを中心に書くこと。1文は短くし、必要に応じて回数・時間・場面などの具体的な基準を含めること。箇条書き（・で始める）で3〜5行程度。前置きや説明は付けず、本文だけを出力すること。児童生徒の名前は使わず「本児」とすること。\n";
+}
+function aiPromptForField(p,k){
+  var cur=anonymizeText(String((p.data||{})[k]||""),p),ctx=planContextText(p);
+  return aiPromptBase()+"作成する項目：「"+(FM[k]||k)+"」\n"+(ctx?"参考情報：\n"+ctx+"\n":"")+(cur?"現在の記入内容（これを土台に整えてください）：\n"+cur:"");
+}
+function aiPromptForCell(p,rowName,c){
+  var ctx=planContextText(p);
+  return aiPromptBase()+"作成する欄：個別の指導計画の指導表。領域「"+(rowName||"")+"」の「"+(COL[c]||c)+"」の欄です。\n"+(ctx?"参考情報：\n"+ctx:"");
+}
+async function geminiDraft(prompt){
+  var key=gemKey();if(!key)throw new Error("NOKEY");
+  var res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6}})});
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  var j=await res.json(),parts=(((j.candidates||[])[0]||{}).content||{}).parts||[];
+  var out=parts.map(function(x){return x.text||"";}).join("").trim();
+  if(!out)throw new Error("EMPTY");
+  return out;
+}
+function openAiDraft(p,k){
+  var box=$("draft-"+k);if(!box)return;box.hidden=false;
+  if(!gemKey()){box.innerHTML='<b>AIで下書き</b><br><span class="small muted">Gemini APIキーが未設定です。「データ管理」画面の「AI入力支援」でキーを保存すると使えます。キーなしでも、文例と文例ライブラリはそのまま使えます。</span>';return;}
+  box.innerHTML='<span class="small muted">AIが下書きを考えています…</span>';
+  geminiDraft(aiPromptForField(p,k)).then(function(txt){
+    box.innerHTML="<b>AIの下書き（要確認・修正）</b><br>"+esc(txt)+'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="aigen-apply-'+k+'">この下書きを反映</button> <span class="small muted">そのまま使わず、事実と自分の言葉に直してな</span></div>';
+    $("aigen-apply-"+k).onclick=function(){p.data[k]=txt;var ta=$("fld-"+k);if(ta)ta.value=txt;touch();liveWarn(k,txt);toast("AIの下書きを反映したで（要確認・修正）");};
+  }).catch(function(e){box.innerHTML='<span class="small muted">AIの下書きに失敗しました（'+esc(e.message)+"）。キーと通信環境を確認してな。</span>";});
+}
+function openCellAssist(p,period,i,c,arr,g,box){
+  if(!box)return;box.hidden=false;
+  var rowName=(arr[i]&&arr[i].name)||"",sample=TABLE_SAMPLES[c]||"";
+  function apply(txt){arr[i][c]=txt;var ta=g.querySelector('textarea[data-r="'+i+'"][data-c="'+c+'"]');if(ta)ta.value=txt;touch();toast("文例を反映したで（要確認・修正）");}
+  var html="<b>"+esc(rowName)+"／"+(COL[c]||c)+" の記入例</b><br>"+esc(sample)
+    +'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="cell-apply">この記入例を反映</button>'
+    +(gemKey()?' <button class="b-ghost b-sm" id="cell-ai">🤖 AIでこの欄を書く</button>':"")
+    +' <span class="small muted">そのまま使わず、自分の言葉に直してな</span></div>'
+    +'<div class="small muted" style="margin-top:.35rem">※ 記入の観点は文部科学省「個別の教育支援計画の参考様式」（令和3年6月）などを参考にしています。文例はこのアプリ独自の文章です。</div>';
+  box.innerHTML=html;
+  box.querySelector("#cell-apply").onclick=function(){apply(sample);};
+  var aiBtn=box.querySelector("#cell-ai");
+  if(aiBtn)aiBtn.onclick=function(){
+    box.innerHTML='<span class="small muted">AIが下書きを考えています…</span>';
+    geminiDraft(aiPromptForCell(p,rowName,c)).then(function(txt){
+      box.innerHTML="<b>AIの下書き（"+esc(rowName)+"／"+(COL[c]||c)+"）</b><br>"+esc(txt)
+        +'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="cell-apply2">この下書きを反映</button> <span class="small muted">そのまま使わず、事実と自分の言葉に直してな</span></div>';
+      box.querySelector("#cell-apply2").onclick=function(){apply(txt);};
+    }).catch(function(e){box.innerHTML='<span class="small muted">AIの下書きに失敗しました（'+esc(e.message)+"）。</span>";});
+  };
+}
+
 
 /* ===== メモ→振り分けのルール ===== */
 var RULES=[
@@ -1122,7 +1239,7 @@ var RECOVERY_PENDING=null;
 var RECOVERY_BLOCKED=false;
 var UNSAVED_CHANGES=false;
 var RECOVERY_BLOCK_REASON="";
-var EMPTY_STATE={plans:[],cur:null,step:0,memo:"",sort:[],fs:"md",templates:[],maps:{},formId:"mext_support",soft:{in:"",out:null},schemaVersion:APP_SCHEMA_VERSION};
+var EMPTY_STATE={plans:[],cur:null,step:0,memo:"",sort:[],fs:"md",templates:[],tplProfiles:[],maps:{},formId:"mext_support",soft:{in:"",out:null},schemaVersion:APP_SCHEMA_VERSION};
 var S=normalizeState(load()||EMPTY_STATE);
 function makePlanId(prefix){return (prefix||"p")+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,9);}
 function blankTableRow(name){return {name:name||"",fact:"",goal:"",method:"",eval:""};}
@@ -1143,6 +1260,8 @@ function academicYearFromDate(value){
   return d.getMonth()>=3?d.getFullYear():d.getFullYear()-1;
 }
 function currentAcademicYear(){return academicYearFromDate(new Date());}
+/* v47: 旧名称の呼び出し（renderHome/seed）が残っていたため補完。実体は academicYearFromDate。 */
+function schoolYearForDate(value){return academicYearFromDate(value==null?new Date():value);}
 function normalizePlan(p,seen){
   p=(p&&typeof p==="object")?p:{};
   if(!p.id||seen&&seen[p.id])p.id=makePlanId("p");
@@ -1156,6 +1275,13 @@ function normalizePlan(p,seen){
     p.school_year=inferredYear||currentAcademicYear();
   }
   p.school_year=Number(p.school_year)||currentAcademicYear();
+  /* v47: 項目キー改名（旧・自治体様式専用キー → 汎用キー）に伴う保存データの移行 */
+  if(p.data&&typeof p.data==="object"){
+    if(p.data.seiro_strengthen!=null&&p.data.strengthen==null)p.data.strengthen=p.data.seiro_strengthen;
+    if(p.data.seiro_complement!=null&&p.data.complement==null)p.data.complement=p.data.seiro_complement;
+    if("seiro_strengthen" in p.data)delete p.data.seiro_strengthen;
+    if("seiro_complement" in p.data)delete p.data.seiro_complement;
+  }
   if(!p.code)p.code="S-"+p.school_year+"-001";
   if(p.grade==null)p.grade="";
   if(p.class_type==null)p.class_type="特別支援学級";
@@ -1227,7 +1353,7 @@ function normalizeState(raw){
   var out={};Object.keys(EMPTY_STATE).forEach(function(k){
     var v=st[k];
     if(v!==undefined){out[k]=v;return;}
-    if(k==="plans"||k==="sort"||k==="templates")out[k]=[];
+    if(k==="plans"||k==="sort"||k==="templates"||k==="tplProfiles")out[k]=[];
     else if(k==="maps")out[k]={};
     else if(k==="soft")out[k]={in:"",out:null};
     else out[k]=EMPTY_STATE[k];
@@ -1240,8 +1366,14 @@ function normalizeState(raw){
   out.step=Math.max(0,Math.min(STEPS.length-1,Math.floor(out.step)));
   if(!Array.isArray(out.sort))out.sort=[];
   if(!Array.isArray(out.templates))out.templates=[];
+  if(!Array.isArray(out.tplProfiles))out.tplProfiles=[];
   if(!out.maps||typeof out.maps!=="object"||Array.isArray(out.maps))out.maps={};
   if(!out.soft||typeof out.soft!=="object")out.soft={in:"",out:null};
+  /* v47: 内蔵様式のID改名に伴う移行 */
+  var FMT_IDMAP={"seiro_support":"localfmt_support","seiro_guidance_pre":"localfmt_guidance_pre","seiro_guidance_post":"localfmt_guidance_post","seiro_both":"localfmt_both"};
+  if(out.formId&&FMT_IDMAP[out.formId])out.formId=FMT_IDMAP[out.formId];
+  out.templates.forEach(function(t){if(t&&FMT_IDMAP[t.id])t.id=FMT_IDMAP[t.id];});
+  Object.keys(out.maps).forEach(function(k){if(FMT_IDMAP[k]){if(out.maps[FMT_IDMAP[k]]===undefined)out.maps[FMT_IDMAP[k]]=out.maps[k];delete out.maps[k];}});
   out.schemaVersion=APP_SCHEMA_VERSION;
   return out;
 }
@@ -1690,7 +1822,7 @@ $("btnSoftPrint").onclick=function(){window.print();};
 
 /* ===== ウィザード ===== */
 function stepFilled(p,s){
-  if(s.id==="seiro_setup")return !!(p.data&&(p.data.child_name||p.data.child_wish||p.data.seiro_strengthen));
+  if(s.id==="localfmt_setup")return !!(p.data&&(p.data.child_name||p.data.child_wish||p.data.strengthen));
   if(s.id==="table")return (p.table||[]).some(hasTblRow);
   if(s.id==="table2")return (p.table2||[]).some(hasTblRow);
   return s.keys.some(function(k){
@@ -1720,7 +1852,7 @@ function renderWizard(){
     rail.appendChild(b);
   });
   var st=STEPS[S.step],body=$("wizBody");body.innerHTML="";
-  if(st.id==="seiro_setup"){renderSeiroStep(body,p);return;}
+  if(st.id==="localfmt_setup"){renderLocalFmtStep(body,p);return;}
   if(st.id==="table"){renderTable(body,p,"前期");return;}
   if(st.id==="table2"){renderTable(body,p,"後期");return;}
   if(st.id==="personal")body.appendChild(el("div","piinote","🔒 ここは個人情報や。印刷のときだけ使って、AIには送らへん。"));
@@ -1737,6 +1869,7 @@ function renderWizard(){
             +'<button class="b-ghost b-sm" data-soft="'+k+'">配慮して言い換え</button>'
             +'<button class="b-ghost b-sm" data-send="'+k+'">配慮した文面の画面へ</button>'
             +'<button class="b-ghost b-sm" data-lib="'+k+'">🔍 文例を探す</button>'
+            +'<button class="b-ghost b-sm" data-aigen="'+k+'">🤖 AIで下書き</button>'
             +'<span class="warnline" id="w-'+k+'"></span></div>'
             +'<div class="draftbox" id="draft-'+k+'" hidden></div>':"");
     body.appendChild(d);
@@ -1754,7 +1887,7 @@ function renderWizard(){
       var k=b.dataset.ai,txt=AI_SAMPLES[k]||"・（文例：実際のアプリでは匿名化した情報から生成します）";
       var box=$("draft-"+k);box.hidden=false;
       box.innerHTML="<b>文例（保護者・委員会に見せられる表現）</b><br>"+esc(txt)
-        +'<div style="margin-top:.5rem"><button class="b-primary b-sm" data-apply="'+k+'">この文例を反映</button> <span class="small muted">そのまま使わず、自分の言葉に直してな</span></div>';
+        +'<div style="margin-top:.5rem"><button class="b-primary b-sm" data-apply="'+k+'">この文例を反映</button> <span class="small muted">そのまま使わず、自分の言葉に直してな</span></div><div class="small muted" style="margin-top:.35rem">※ 記入の観点は文部科学省「個別の教育支援計画の参考様式」（令和3年6月）などを参考にしています。文例はこのアプリ独自の文章です。</div>';
       box.querySelector("[data-apply]").onclick=function(){p.data[k]=txt;$("fld-"+k).value=txt;touch();liveWarn(k,txt);toast("文例を反映したで（要確認・修正）");};
     };
   });
@@ -1771,6 +1904,9 @@ function renderWizard(){
   });
   body.querySelectorAll("[data-lib]").forEach(function(b){
     b.onclick=function(){LIBF={q:"",dis:{},scene:{},stage:{},field:b.dataset.lib};save(true);go("library");};
+  });
+  body.querySelectorAll("[data-aigen]").forEach(function(b){
+    b.onclick=function(){openAiDraft(p,b.dataset.aigen);};
   });
   body.querySelectorAll("[data-send]").forEach(function(b){
     b.onclick=function(){var k=b.dataset.send;S.soft={in:p.data[k]||"",out:null};save(true);go("soften");
@@ -1803,7 +1939,16 @@ function renderTable(body,p,period){
       +'<textarea data-r="'+i+'" data-c="eval" placeholder="評価">'+esc(r.eval||"")+"</textarea>";
     g.appendChild(t);
   });
+  arr.forEach(function(r,i){
+    var ab=el("div","airow");
+    ab.innerHTML=["fact","goal","method","eval"].map(function(c){return '<button class="b-ghost b-sm" data-cell="'+i+":"+c+'">'+COL[c]+"✨</button>";}).join("");
+    g.appendChild(ab);
+  });
   body.appendChild(g);
+  var tbox=el("div","draftbox");tbox.id="tbldraft-"+period;tbox.hidden=true;body.appendChild(tbox);
+  g.querySelectorAll("[data-cell]").forEach(function(b){
+    b.onclick=function(){var pr=b.dataset.cell.split(":");openCellAssist(p,period,+pr[0],pr[1],arr,g,tbox);};
+  });
   var bar=el("div","row mt");
   bar.innerHTML='<button class="b-ghost b-sm" id="addT">＋ 行を追加</button>'+(arr.length>1?'<button class="b-ghost b-sm" id="delT">最後の行を消す</button>':"");
   body.appendChild(bar);
@@ -1816,6 +1961,254 @@ $("btnNext").onclick=function(){if(S.step<STEPS.length-1){S.step++;save(true);re
 $("btnPrev").onclick=function(){if(S.step>0){S.step--;save(true);renderWizard();}};
 $("btnSave").onclick=function(){flushQueuedSave();if(save())toast("下書きを保存しました");};
 $("btnJumpCheck").onclick=function(){go("check");runCheck();};
+
+/* ===== v47: AIキー設定の配線 ===== */
+(function(){
+  var inp=$("gemKeyInput"),st=$("gemKeyState");if(!inp||!st)return;
+  function refresh(){st.textContent=gemKey()?"キーは保存済みです（このブラウザ内のみ）。":"キーは未設定です。AIで下書きはキー設定後に使えます。";}
+  if(gemKey())inp.placeholder="保存済み（変更する場合だけ入力）";
+  refresh();
+  $("btnGemKeySave").onclick=function(){var v=inp.value.trim();if(!v){toast("キーを入力してな");return;}setGemKey(v);inp.value="";inp.placeholder="保存済み（変更する場合だけ入力）";refresh();toast("キーを保存したで");};
+  $("btnGemKeyClear").onclick=function(){setGemKey("");inp.value="";inp.placeholder="Gemini APIキー";refresh();toast("キーを消したで");};
+})();
+
+/* ===== v47: 様式テンプレート差し込み（結合セル対応） =====
+   自治体の .xlsx を土台に、結合範囲の左上セルへ値を書き込み、
+   結合・罫線・印刷設定を保持したまま書き出す。 */
+var TPLENG=null;
+function colLetters(n){var s="";n=Number(n)+1;while(n>0){var r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26);}return s;}
+function rcToRef(r,c){return colLetters(c)+(r+1);}
+function refToRC(ref){var m=String(ref||"").match(/^([A-Z]+)(\d+)$/i);if(!m)return null;var n=0;for(var i=0;i<m[1].length;i++)n=n*26+(m[1].toUpperCase().charCodeAt(i)-64);return {r:Number(m[2])-1,c:n-1};}
+function xmlEsc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+var TPL_SYNONYMS=[
+ ["児童生徒氏名","child_name"],["氏名","child_name"],["名前","child_name"],["ふりがな","child_furigana"],["フリガナ","child_furigana"],
+ ["学校名","school"],["学級","class_type"],["在籍形態","class_type"],["学年","grade"],["年度","school_year"],["管理番号","child_code"],
+ ["生年月日","birth_date"],["住所","address"],["電話番号","tel"],["電話","tel"],["保護者氏名","guardian_name"],["緊急連絡先","emergency"],
+ ["記入日","written_date"],["記入者","writer"],["得意なこと","profile_strengths"],["好きなこと","profile_strengths"],["強み","profile_strengths"],
+ ["苦手なこと","profile_needs"],["困難","profile_needs"],["本人の願い","child_wish"],["願い","child_wish"],["保護者の願い","guardian_wish"],
+ ["生育歴","history"],["教育歴","edu_history"],["発達検査","dev_test"],["長期目標","support_long_goal"],["短期目標","short_goal_1"],
+ ["支援の内容","supports"],["支援内容","supports"],["手立て","supports"],["評価","eval_method"],["学校における支援","school_support"],
+ ["家庭での支援","family_support"],["関係機関","related_agencies"],["引継ぎ","eval_handover"],["伸ばしたい力","strengthen"],["補いたい力","complement"],
+ ["実態","profile_needs"],["確認日","consent_date"],["了承日","consent_date"],["モニタリング","eval_method"],["日常生活","selfcare"],["身辺自立","selfcare"],["言葉","speech"],["コミュニケーション","speech"],["学習","academics"],["国語","academics"],["算数","academics"]
+];
+function tplSignature(entries){var s=entries.map(function(e){return e.labelRef+":"+e.text;}).join("|");var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;}return "sig"+(h>>>0).toString(16);}
+async function tplParse(buf){
+  var files=await unzipXlsx(buf);
+  var wb=xmlDoc(files["xl/workbook.xml"]),relsDoc=xmlDoc(files["xl/_rels/workbook.xml.rels"]),relMap={};
+  Array.from(relsDoc.getElementsByTagName("Relationship")).forEach(function(r){relMap[r.getAttribute("Id")]=r.getAttribute("Target");});
+  var shared=parseSharedStrings(files),styleInfo=parseStyles(files);
+  var sheets=[];
+  Array.from(wb.getElementsByTagName("sheet")).forEach(function(sh){
+    var rid=sh.getAttribute("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")||sh.getAttribute("r:id");
+    var target=relMap[rid];if(!target)return;
+    target=target.replace(/^\//,"");if(target.indexOf("../")===0)target=target.replace(/^\.\.\//,"");
+    if(target.indexOf("xl/")!==0)target="xl/"+target.replace(/^xl\//,"");
+    if(files[target])sheets.push({name:sh.getAttribute("name"),path:target});
+  });
+  if(!sheets.length)throw new Error("シートが見つかりませんでした");
+  return {files:files,sheets:sheets,shared:shared,styleInfo:styleInfo};
+}
+function tplAnalyze(eng,sheet){
+  var xml=bytesText(eng.files[sheet.path]);
+  var merges=[];
+  var mm=xml.match(/<mergeCell[^>]*ref="([^"]+)"[^>]*>/g)||[];
+  mm.forEach(function(tag){var ref=(tag.match(/ref="([^"]+)"/)||[])[1];if(!ref)return;var parts=ref.split(":");var a=refToRC(parts[0]),b=refToRC(parts[1]||parts[0]);if(a&&b)merges.push({r1:a.r,c1:a.c,r2:b.r,c2:b.c,tl:parts[0].toUpperCase()});});
+  function rangeOf(r,c){for(var i=0;i<merges.length;i++){var g=merges[i];if(r>=g.r1&&r<=g.r2&&c>=g.c1&&c<=g.c2)return g;}return null;}
+  var rows=parseSheetXml(eng.files[sheet.path],eng.shared,eng.styleInfo.ids,eng.styleInfo.dateFmts);
+  var grid={};
+  rows.forEach(function(row,r){(row||[]).forEach(function(v,c){if(v!=null&&String(v).trim())grid[rcToRef(r,c)]=String(v);});});
+  /* 値が入っているセル＝欄名候補。その右（または下）にある最初の空き領域を記入セルとする */
+  var labelRefs=Object.keys(grid);
+  function isLabelText(t){return String(t||"").trim().length>0&&String(t).trim().length<=30;}
+  function findRight(lr,lc){
+    var g=rangeOf(lr,lc),startC=(g?g.c2:lc)+1,startR=g?g.r1:lr,passed=0;
+    for(var c=startC;c<startC+32;c++){
+      var ref=rcToRef(startR,c),gg=rangeOf(startR,c);
+      var candRef=gg?gg.tl:ref;
+      if(labelRefs.indexOf(candRef)>=0){passed++;continue;}
+      if(grid[candRef]&&isLabelText(grid[candRef])){passed++;continue;}
+      return {ref:candRef,passed:passed,merged:!!gg};
+    }
+    return null;
+  }
+  function findBelow(lr,lc){
+    var g=rangeOf(lr,lc),downR=(g?g.r2:lr)+1,downC=g?g.c1:lc;
+    for(var r=downR;r<downR+16;r++){
+      var ref2=rcToRef(r,downC),g2=rangeOf(r,downC);
+      var cand2=g2?g2.tl:ref2;
+      if(labelRefs.indexOf(cand2)>=0)continue;
+      if(grid[cand2]&&isLabelText(grid[cand2]))continue;
+      var area=g2?(g2.r2-g2.r1+1)*(g2.c2-g2.c1+1):1;
+      return {ref:cand2,merged:!!g2,area:area,aligned:cand2===rcToRef(r,downC)};
+    }
+    return null;
+  }
+  /* 行ごとの「欄名らしいセル」の数（見出し行の判定に使う） */
+  var rowLabelCount={};
+  labelRefs.forEach(function(ref){var rc=refToRC(ref);if(isLabelText(grid[ref]))rowLabelCount[rc.r]=(rowLabelCount[rc.r]||0)+1;});
+  function findTarget(lr,lc){
+    var right=findRight(lr,lc),below=findBelow(lr,lc);
+    /* 見出し行（同じ行に欄名が3つ以上）：値欄は真下とみなす */
+    if((rowLabelCount[lr]||0)>=3&&below)return below.ref;
+    /* 真下に、欄名と同じ列から始まる結合記入欄があり、右は素の空きセルのとき：縦配置様式とみなして真下を優先 */
+    if(below&&below.aligned&&below.merged&&below.area>=2&&right&&!right.merged)return below.ref;
+    if(right)return right.ref;
+    if(below)return below.ref;
+    return null;
+  }
+  var entries=[];
+  labelRefs.forEach(function(ref){
+    var rc=refToRC(ref),text=grid[ref];
+    if(!isLabelText(text))return;
+    var ownRange=rangeOf(rc.r,rc.c);
+    if(ownRange&&(ownRange.c2-ownRange.c1+1)>=4)return; /* 全幅のタイトル帯は欄名にしない */
+    var target=findTarget(rc.r,rc.c);
+    if(!target)return;
+    var field="";
+    var norm=text.replace(/[【】〈〉（）()：:・\s]/g,"");
+    var synSorted=TPL_SYNONYMS.slice().sort(function(x,y){return y[0].length-x[0].length;});
+    for(var i=0;i<synSorted.length;i++){
+      var syn=synSorted[i][0].replace(/[【】〈〉（）()：:・\s]/g,"");
+      if(norm===syn||norm.indexOf(syn)>=0){field=synSorted[i][1];break;}
+    }
+    if(!field){var fl=Object.keys(FM);for(var j=0;j<fl.length;j++){var lab=String(FM[fl[j]]).replace(/[【】〈〉（）()：:・\s]/g,"");if(lab&&(norm.indexOf(lab)>=0||lab.indexOf(norm)>=0)&&lab.length>=2){field=fl[j];break;}}}
+    entries.push({labelRef:ref,text:text,target:target,field:field});
+  });
+  entries.sort(function(a,b){var x=refToRC(a.labelRef),y=refToRC(b.labelRef);return x.r-y.r||x.c-y.c;});
+  return {sheetPath:sheet.path,sheetName:sheet.name,merges:merges,grid:grid,entries:entries,sig:tplSignature(entries)};
+}
+function tplRenderMap(){
+  var area=$("tplMapArea");if(!area||!TPLENG)return;
+  if(!TPLENG.entries.length){area.innerHTML='<p class="small muted">欄名らしいセルが見つかりませんでした。様式の構造を確認してください。</p>';return;}
+  var opts=function(sel){var o='<option value="">（未割当）</option>';Object.keys(FM).forEach(function(k){o+='<option value="'+k+'"'+(k===sel?" selected":"")+">"+esc(FM[k])+"</option>";});return o;};
+  var h='<div class="small muted" style="margin-bottom:.4rem">欄名 '+TPLENG.entries.length+' 件を検出しました。差し込み先が合っているか確認してください（結合欄は左上のセルに書き込みます）。</div>';
+  h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.85rem"><tr><th style="text-align:left;padding:.3rem">様式の欄名</th><th style="text-align:left;padding:.3rem">差し込み先</th><th style="text-align:left;padding:.3rem">このアプリの項目</th></tr>';
+  var dupCount={};TPLENG.entries.forEach(function(e){dupCount[e.target]=(dupCount[e.target]||0)+1;});
+  TPLENG.entries.forEach(function(e,i){
+    var dup=dupCount[e.target]>1;
+    h+='<tr style="border-top:1px solid var(--line)"><td style="padding:.3rem">'+esc(e.text)+' <span class="muted">('+e.labelRef+')</span></td><td style="padding:.3rem"><input type="text" data-tpl-target="'+i+'" value="'+e.target+'" style="width:64px;text-transform:uppercase" aria-label="差し込み先セル">'+(dup?' <span style="color:var(--warn,#b0701a)" title="他の欄と同じセルを指しています">⚠重なり</span>':"")+'</td><td style="padding:.3rem"><select data-tpl-field="'+i+'" style="max-width:260px">'+opts(e.field)+"</select></td></tr>";
+  });
+  h+="</table></div>";
+  area.innerHTML=h;
+  area.querySelectorAll("[data-tpl-field]").forEach(function(sel){sel.onchange=function(){TPLENG.entries[+sel.dataset.tplField].field=sel.value;};});
+  area.querySelectorAll("[data-tpl-target]").forEach(function(inp){inp.onchange=function(){
+    var v=inp.value.trim().toUpperCase();
+    if(refToRC(v)){TPLENG.entries[+inp.dataset.tplTarget].target=v;inp.value=v;tplRenderMap();}
+    else{inp.value=TPLENG.entries[+inp.dataset.tplTarget].target;toast("セル番地の形で入れてな（例：C5）");}
+  };});
+}
+function tplSetCell(xml,ref,value){
+  var rc=refToRC(ref);if(!rc)return xml;
+  var rowNum=rc.r+1;
+  var escVal=xmlEsc(value);
+  var styleAttr="";
+  var rowStart=xml.indexOf('<row r="'+rowNum+'"');
+  if(rowStart<0){
+    var newRow='<row r="'+rowNum+'"><c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+escVal+"</t></is></c></row>";
+    var sdEnd=xml.indexOf("</sheetData>");
+    if(sdEnd<0)return xml;
+    /* 行番号順になる位置へ挿入 */
+    var insertAt=sdEnd,rm=new RegExp('<row r="(\\d+)"','g'),m2;
+    while((m2=rm.exec(xml))!==null){if(Number(m2[1])>rowNum){insertAt=m2.index;break;}}
+    return xml.slice(0,insertAt)+newRow+xml.slice(insertAt);
+  }
+  var rowTagEnd=xml.indexOf(">",rowStart);
+  var selfClose=xml.slice(rowStart,rowTagEnd+1).indexOf("/>")>=0;
+  var rowEnd=selfClose?rowTagEnd+1:xml.indexOf("</row>",rowStart)+6;
+  var rowXml=xml.slice(rowStart,rowEnd);
+  var cellRe=new RegExp('<c r="'+ref+'"[^>]*?(?:/>|>[\\s\\S]*?</c>)');
+  var cm=rowXml.match(cellRe);
+  var newCell;
+  if(cm){
+    var sm=cm[0].match(/\ss="([^"]*)"/);if(sm)styleAttr=' s="'+sm[1]+'"';
+    newCell='<c r="'+ref+'"'+styleAttr+' t="inlineStr"><is><t xml:space="preserve">'+escVal+"</t></is></c>";
+    rowXml=rowXml.replace(cellRe,newCell);
+  }else{
+    newCell='<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+escVal+"</t></is></c>";
+    if(selfClose){rowXml=rowXml.replace(/\/>$/,"").replace(/>$/,">")+newCell+"</row>";}
+    else{
+      var cellsRe=/<c r="([A-Z]+)(\d+)"/g,m3,insertPos=rowXml.length-6;
+      while((m3=cellsRe.exec(rowXml))!==null){var cc=refToRC(m3[1]+m3[2]);if(cc&&(cc.c>rc.c)){insertPos=m3.index;break;}}
+      rowXml=rowXml.slice(0,insertPos)+newCell+rowXml.slice(insertPos);
+    }
+  }
+  return xml.slice(0,rowStart)+rowXml+xml.slice(rowEnd);
+}
+function zipStoreBytes(files){
+  var parts=[],central=[],offset=0,enc=new TextEncoder();
+  files.forEach(function(f){
+    var name=enc.encode(f[0]),data=f[1],crc=crc32(data);
+    var local=new Uint8Array(30+name.length),dv=new DataView(local.buffer);
+    dv.setUint32(0,0x04034b50,true);dv.setUint16(4,20,true);dv.setUint16(6,0x0800,true);dv.setUint16(8,0,true);
+    dv.setUint16(10,0,true);dv.setUint16(12,0,true);dv.setUint32(14,crc,true);dv.setUint32(18,data.length,true);
+    dv.setUint32(22,data.length,true);dv.setUint16(26,name.length,true);dv.setUint16(28,0,true);local.set(name,30);
+    parts.push(local,data);
+    var cen=new Uint8Array(46+name.length),cv=new DataView(cen.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);
+    cv.setUint16(10,0,true);cv.setUint16(12,0,true);cv.setUint16(14,0,true);cv.setUint32(16,crc,true);
+    cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,name.length,true);
+    cv.setUint32(42,offset,true);cen.set(name,46);central.push(cen);offset+=local.length+data.length;
+  });
+  var cdSize=central.reduce(function(a,b){return a+b.length;},0);
+  var end=new Uint8Array(22),ev=new DataView(end.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+  ev.setUint32(12,cdSize,true);ev.setUint32(16,offset,true);
+  var all=parts.concat(central,[end]),total=all.reduce(function(a,b){return a+b.length;},0),out=new Uint8Array(total),pos=0;
+  all.forEach(function(p){out.set(p,pos);pos+=p.length;});
+  return new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+async function tplLoadFile(file){
+  var msg=$("tplMsg");
+  try{
+    var buf=new Uint8Array(await file.arrayBuffer());
+    var parsed=await tplParse(buf);
+    TPLENG={files:parsed.files,sheets:parsed.sheets,shared:parsed.shared,styleInfo:parsed.styleInfo,fileName:file.name};
+    var sel=$("tplSheet");
+    if(parsed.sheets.length>1){sel.hidden=false;sel.innerHTML=parsed.sheets.map(function(s,i){return '<option value="'+i+'">'+esc(s.name)+"</option>";}).join("");sel.onchange=function(){tplApplySheet(parsed.sheets[+sel.value]);};}
+    else sel.hidden=true;
+    $("tplFileName").textContent=file.name;
+    tplApplySheet(parsed.sheets[0]);
+  }catch(e){if(msg)msg.textContent="様式を読み込めませんでした："+e.message;}
+}
+function tplApplySheet(sheet){
+  var a=tplAnalyze(TPLENG,sheet);
+  TPLENG.sheetPath=a.sheetPath;TPLENG.sheetName=a.sheetName;TPLENG.merges=a.merges;TPLENG.grid=a.grid;TPLENG.entries=a.entries;TPLENG.sig=a.sig;
+  var prof=(S.tplProfiles||[]).filter(function(x){return x.sig===a.sig;})[0];
+  if(prof){prof.mapping.forEach(function(m){var e=TPLENG.entries.filter(function(x){return x.labelRef===m.labelRef;})[0];if(e){e.field=m.field;if(m.target&&refToRC(m.target))e.target=m.target;}});}
+  tplRenderMap();
+  $("tplActions").hidden=false;
+  if(prof)$("tplProfileName").value=prof.name||"";
+  $("tplMsg").textContent="シート「"+a.sheetName+"」を解析しました。結合セル "+a.merges.length+" 件。"+(prof?"保存済みの対応づけ（"+prof.name+"）を適用しました。":"");
+}
+function tplExport(){
+  var p=cur();if(!p){toast("計画を選んでな");return;}
+  if(!TPLENG||!TPLENG.entries){toast("様式を読み込んでな");return;}
+  var xml=bytesText(TPLENG.files[TPLENG.sheetPath]),n=0;
+  TPLENG.entries.forEach(function(e){
+    if(!e.field)return;
+    var v=valueFor(p,e.field);
+    if(v==null||!String(v).trim())return;
+    xml=tplSetCell(xml,e.target,String(v));n++;
+  });
+  if(!n){toast("差し込む内容がありません");return;}
+  var enc=new TextEncoder();
+  var files=Object.keys(TPLENG.files).map(function(name){return [name,name===TPLENG.sheetPath?enc.encode(xml):TPLENG.files[name]];});
+  download((p.code||"plan")+"_様式.xlsx",zipStoreBytes(files));
+  toast("様式に差し込んで書き出したで（"+n+"件）");
+}
+(function(){
+  var f=$("tplFile");if(!f)return;
+  f.addEventListener("change",function(){if(f.files&&f.files[0])tplLoadFile(f.files[0]);f.value="";});
+  var ex=$("btnTplExport");if(ex)ex.onclick=tplExport;
+  var sv=$("btnTplSaveProfile");
+  if(sv)sv.onclick=function(){
+    if(!TPLENG){toast("様式を読み込んでな");return;}
+    var name=($("tplProfileName").value||"").trim()||TPLENG.fileName||"様式";
+    S.tplProfiles=(S.tplProfiles||[]).filter(function(x){return x.sig!==TPLENG.sig;});
+    S.tplProfiles.push({id:"tp"+Date.now().toString(36),name:name,fileName:TPLENG.fileName,sheetName:TPLENG.sheetName,sig:TPLENG.sig,mapping:TPLENG.entries.map(function(e){return {labelRef:e.labelRef,field:e.field,target:e.target};})});
+    save(true);toast("対応づけを保存したで："+name);
+  };
+})();
 
 /* ===== チェック ===== */
 var CHECKFILT="all",CHECKRESULT=null;
@@ -1907,7 +2300,7 @@ function renderPaper(){
   var h='<div class="paper"><h2>個別の指導計画・教育支援計画</h2>'
    +'<div class="meta"><span><b>管理番号</b>'+esc(p.code||"")+"</span><span><b>学年</b>"+esc(p.grade||"")
    +"</span><span><b>在籍形態</b>"+esc(p.class_type||"")+"</span><span><b>学校名</b>"+esc(p.school||"")+"</span></div>";
-  h+=sec("1　実態と願い",["profile_strengths","profile_needs","history","edu_history","dev_test","life","child_wish","guardian_wish","wish","seiro_strengthen","seiro_complement"]);
+  h+=sec("1　実態と願い",["profile_strengths","profile_needs","history","edu_history","dev_test","life","child_wish","guardian_wish","wish","strengthen","complement"]);
   h+=sec("2　目標",["support_long_goal","guidance_long_goal","short_goal_1","short_goal_2"]);
   h+=sec("3　手立てと評価",["supports","eval_method","school_support","eval_handover"]);
   h+=tbl("4　指導表（前期）",p.table);
@@ -1947,7 +2340,7 @@ function valueFor(p,fid){
   if(fid==="table"||fid==="table_pre")return tableText(p,"前期");
   if(fid==="table_post")return tableText(p,"後期");
   if(fid==="table_all")return tableAllText(p);
-  if(fid==="table_seiro")return tableText(p,"前期");
+  if(fid==="table_localfmt")return tableText(p,"前期");
   if(fid==="child_code")return p.code||"";if(fid==="grade")return p.grade||"";
   if(fid==="class_type")return p.class_type||"";if(fid==="school")return p.school||"";
   return (p.data&&p.data[fid])||"";
@@ -2037,14 +2430,14 @@ function exportForm(kind){
   catch(e){download((p.code||"plan")+"_"+tpl.id+".csv",new Blob(["\ufeff"+csvFrom(rows)],{type:"text/csv;charset=utf-8"}));toast("ExcelにできへんかったのでCSVにしたで");}
 }
 
-var LIB=[["ASD", "切り替え,学習", "小低", "profile_needs", "見通しをもてない活動では不安が高まり、次に何をするのか分からず席を立つことがあります"], ["ASD", "切り替え", "共通", "profile_needs", "急な予定変更が苦手で、気持ちが高ぶって動けなくなることがあります"], ["ASD", "対人,集団", "小低", "profile_needs", "相手の気持ちを想像することが難しく、思ったことをそのまま伝えてしまうことがあります"], ["ASD", "感覚,集団", "小低", "profile_needs", "大きな音や人混みが苦手で、疲れやすく、気持ちが落ち着きにくいことがあります"], ["ASD", "ことば,対人", "小高", "profile_needs", "ことばの裏の意味や冗談を理解することが難しく、会話がかみ合わないことがあります"], ["ASD", "対人,集団", "共通", "profile_needs", "自分から友達に声をかけることが少なく、ひとりで過ごすことが多いです"], ["ASD", "生活,切り替え", "共通", "profile_strengths", "決まったやり方や手順があると安心し、最後まで落ち着いて取り組むことができます"], ["ASD", "学習", "共通", "profile_strengths", "見通しのある活動には集中して取り組み、細かいところまで丁寧に仕上げることができます"], ["ASD", "学習,ことば", "小高", "profile_strengths", "興味のある分野（電車・生き物・地図など）の知識が豊富で、自信をもって話すことができます"], ["ASD", "学習", "小低", "profile_strengths", "絵や図、具体物があると内容をよく理解し、覚えることができます"], ["ASD", "生活,身辺自立", "共通", "profile_strengths", "決まった係の仕事や日課を、正確にやり遂げることができます"], ["ASD", "切り替え", "小低", "short_goal_1", "次の活動の予定表を見て、自分で切り替えることができる"], ["ASD", "感情", "共通", "short_goal_1", "気持ちが高ぶったとき、自分から落ち着ける場所を選んだり、支援者に合図を出したりできる"], ["ASD", "対人,ことば", "小高", "short_goal_1", "自分の気持ちや希望を、ことばで伝えることができる"], ["ASD", "対人", "共通", "short_goal_2", "友達の話を最後まで聞いてから、自分の考えを伝えることができる"], ["ASD", "集団", "小高", "guidance_long_goal", "集団の中で、自分の役割を理解して活動に参加することができる"], ["ASD", "生活", "共通", "support_long_goal", "見通しをもって生活し、困ったときは自分から助けを求めることができる"], ["ASD", "切り替え", "共通", "supports", "活動の前に予定表を一緒に確認し、見通しをもてるようにする"], ["ASD", "学習", "共通", "supports", "手順表や絵カードを使い、やることが目で分かるようにする"], ["ASD", "対人,ことば", "小低", "supports", "ことばでのやりとりが難しいときは、教師が仲立ちして橋渡しをする"], ["ASD", "感覚", "共通", "supports", "落ち着ける場所を確保し、本人の意思を確認してから移動できるようにする"], ["ASD", "感覚", "小低", "supports", "イヤーマフや仕切りなど、感覚の負担を減らす道具を用意する"], ["ASD", "切り替え", "共通", "supports", "変更があるときは事前に知らせ、代わりの予定を一緒に確認する"], ["ASD", "学習,対人", "小高", "supports", "小集団のゲームなどで、教師が仲立ちしながら気持ちを表現するきっかけをつくる"], ["ASD", "感情", "共通", "supports", "気持ちに名前をつけて整理する練習を、具体的な場面で繰り返す"], ["ASD", "切り替え", "共通", "eval_method", "予定表を自分で見て切り替えられる場面が増えました。週1回の記録で見取ります"], ["ASD", "感情", "共通", "eval_handover", "気持ちが高ぶったとき、自分から合図を出せるようになりました。この合図の決め方を次の担任に引き継ぎます"], ["ASD", "共通", "共通", "family_support", "家庭でも、予定を前もって伝え、本人の気持ちを聞いてから活動を進めています"], ["ASD", "集団", "小低", "start_ease", "4月は、得意な図鑑や絵カードから始め、安心して活動に入れるようにします"], ["ADHD", "学習", "共通", "profile_needs", "気が散りやすく、必要な持ち物を忘れたり、なくしたりすることがあります"], ["ADHD", "学習,集団", "小低", "profile_needs", "授業中、体を動かしたくて席を離れたり、手いたずらが続いたりすることがあります"], ["ADHD", "対人,ことば", "共通", "profile_needs", "思いついたことをすぐ言ってしまい、話の途中で口をはさんでしまうことがあります"], ["ADHD", "生活", "小高", "profile_needs", "提出物や時間の管理が苦手で、後回しにしてしまうことがあります"], ["ADHD", "学習", "共通", "profile_strengths", "興味のあることには、驚くほど集中して取り組むことができます"], ["ADHD", "学習,運動", "共通", "profile_strengths", "体を動かして体験する学習だと、よく理解し、力を発揮できます"], ["ADHD", "学習", "小低", "short_goal_1", "指示を最後まで聞いてから、取りかかることができる"], ["ADHD", "生活", "小高", "short_goal_1", "持ち物や提出物を、決めた場所で自分で管理することができる"], ["ADHD", "ことば,対人", "共通", "short_goal_2", "話している人を最後まで見て、順番を待つことができる"], ["ADHD", "学習", "小低", "short_goal_2", "まずは5分、着席して課題に取り組むことができる"], ["ADHD", "学習", "共通", "supports", "指示は短く簡潔に、一度に一つずつ伝える"], ["ADHD", "学習", "共通", "supports", "フローチャートやチェックリストなど、視覚的な情報を使う"], ["ADHD", "学習,集団", "共通", "supports", "掲示物を減らし、集中しやすい座席や環境をつくる"], ["ADHD", "学習", "共通", "supports", "できた行動を具体的に伝え、自分で気づける声かけをする（セルフモニタリングを育てる）"], ["ADHD", "生活", "共通", "supports", "宿題や持ち物は、決まった場所と決まった手順で確認する習慣をつくる"], ["ADHD", "運動,学習", "共通", "supports", "体を動かす活動や役割を適度に取り入れ、発散できる場をつくる"], ["ADHD", "感情", "共通", "supports", "気持ちが高ぶったときの落ち着き方を、あらかじめ本人と決めておく"], ["ADHD", "対人,集団", "中高", "supports", "アンガーマネジメントやストレス対処の方法を、個別に練習する"], ["ADHD", "生活", "小高", "eval_method", "持ち物チェック表を使う日が増えました。帰りの会で本人と振り返り、記録します"], ["ADHD", "学習", "共通", "school_support", "活動の前にルールを確かめ、適切な行動を穏やかに伝える"], ["ADHD", "集団", "共通", "school_support", "友達が自然に支えられるよう、クラスでの関わり方を全体に伝える"], ["ADHD", "学習", "共通", "eval_handover", "席の位置や指示の出し方など、うまくいった条件をそのまま次年度に引き継ぎます"], ["ADHD", "家庭", "共通", "family_support", "家庭でも、指示は一つずつ短く伝え、できたらすぐほめるようにしています"], ["SLD", "読み書き", "小低", "profile_needs", "音読がたどたどしく、読み間違えることがあります（読字の困難）"], ["SLD", "読み書き", "小高", "profile_needs", "漢字の書きが苦手で、細かい部分が抜けたり、字形が乱れたりします（書字の困難）"], ["SLD", "計算", "小高", "profile_needs", "文章題で数の関係を理解することが難しく、途中で分からなくなってしまうことがあります"], ["SLD", "読み書き", "中高", "profile_needs", "板書を写すのに時間がかかり、ノートを取りきれないことがあります"], ["SLD", "学習", "共通", "profile_strengths", "聞いて理解することは得意で、話し合いや発表では力を発揮できます"], ["SLD", "学習", "共通", "profile_strengths", "絵や図、具体物を使うと、考えを整理して理解することができます"], ["SLD", "読み書き", "小低", "short_goal_1", "定規をあてるなどの工夫を使い、文章を読み進めることができる"], ["SLD", "読み書き", "小高", "short_goal_1", "書く量を調整しながら、考えたことを書き表すことができる"], ["SLD", "計算", "小高", "short_goal_2", "絵や図を使い、数の関係を考えて問題を解くことができる"], ["SLD", "読み書き", "共通", "supports", "読みやすい工夫（定規をあてる、2〜3行だけ見える窓のあるシート、カラーフィルター）を紹介し、本人に合う方法を一緒に見つける"], ["SLD", "読み書き", "共通", "supports", "板書の量を減らし、プリントやタブレットを併用する"], ["SLD", "読み書き", "共通", "supports", "書く量を調整し、口頭での確認や選択式の課題も取り入れる"], ["SLD", "読み書き", "共通", "supports", "タブレットや音声読み上げなど、読み書きを支える道具を活用する"], ["SLD", "計算", "小高", "supports", "問題に取りかかる前に、絵や図で数字の関係を一緒に整理する"], ["SLD", "読み書き", "共通", "supports", "間違いを責めず、できたところを具体的に伝えて自信を支える"], ["SLD", "読み書き", "共通", "eval_method", "定規をあてて読む方法が身につき、読み間違いが減りました。学期末に読字の様子を記録します"], ["SLD", "読み書き", "共通", "eval_handover", "タブレットと定規の併用が有効でした。この方法を次の学年にも引き継ぎます"], ["SLD", "家庭", "共通", "family_support", "家庭でも、読むときは横について待ち、書く量は減らして負担を軽くしています"], ["DCD", "運動", "共通", "profile_needs", "縄跳びやボール運動など、体を協調して動かすことが苦手で、運動を避けることがあります"], ["DCD", "読み書き", "小低", "profile_needs", "字の大きさがそろわず、筆圧が強すぎたり弱すぎたりして、書くのに疲れてしまいます"], ["DCD", "身辺自立", "共通", "profile_needs", "ボタン・ファスナー・靴ひもなど、身のまわりの手作業に時間がかかります"], ["DCD", "運動,学習", "共通", "profile_needs", "工作でハサミや定規を使うことが苦手で、完成までに時間がかかります"], ["DCD", "身辺自立", "共通", "profile_strengths", "時間をかけて取り組むことができ、できるようになりたい活動には粘り強く挑戦します"], ["DCD", "運動", "共通", "profile_needs", "運動がうまくできず、自信をなくしている様子が見られます"], ["DCD", "運動", "共通", "short_goal_1", "動きを分けて練習し、できるようになりたい運動に挑戦することができる"], ["DCD", "読み書き,身辺自立", "共通", "short_goal_2", "使いやすい道具を使い、書くことや身支度の負担を減らすことができる"], ["DCD", "運動", "共通", "support_long_goal", "できないことを責めず、自分のペースで活動に参加し、できた喜びを味わうことができる"], ["DCD", "運動", "共通", "supports", "動きを細かく分け、成功しやすい課題から始める"], ["DCD", "運動", "共通", "supports", "動きを見てから行う、事前に練習しておくなど、見通しをもたせる"], ["DCD", "読み書き", "共通", "supports", "鉛筆ホルダー、滑り止めの定規、滑り止めマットなど、道具を工夫する"], ["DCD", "運動", "共通", "supports", "運動の結果だけでなく、取り組み方や本人なりの成長をほめる"], ["DCD", "身辺自立", "共通", "supports", "扱いやすい衣服や食具を選び、時間に余裕をもてるようにする"], ["DCD", "運動", "共通", "eval_method", "動きを分けて練習することで、少しずつできるようになりました。本人の気づきを記録します"], ["DCD", "運動", "共通", "eval_handover", "体育の予習と道具の工夫が有効でした。次年度の体育の内容に合わせて引き継ぎます"], ["DCD", "家庭", "共通", "family_support", "家庭でも、着替えや食事に時間の余裕をもち、できたことを一緒に喜んでいます"], ["知的", "学習", "共通", "profile_needs", "ことばでの説明だけでは理解が難しく、具体物や絵があると分かりやすいです"], ["知的", "生活,切り替え", "共通", "profile_needs", "新しいことへの不安が強く、慣れるまで時間がかかることがあります"], ["知的", "生活,身辺自立", "共通", "profile_strengths", "係の仕事や決まった活動を、喜んで取り組むことができます"], ["知的", "学習", "共通", "profile_strengths", "繰り返し経験したことは、よく覚えて実行することができます"], ["知的", "身辺自立", "共通", "short_goal_1", "手順表を見て、自分で支度を進めることができる"], ["知的", "生活", "共通", "short_goal_2", "困ったときに、自分から支援者に助けを求めることができる"], ["知的", "学習,生活", "共通", "support_long_goal", "日常生活に必要なことを、自分でできるようにしていく"], ["知的", "学習", "共通", "supports", "活動を小さなステップに分け、できたことをその都度ほめる"], ["知的", "学習", "共通", "supports", "具体物や実物、絵カードを使い、目で見て分かるようにする"], ["知的", "生活", "共通", "supports", "生活単元や遊びを通して、繰り返し経験できる場をつくる"], ["知的", "身辺自立", "共通", "supports", "手順表やシールを使い、できたことが見えるようにする"], ["知的", "学習", "共通", "eval_method", "手順表を見て自分で支度できる日が増えました。日々の様子から記録します"], ["知的", "生活", "共通", "eval_handover", "できたことを支えている手順や環境を、次の担任に具体的に引き継ぎます"], ["知的", "家庭", "共通", "family_support", "家庭でも、同じ手順表を使い、できたことを一緒にほめています"], ["吃音", "ことば", "共通", "profile_needs", "話し始めにことばが出にくく、どもることがあります。急かされると話すことに緊張します"], ["吃音", "ことば", "共通", "profile_strengths", "歌や音読など、リズムのある活動では、比較的スムーズに話すことができます"], ["吃音", "ことば,対人", "共通", "short_goal_1", "話すことを急がされず、自分のペースで伝えることができる"], ["吃音", "ことば", "共通", "supports", "話し終えるまで急かさずに待ち、伝わった内容に応じる"], ["吃音", "ことば,行事", "共通", "supports", "話す時間に余裕をもたせ、発表の方法は本人の希望を確認する"], ["吃音", "ことば", "共通", "supports", "話しやすく伝わる方法（書き出してから話すなど）も一緒に考える"], ["吃音", "ことば", "共通", "eval_method", "自分のペースで最後まで話せる場面が増えました。発言の様子を記録します"], ["吃音", "ことば", "共通", "eval_handover", "急かさない対応を、教科担任を含めて引き継ぎます"], ["吃音", "家庭", "共通", "family_support", "家庭でも、話し終えるまで待ち、言い直しを求めないようにしています"], ["情緒", "感情,学習", "共通", "profile_needs", "間違いを強く恐れ、自信のなさから課題への取り組みが消極的になることがあります"], ["情緒", "感情", "共通", "profile_needs", "注意されると、自分を責めて落ち込んでしまうことがあります"], ["情緒", "感情,集団", "小高", "profile_needs", "気持ちの切り替えに時間がかかり、かんしゃくとして表れることがあります"], ["情緒", "感情,進路", "中高", "profile_needs", "学校生活への不安から、登校が難しくなる時期がありました"], ["情緒", "学習", "共通", "profile_strengths", "決まった活動や得意なことには、自分のペースで自信をもって取り組めます"], ["情緒", "学習", "共通", "short_goal_1", "失敗しても、もう一度やってみようとすることができる"], ["情緒", "感情", "共通", "short_goal_2", "気持ちが高ぶったとき、自分なりの落ち着く方法を使うことができる"], ["情緒", "進路", "中高", "support_long_goal", "自分のよさや得意なことに気づき、見通しをもって生活できる"], ["情緒", "感情,学習", "共通", "supports", "できていることや小さな兆しを見つけ、具体的に伝える（個人内評価）"], ["情緒", "学習", "共通", "supports", "目標をスモールステップに分け、成功体験を積み重ねる"], ["情緒", "感情", "共通", "supports", "気持ちを整理する時間や場所を確保する"], ["情緒", "進路", "中高", "supports", "得意なことを生かせる活動や役割を通して、自己肯定感を育てる"], ["情緒", "感情", "共通", "supports", "気持ちの高ぶりには、落ち着いてから話を聞き、事実と気持ちを分けて整理する"], ["情緒", "感情", "共通", "eval_method", "失敗したあとに、自分からもう一度取り組めることが増えました。個人内の変化を記録します"], ["情緒", "進路", "中高", "eval_handover", "安心できる条件と、不安が高まる場面を、支援会議で共有して引き継ぎます"], ["情緒", "家庭", "共通", "family_support", "家庭でも、できたことに目を向け、本人の気持ちを聞いてから話をするようにしています"], ["共通", "対人", "共通", "child_wish", "友達と一緒に活動したい"], ["共通", "学習", "共通", "child_wish", "勉強で分かるようになりたい"], ["共通", "生活", "共通", "child_wish", "自分でできることを増やしたい"], ["共通", "対人,集団", "共通", "guardian_wish", "同年齢の友達ともっと関わりをもってほしい"], ["共通", "生活,身辺自立", "共通", "guardian_wish", "自分で身のまわりのことをできるようになってほしい"], ["共通", "学習,感情", "共通", "guardian_wish", "自信をつけて、楽しく学校生活を送ってほしい"], ["共通", "対人", "共通", "guardian_wish", "トラブルを減らし、友達と仲良く過ごしてほしい"], ["共通", "進路", "中高", "guardian_wish", "得意なことを生かして、進路を選んでほしい"], ["共通", "集団,行事", "共通", "school_support", "活動の前に見通しを伝え、参加の仕方や休憩の取り方を本人と確認する"], ["共通", "集団", "共通", "school_support", "ことばだけでなく、絵カードや手順表を合わせて使う"], ["共通", "感情", "共通", "school_support", "きまりと違う行動は、行動そのものを責めず、背景を考える"], ["共通", "対人,集団", "共通", "school_support", "周りの友達が自然に支えられるよう、関わり方を全体に伝え、いじめを防ぐ"], ["共通", "学習", "共通", "support_long_goal", "自分の力で考え、生活や学習の見通しをもって行動できる"], ["共通", "感情", "共通", "support_long_goal", "感情を自分でコントロールし、人と関わることができる"], ["共通", "感情", "共通", "supports", "感情やストレスを自分でコントロールする方法を、個別に練習する"], ["共通", "生活", "共通", "supports", "本人が選べる場面を増やし、決定できる経験を積む"], ["共通", "集団", "共通", "supports", "できたことを認め、ほめる場面をあらかじめ計画しておく"], ["共通", "共通", "共通", "eval_method", "本人の変容（できるようになったこと）と兆しを、学期ごとに複数の目で見取る"], ["共通", "生活", "共通", "eval_handover", "新しい環境で不安を減らすため、うまくいった条件と4月のスタートの課題を具体的に引き継ぐ"], ["共通", "共通", "共通", "start_ease", "前年度までのおさらいや得意なことから始め、信頼関係を築く"], ["共通", "共通", "共通", "effective_supports", "見通しを伝えること、視覚的な手がかり、できたことをすぐほめること"], ["共通", "対人", "共通", "speech", "気持ちが高ぶったときは、ことばで伝えにくいことがあります。絵カードがあると伝えやすいです"], ["共通", "学習", "共通", "academics", "得意な面から学び直し、できたことを積み重ねながら進めています"], ["共通", "読み書き", "小高", "seiro_strengthen", "発表会の練習などでセリフを覚え、堂々と話すことができるようにする"], ["共通", "感情", "共通", "seiro_complement", "強い言い方が減り、相手を考えた言葉が増えてほしい"], ["共通", "共通", "共通", "period_note", "前期は落ち着いて話せる場面が増えました。後期は自分から気持ちを伝える機会をふやします"], ["共通", "対人", "共通", "profile_needs", "思いが通らないと、相手をかばうことばが出にくく、トラブルになりやすいことがあります"], ["共通", "学習", "共通", "profile_needs", "難しいと感じると、取りかかるまでに時間がかかることがあります"], ["共通", "感情", "共通", "profile_needs", "自分に自信がもてず、できていても「無理」と答えてしまうことがあります"]];
+var LIB=[["ASD", "切り替え,学習", "小低", "profile_needs", "見通しをもてない活動では不安が高まり、次に何をするのか分からず席を立つことがあります"], ["ASD", "切り替え", "共通", "profile_needs", "急な予定変更が苦手で、気持ちが高ぶって動けなくなることがあります"], ["ASD", "対人,集団", "小低", "profile_needs", "相手の気持ちを想像することが難しく、思ったことをそのまま伝えてしまうことがあります"], ["ASD", "感覚,集団", "小低", "profile_needs", "大きな音や人混みが苦手で、疲れやすく、気持ちが落ち着きにくいことがあります"], ["ASD", "ことば,対人", "小高", "profile_needs", "ことばの裏の意味や冗談を理解することが難しく、会話がかみ合わないことがあります"], ["ASD", "対人,集団", "共通", "profile_needs", "自分から友達に声をかけることが少なく、ひとりで過ごすことが多いです"], ["ASD", "生活,切り替え", "共通", "profile_strengths", "決まったやり方や手順があると安心し、最後まで落ち着いて取り組むことができます"], ["ASD", "学習", "共通", "profile_strengths", "見通しのある活動には集中して取り組み、細かいところまで丁寧に仕上げることができます"], ["ASD", "学習,ことば", "小高", "profile_strengths", "興味のある分野（電車・生き物・地図など）の知識が豊富で、自信をもって話すことができます"], ["ASD", "学習", "小低", "profile_strengths", "絵や図、具体物があると内容をよく理解し、覚えることができます"], ["ASD", "生活,身辺自立", "共通", "profile_strengths", "決まった係の仕事や日課を、正確にやり遂げることができます"], ["ASD", "切り替え", "小低", "short_goal_1", "次の活動の予定表を見て、自分で切り替えることができる"], ["ASD", "感情", "共通", "short_goal_1", "気持ちが高ぶったとき、自分から落ち着ける場所を選んだり、支援者に合図を出したりできる"], ["ASD", "対人,ことば", "小高", "short_goal_1", "自分の気持ちや希望を、ことばで伝えることができる"], ["ASD", "対人", "共通", "short_goal_2", "友達の話を最後まで聞いてから、自分の考えを伝えることができる"], ["ASD", "集団", "小高", "guidance_long_goal", "集団の中で、自分の役割を理解して活動に参加することができる"], ["ASD", "生活", "共通", "support_long_goal", "見通しをもって生活し、困ったときは自分から助けを求めることができる"], ["ASD", "切り替え", "共通", "supports", "活動の前に予定表を一緒に確認し、見通しをもてるようにする"], ["ASD", "学習", "共通", "supports", "手順表や絵カードを使い、やることが目で分かるようにする"], ["ASD", "対人,ことば", "小低", "supports", "ことばでのやりとりが難しいときは、教師が仲立ちして橋渡しをする"], ["ASD", "感覚", "共通", "supports", "落ち着ける場所を確保し、本人の意思を確認してから移動できるようにする"], ["ASD", "感覚", "小低", "supports", "イヤーマフや仕切りなど、感覚の負担を減らす道具を用意する"], ["ASD", "切り替え", "共通", "supports", "変更があるときは事前に知らせ、代わりの予定を一緒に確認する"], ["ASD", "学習,対人", "小高", "supports", "小集団のゲームなどで、教師が仲立ちしながら気持ちを表現するきっかけをつくる"], ["ASD", "感情", "共通", "supports", "気持ちに名前をつけて整理する練習を、具体的な場面で繰り返す"], ["ASD", "切り替え", "共通", "eval_method", "予定表を自分で見て切り替えられる場面が増えました。週1回の記録で見取ります"], ["ASD", "感情", "共通", "eval_handover", "気持ちが高ぶったとき、自分から合図を出せるようになりました。この合図の決め方を次の担任に引き継ぎます"], ["ASD", "共通", "共通", "family_support", "家庭でも、予定を前もって伝え、本人の気持ちを聞いてから活動を進めています"], ["ASD", "集団", "小低", "start_ease", "4月は、得意な図鑑や絵カードから始め、安心して活動に入れるようにします"], ["ADHD", "学習", "共通", "profile_needs", "気が散りやすく、必要な持ち物を忘れたり、なくしたりすることがあります"], ["ADHD", "学習,集団", "小低", "profile_needs", "授業中、体を動かしたくて席を離れたり、手いたずらが続いたりすることがあります"], ["ADHD", "対人,ことば", "共通", "profile_needs", "思いついたことをすぐ言ってしまい、話の途中で口をはさんでしまうことがあります"], ["ADHD", "生活", "小高", "profile_needs", "提出物や時間の管理が苦手で、後回しにしてしまうことがあります"], ["ADHD", "学習", "共通", "profile_strengths", "興味のあることには、驚くほど集中して取り組むことができます"], ["ADHD", "学習,運動", "共通", "profile_strengths", "体を動かして体験する学習だと、よく理解し、力を発揮できます"], ["ADHD", "学習", "小低", "short_goal_1", "指示を最後まで聞いてから、取りかかることができる"], ["ADHD", "生活", "小高", "short_goal_1", "持ち物や提出物を、決めた場所で自分で管理することができる"], ["ADHD", "ことば,対人", "共通", "short_goal_2", "話している人を最後まで見て、順番を待つことができる"], ["ADHD", "学習", "小低", "short_goal_2", "まずは5分、着席して課題に取り組むことができる"], ["ADHD", "学習", "共通", "supports", "指示は短く簡潔に、一度に一つずつ伝える"], ["ADHD", "学習", "共通", "supports", "フローチャートやチェックリストなど、視覚的な情報を使う"], ["ADHD", "学習,集団", "共通", "supports", "掲示物を減らし、集中しやすい座席や環境をつくる"], ["ADHD", "学習", "共通", "supports", "できた行動を具体的に伝え、自分で気づける声かけをする（セルフモニタリングを育てる）"], ["ADHD", "生活", "共通", "supports", "宿題や持ち物は、決まった場所と決まった手順で確認する習慣をつくる"], ["ADHD", "運動,学習", "共通", "supports", "体を動かす活動や役割を適度に取り入れ、発散できる場をつくる"], ["ADHD", "感情", "共通", "supports", "気持ちが高ぶったときの落ち着き方を、あらかじめ本人と決めておく"], ["ADHD", "対人,集団", "中高", "supports", "アンガーマネジメントやストレス対処の方法を、個別に練習する"], ["ADHD", "生活", "小高", "eval_method", "持ち物チェック表を使う日が増えました。帰りの会で本人と振り返り、記録します"], ["ADHD", "学習", "共通", "school_support", "活動の前にルールを確かめ、適切な行動を穏やかに伝える"], ["ADHD", "集団", "共通", "school_support", "友達が自然に支えられるよう、クラスでの関わり方を全体に伝える"], ["ADHD", "学習", "共通", "eval_handover", "席の位置や指示の出し方など、うまくいった条件をそのまま次年度に引き継ぎます"], ["ADHD", "家庭", "共通", "family_support", "家庭でも、指示は一つずつ短く伝え、できたらすぐほめるようにしています"], ["SLD", "読み書き", "小低", "profile_needs", "音読がたどたどしく、読み間違えることがあります（読字の困難）"], ["SLD", "読み書き", "小高", "profile_needs", "漢字の書きが苦手で、細かい部分が抜けたり、字形が乱れたりします（書字の困難）"], ["SLD", "計算", "小高", "profile_needs", "文章題で数の関係を理解することが難しく、途中で分からなくなってしまうことがあります"], ["SLD", "読み書き", "中高", "profile_needs", "板書を写すのに時間がかかり、ノートを取りきれないことがあります"], ["SLD", "学習", "共通", "profile_strengths", "聞いて理解することは得意で、話し合いや発表では力を発揮できます"], ["SLD", "学習", "共通", "profile_strengths", "絵や図、具体物を使うと、考えを整理して理解することができます"], ["SLD", "読み書き", "小低", "short_goal_1", "定規をあてるなどの工夫を使い、文章を読み進めることができる"], ["SLD", "読み書き", "小高", "short_goal_1", "書く量を調整しながら、考えたことを書き表すことができる"], ["SLD", "計算", "小高", "short_goal_2", "絵や図を使い、数の関係を考えて問題を解くことができる"], ["SLD", "読み書き", "共通", "supports", "読みやすい工夫（定規をあてる、2〜3行だけ見える窓のあるシート、カラーフィルター）を紹介し、本人に合う方法を一緒に見つける"], ["SLD", "読み書き", "共通", "supports", "板書の量を減らし、プリントやタブレットを併用する"], ["SLD", "読み書き", "共通", "supports", "書く量を調整し、口頭での確認や選択式の課題も取り入れる"], ["SLD", "読み書き", "共通", "supports", "タブレットや音声読み上げなど、読み書きを支える道具を活用する"], ["SLD", "計算", "小高", "supports", "問題に取りかかる前に、絵や図で数字の関係を一緒に整理する"], ["SLD", "読み書き", "共通", "supports", "間違いを責めず、できたところを具体的に伝えて自信を支える"], ["SLD", "読み書き", "共通", "eval_method", "定規をあてて読む方法が身につき、読み間違いが減りました。学期末に読字の様子を記録します"], ["SLD", "読み書き", "共通", "eval_handover", "タブレットと定規の併用が有効でした。この方法を次の学年にも引き継ぎます"], ["SLD", "家庭", "共通", "family_support", "家庭でも、読むときは横について待ち、書く量は減らして負担を軽くしています"], ["DCD", "運動", "共通", "profile_needs", "縄跳びやボール運動など、体を協調して動かすことが苦手で、運動を避けることがあります"], ["DCD", "読み書き", "小低", "profile_needs", "字の大きさがそろわず、筆圧が強すぎたり弱すぎたりして、書くのに疲れてしまいます"], ["DCD", "身辺自立", "共通", "profile_needs", "ボタン・ファスナー・靴ひもなど、身のまわりの手作業に時間がかかります"], ["DCD", "運動,学習", "共通", "profile_needs", "工作でハサミや定規を使うことが苦手で、完成までに時間がかかります"], ["DCD", "身辺自立", "共通", "profile_strengths", "時間をかけて取り組むことができ、できるようになりたい活動には粘り強く挑戦します"], ["DCD", "運動", "共通", "profile_needs", "運動がうまくできず、自信をなくしている様子が見られます"], ["DCD", "運動", "共通", "short_goal_1", "動きを分けて練習し、できるようになりたい運動に挑戦することができる"], ["DCD", "読み書き,身辺自立", "共通", "short_goal_2", "使いやすい道具を使い、書くことや身支度の負担を減らすことができる"], ["DCD", "運動", "共通", "support_long_goal", "できないことを責めず、自分のペースで活動に参加し、できた喜びを味わうことができる"], ["DCD", "運動", "共通", "supports", "動きを細かく分け、成功しやすい課題から始める"], ["DCD", "運動", "共通", "supports", "動きを見てから行う、事前に練習しておくなど、見通しをもたせる"], ["DCD", "読み書き", "共通", "supports", "鉛筆ホルダー、滑り止めの定規、滑り止めマットなど、道具を工夫する"], ["DCD", "運動", "共通", "supports", "運動の結果だけでなく、取り組み方や本人なりの成長をほめる"], ["DCD", "身辺自立", "共通", "supports", "扱いやすい衣服や食具を選び、時間に余裕をもてるようにする"], ["DCD", "運動", "共通", "eval_method", "動きを分けて練習することで、少しずつできるようになりました。本人の気づきを記録します"], ["DCD", "運動", "共通", "eval_handover", "体育の予習と道具の工夫が有効でした。次年度の体育の内容に合わせて引き継ぎます"], ["DCD", "家庭", "共通", "family_support", "家庭でも、着替えや食事に時間の余裕をもち、できたことを一緒に喜んでいます"], ["知的", "学習", "共通", "profile_needs", "ことばでの説明だけでは理解が難しく、具体物や絵があると分かりやすいです"], ["知的", "生活,切り替え", "共通", "profile_needs", "新しいことへの不安が強く、慣れるまで時間がかかることがあります"], ["知的", "生活,身辺自立", "共通", "profile_strengths", "係の仕事や決まった活動を、喜んで取り組むことができます"], ["知的", "学習", "共通", "profile_strengths", "繰り返し経験したことは、よく覚えて実行することができます"], ["知的", "身辺自立", "共通", "short_goal_1", "手順表を見て、自分で支度を進めることができる"], ["知的", "生活", "共通", "short_goal_2", "困ったときに、自分から支援者に助けを求めることができる"], ["知的", "学習,生活", "共通", "support_long_goal", "日常生活に必要なことを、自分でできるようにしていく"], ["知的", "学習", "共通", "supports", "活動を小さなステップに分け、できたことをその都度ほめる"], ["知的", "学習", "共通", "supports", "具体物や実物、絵カードを使い、目で見て分かるようにする"], ["知的", "生活", "共通", "supports", "生活単元や遊びを通して、繰り返し経験できる場をつくる"], ["知的", "身辺自立", "共通", "supports", "手順表やシールを使い、できたことが見えるようにする"], ["知的", "学習", "共通", "eval_method", "手順表を見て自分で支度できる日が増えました。日々の様子から記録します"], ["知的", "生活", "共通", "eval_handover", "できたことを支えている手順や環境を、次の担任に具体的に引き継ぎます"], ["知的", "家庭", "共通", "family_support", "家庭でも、同じ手順表を使い、できたことを一緒にほめています"], ["吃音", "ことば", "共通", "profile_needs", "話し始めにことばが出にくく、どもることがあります。急かされると話すことに緊張します"], ["吃音", "ことば", "共通", "profile_strengths", "歌や音読など、リズムのある活動では、比較的スムーズに話すことができます"], ["吃音", "ことば,対人", "共通", "short_goal_1", "話すことを急がされず、自分のペースで伝えることができる"], ["吃音", "ことば", "共通", "supports", "話し終えるまで急かさずに待ち、伝わった内容に応じる"], ["吃音", "ことば,行事", "共通", "supports", "話す時間に余裕をもたせ、発表の方法は本人の希望を確認する"], ["吃音", "ことば", "共通", "supports", "話しやすく伝わる方法（書き出してから話すなど）も一緒に考える"], ["吃音", "ことば", "共通", "eval_method", "自分のペースで最後まで話せる場面が増えました。発言の様子を記録します"], ["吃音", "ことば", "共通", "eval_handover", "急かさない対応を、教科担任を含めて引き継ぎます"], ["吃音", "家庭", "共通", "family_support", "家庭でも、話し終えるまで待ち、言い直しを求めないようにしています"], ["情緒", "感情,学習", "共通", "profile_needs", "間違いを強く恐れ、自信のなさから課題への取り組みが消極的になることがあります"], ["情緒", "感情", "共通", "profile_needs", "注意されると、自分を責めて落ち込んでしまうことがあります"], ["情緒", "感情,集団", "小高", "profile_needs", "気持ちの切り替えに時間がかかり、かんしゃくとして表れることがあります"], ["情緒", "感情,進路", "中高", "profile_needs", "学校生活への不安から、登校が難しくなる時期がありました"], ["情緒", "学習", "共通", "profile_strengths", "決まった活動や得意なことには、自分のペースで自信をもって取り組めます"], ["情緒", "学習", "共通", "short_goal_1", "失敗しても、もう一度やってみようとすることができる"], ["情緒", "感情", "共通", "short_goal_2", "気持ちが高ぶったとき、自分なりの落ち着く方法を使うことができる"], ["情緒", "進路", "中高", "support_long_goal", "自分のよさや得意なことに気づき、見通しをもって生活できる"], ["情緒", "感情,学習", "共通", "supports", "できていることや小さな兆しを見つけ、具体的に伝える（個人内評価）"], ["情緒", "学習", "共通", "supports", "目標をスモールステップに分け、成功体験を積み重ねる"], ["情緒", "感情", "共通", "supports", "気持ちを整理する時間や場所を確保する"], ["情緒", "進路", "中高", "supports", "得意なことを生かせる活動や役割を通して、自己肯定感を育てる"], ["情緒", "感情", "共通", "supports", "気持ちの高ぶりには、落ち着いてから話を聞き、事実と気持ちを分けて整理する"], ["情緒", "感情", "共通", "eval_method", "失敗したあとに、自分からもう一度取り組めることが増えました。個人内の変化を記録します"], ["情緒", "進路", "中高", "eval_handover", "安心できる条件と、不安が高まる場面を、支援会議で共有して引き継ぎます"], ["情緒", "家庭", "共通", "family_support", "家庭でも、できたことに目を向け、本人の気持ちを聞いてから話をするようにしています"], ["共通", "対人", "共通", "child_wish", "友達と一緒に活動したい"], ["共通", "学習", "共通", "child_wish", "勉強で分かるようになりたい"], ["共通", "生活", "共通", "child_wish", "自分でできることを増やしたい"], ["共通", "対人,集団", "共通", "guardian_wish", "同年齢の友達ともっと関わりをもってほしい"], ["共通", "生活,身辺自立", "共通", "guardian_wish", "自分で身のまわりのことをできるようになってほしい"], ["共通", "学習,感情", "共通", "guardian_wish", "自信をつけて、楽しく学校生活を送ってほしい"], ["共通", "対人", "共通", "guardian_wish", "トラブルを減らし、友達と仲良く過ごしてほしい"], ["共通", "進路", "中高", "guardian_wish", "得意なことを生かして、進路を選んでほしい"], ["共通", "集団,行事", "共通", "school_support", "活動の前に見通しを伝え、参加の仕方や休憩の取り方を本人と確認する"], ["共通", "集団", "共通", "school_support", "ことばだけでなく、絵カードや手順表を合わせて使う"], ["共通", "感情", "共通", "school_support", "きまりと違う行動は、行動そのものを責めず、背景を考える"], ["共通", "対人,集団", "共通", "school_support", "周りの友達が自然に支えられるよう、関わり方を全体に伝え、いじめを防ぐ"], ["共通", "学習", "共通", "support_long_goal", "自分の力で考え、生活や学習の見通しをもって行動できる"], ["共通", "感情", "共通", "support_long_goal", "感情を自分でコントロールし、人と関わることができる"], ["共通", "感情", "共通", "supports", "感情やストレスを自分でコントロールする方法を、個別に練習する"], ["共通", "生活", "共通", "supports", "本人が選べる場面を増やし、決定できる経験を積む"], ["共通", "集団", "共通", "supports", "できたことを認め、ほめる場面をあらかじめ計画しておく"], ["共通", "共通", "共通", "eval_method", "本人の変容（できるようになったこと）と兆しを、学期ごとに複数の目で見取る"], ["共通", "生活", "共通", "eval_handover", "新しい環境で不安を減らすため、うまくいった条件と4月のスタートの課題を具体的に引き継ぐ"], ["共通", "共通", "共通", "start_ease", "前年度までのおさらいや得意なことから始め、信頼関係を築く"], ["共通", "共通", "共通", "effective_supports", "見通しを伝えること、視覚的な手がかり、できたことをすぐほめること"], ["共通", "対人", "共通", "speech", "気持ちが高ぶったときは、ことばで伝えにくいことがあります。絵カードがあると伝えやすいです"], ["共通", "学習", "共通", "academics", "得意な面から学び直し、できたことを積み重ねながら進めています"], ["共通", "読み書き", "小高", "strengthen", "発表会の練習などでセリフを覚え、堂々と話すことができるようにする"], ["共通", "感情", "共通", "complement", "強い言い方が減り、相手を考えた言葉が増えてほしい"], ["共通", "共通", "共通", "period_note", "前期は落ち着いて話せる場面が増えました。後期は自分から気持ちを伝える機会をふやします"], ["共通", "対人", "共通", "profile_needs", "思いが通らないと、相手をかばうことばが出にくく、トラブルになりやすいことがあります"], ["共通", "学習", "共通", "profile_needs", "難しいと感じると、取りかかるまでに時間がかかることがあります"], ["共通", "感情", "共通", "profile_needs", "自分に自信がもてず、できていても「無理」と答えてしまうことがあります"]];
 
 /* ===== 文例ライブラリ ===== */
 var DIS_CODES=["ASD","ADHD","SLD","DCD","知的","吃音","情緒","共通"];
 var DIS_LABEL={ASD:"ASD（自閉スペクトラム）",ADHD:"ADHD（注意・多動）",SLD:"SLD（学びの困難・LD）",DCD:"DCD（不器用）",知的:"知的障害",吃音:"吃音",情緒:"情緒・不安・二次障害",共通:"共通"};
 var STAGE_CODES=["小低","小高","中高","共通"];
 var STAGE_LABEL={"小低":"小学校低学年","小高":"小学校高学年","中高":"中学・高校","共通":"校種を問わず"};
-var LIBLEFT_FIELDS=["profile_strengths","profile_needs","child_wish","guardian_wish","support_long_goal","guidance_long_goal","short_goal_1","short_goal_2","supports","eval_method","school_support","eval_handover","start_ease","effective_supports","speech","academics","seiro_strengthen","seiro_complement","period_note","family_support"];
+var LIBLEFT_FIELDS=["profile_strengths","profile_needs","child_wish","guardian_wish","support_long_goal","guidance_long_goal","short_goal_1","short_goal_2","supports","eval_method","school_support","eval_handover","start_ease","effective_supports","speech","academics","strengthen","complement","period_note","family_support"];
 var LIB_SCENES=(function(){var s={};LIB.forEach(function(e){e[1].split(",").forEach(function(t){t=t.trim();if(t)s[t]=1;});});return Object.keys(s).sort();})();
 var LIBF={q:"",dis:{},scene:{},stage:{},field:""};
 function libFilter(){
@@ -2184,7 +2577,7 @@ function planRowsForExport(dropPii){
   pushTable(p.table,"前期");
   pushTable(p.table2,"後期");
   Object.keys(FM).forEach(function(k){
-    if(k==="table"||k==="table_pre"||k==="table_post"||k==="table_all"||k==="table_seiro")return;
+    if(k==="table"||k==="table_pre"||k==="table_post"||k==="table_all"||k==="table_localfmt")return;
     if(dropPii&&PII.indexOf(k)>=0)return;
     var v=valueFor(p,k);if(String(v||"").trim())rows.push([FM[k],v]);
   });
@@ -2386,7 +2779,7 @@ if(MIGRATION_PENDING){
 
 /* ===== Excel取り込み：実帳票対応版／操作性強化 =====
    目的：
-   - 聖籠町様式の「見出し内サブ項目」を正しく分解
+   - 自治体様式の「見出し内サブ項目」を正しく分解
    - 結合セル・空セルを考慮して表を読む
    - 前期の指導表を p.table に格納し、後期編集へそのまま引き継ぐ
    - 国語・算数など追加領域も保持
@@ -2559,7 +2952,7 @@ function parseBasicRows(json,plan,map){
       var key=cleanCell(cell);if(!key)return;
       /* セル内の見出しから分解できる情報を先に拾う */
       parseSupportNested(plan,key,ri+1,ci+1);
-      /* 聖籠町様式の「学級・学年」は1つの欄なので、まず右隣の値を取得する */
+      /* 自治体様式の「学級・学年」は1つの欄なので、まず右隣の値を取得する */
       if(/^[\s　]*学級[・･]学年[\s　]*$/.test(key)){
         if(!plan.fields.class_name){
           var combinedVal=firstRightValue(row,ci,keys);
@@ -2969,7 +3362,7 @@ function renderImportPreview(){
       ["support_long_goal","長期目標"],["school_support","学校における支援"],["eval_handover","評価・引継ぎ事項"],
       ["history","療育・これまでの生育歴"],["edu_history","教育歴"],["dev_test","発達検査"],
       ["family_support","家庭"],["welfare_support","福祉"],["community_support","地域"],["medical_support","医療"],
-      ["seiro_strengthen","伸ばしたい力"],["seiro_complement","補いたい力"]
+      ["strengthen","伸ばしたい力"],["complement","補いたい力"]
     ];
     editKeys.forEach(function(x){
       html+='<label class="f" style="margin-top:.35rem">'+x[1]+'</label>'+
@@ -3068,8 +3461,8 @@ document.getElementById("btnImportExcel").onclick=function(){
         strengths:"profile_strengths",
         needs:"profile_needs",
         emergency_tel:"emergency",
-        seiro_strengthen:"seiro_strengthen",
-        seiro_complement:"seiro_complement"
+        strengthen:"strengthen",
+        complement:"complement"
       }[k]||k;
       if(target==="edu_history"&&p.data[target])p.data[target]+="\n"+v;
       else p.data[target]=v;
