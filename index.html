@@ -7,7 +7,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="theme-color" content="#193a63">
 <title>個別の支援・指導計画 ｜ 作成支援ツール</title>
-<meta name="excel-import-version" content="v47">
+<meta name="excel-import-version" content="v48">
 <style>
 
 
@@ -291,6 +291,8 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
       <button data-go="home">ホーム</button>
       <button data-go="memo">メモから作成</button>
       <button data-go="wizard">計画の入力</button>
+      <button data-go="meeting">面談モード</button>
+      <button data-go="quick">一括入力</button>
       <button data-go="library">文例を探す</button>
       <button data-go="soften">配慮した文面</button>
       <button data-go="check">チェック</button>
@@ -613,6 +615,7 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
       <div class="section-head"><span class="eyebrow">Readiness</span><h3 style="margin:0">提出前チェック</h3></div>
       <div class="checkgrid" id="readyGrid"></div>
     </div>
+    <div class="card mt" id="histArea"></div>
     <div class="footnav">
       <button class="b-ghost" data-go="wizard">← 入力に戻る</button>
       <button class="b-primary" data-go="form">様式に差し込む →</button>
@@ -697,6 +700,50 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     </div>
   </section>
 
+  <!-- MEETING / 面談モード -->
+  <section class="screen" id="s-meeting">
+    <div class="spread noprint">
+      <div>
+        <h1 style="margin-bottom:.1rem">面談モード</h1>
+        <p class="lead" style="margin:0">保護者面談のときに使う画面や。大きな文字で、面談に関係する項目だけ出すで。</p>
+      </div>
+      <div class="row">
+        <span class="small muted" id="meetMeta"></span>
+        <button class="b-primary" id="btnMeetEnd">面談を終える（履歴に記録）</button>
+      </div>
+    </div>
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Memo</span><h3 style="margin:0">面談メモ</h3></div>
+      <textarea id="meetMemo" rows="4" placeholder="話しながら箇条書きでメモ（例）&#10;・家では自分で着替えられるようになってきた&#10;・宿題の量を減らしてほしい"></textarea>
+      <div class="row mt">
+        <button class="b-ghost b-sm" id="btnMeetMic">🎤 音声で入力</button>
+        <button class="b-soft b-sm" id="btnMeetSort">メモを項目に振り分ける</button>
+      </div>
+      <div id="meetSortRows" class="mt"></div>
+    </div>
+    <div class="card mt">
+      <div class="section-head"><span class="eyebrow">Consent</span><h3 style="margin:0">保護者の了承</h3></div>
+      <div id="meetConsent"></div>
+    </div>
+    <div id="meetFields" class="mt"></div>
+  </section>
+
+  <!-- QUICK / 一括入力 -->
+  <section class="screen" id="s-quick">
+    <div class="spread noprint">
+      <div>
+        <h1 style="margin-bottom:.1rem">一括入力</h1>
+        <p class="lead" style="margin:0">全項目を1画面で見渡せる編集画面や。面談後の修正はここが速いで。</p>
+      </div>
+      <span class="small muted" id="quickProgress"></span>
+    </div>
+    <div class="row mt">
+      <input type="search" id="quickFilter" placeholder="項目名で絞り込み（例：目標）" style="flex:1;min-width:200px">
+      <button class="b-ghost b-sm" id="btnQuickNext">次の空欄へ</button>
+    </div>
+    <div id="quickFields" class="mt"></div>
+  </section>
+
   <!-- PREVIEW -->
   <section class="screen" id="s-preview">
     <div class="spread noprint">
@@ -742,14 +789,39 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     </div>
     <div class="card mt">
       <div class="section-head"><span class="eyebrow">AI Assist</span><h3 style="margin:0">AI入力支援（任意）</h3></div>
-      <p class="small muted">各項目の「🤖 AIで下書き」を使うときだけ、Google Gemini に文章の下書きを頼めます。使う場合は、無料で取得できる Gemini APIキーを入れてください。キーはこのブラウザの中だけに保存され、計画データのJSON書き出しには含まれません。</p>
+      <p class="small muted">各項目の「🤖 AIで下書き」を使うときだけ、選んだAIプロバイダに文章の下書きを頼めます。プロバイダごとにキーを保存でき、切り替えて使えます。キーはこのブラウザの中だけに保存され、計画データのJSON書き出しには含まれません。</p>
       <div class="row">
-        <input type="password" id="gemKeyInput" placeholder="Gemini APIキー" style="flex:1;min-width:240px" autocomplete="off">
-        <button class="b-primary b-sm" id="btnGemKeySave">キーを保存</button>
-        <button class="b-ghost b-sm" id="btnGemKeyClear">キーを消す</button>
+        <label class="small">プロバイダ
+          <select id="aiProvSel" style="margin-left:.4rem">
+            <option value="gemini">Google Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="claude">Anthropic Claude</option>
+            <option value="custom">カスタム（OpenAI互換）</option>
+          </select>
+        </label>
       </div>
-      <p class="small muted mt" id="gemKeyState"></p>
-      <p class="small muted">AIに送るのは、その項目の文脈（実態・願い・目標など）だけです。氏名などの個人情報欄は送りません。文中に氏名があれば「本児」に置き換えます。キーは <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a> で取得できます。</p>
+      <div id="aiPanel-gemini" class="ai-panel mt">
+        <div class="row"><input type="password" id="aiKey-gemini" placeholder="Gemini APIキー" style="flex:1;min-width:220px" autocomplete="off"><input type="text" id="aiModel-gemini" placeholder="モデル名" style="width:200px"></div>
+        <p class="small muted mt">キーは <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a> で取得できます。</p>
+      </div>
+      <div id="aiPanel-openai" class="ai-panel mt" hidden>
+        <div class="row"><input type="password" id="aiKey-openai" placeholder="OpenAI APIキー" style="flex:1;min-width:220px" autocomplete="off"><input type="text" id="aiModel-openai" placeholder="モデル名" style="width:200px"></div>
+        <p class="small muted mt">キーは <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI Platform</a> で取得できます。</p>
+      </div>
+      <div id="aiPanel-claude" class="ai-panel mt" hidden>
+        <div class="row"><input type="password" id="aiKey-claude" placeholder="Anthropic APIキー" style="flex:1;min-width:220px" autocomplete="off"><input type="text" id="aiModel-claude" placeholder="モデル名" style="width:200px"></div>
+        <p class="small muted mt">キーは <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console</a> で取得できます。</p>
+      </div>
+      <div id="aiPanel-custom" class="ai-panel mt" hidden>
+        <div class="row"><input type="text" id="aiBase-custom" placeholder="ベースURL（例：http://localhost:11434/v1）" style="flex:1;min-width:220px"><input type="password" id="aiKey-custom" placeholder="APIキー（不要な場合は空）" style="flex:1;min-width:180px" autocomplete="off"><input type="text" id="aiModel-custom" placeholder="モデル名" style="width:180px"></div>
+        <p class="small muted mt">OpenAI互換のエンドポイントを指定します（Ollama等のローカルAI、Groqなど）。ローカルAIは側の設定でブラウザからの接続許可が必要な場合があります。</p>
+      </div>
+      <div class="row mt">
+        <button class="b-primary b-sm" id="btnAiSave">設定を保存</button>
+        <button class="b-ghost b-sm" id="btnAiTest">接続テスト</button>
+        <span class="small muted" id="aiCfgState"></span>
+      </div>
+      <p class="small muted mt">AIに送るのは、その項目の文脈（実態・願い・目標など）だけです。氏名などの個人情報欄は送りません。文中に氏名があれば「本児」に置き換えます。</p>
     </div>
     <div class="card mt">
       <div class="section-head"><span class="eyebrow">Danger</span><h3 style="margin:0">リセット</h3></div>
@@ -759,7 +831,7 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     <div class="card mt">
       <h3>このアプリについて</h3>
       <ul class="small muted" style="padding-left:1.2rem;margin:0">
-        <li>入力・音声・保存・様式の差し込みは、ブラウザの中だけで完結（外部に送信しません）。AI入力支援を使うときだけ、本人がキーを設定しボタンを押した場合に限り、項目の文脈が Gemini に送信されます</li>
+        <li>入力・音声・保存・様式の差し込みは、ブラウザの中だけで完結（外部に送信しません）。AI入力支援を使うときだけ、本人がキーを設定しボタンを押した場合に限り、項目の文脈が、設定したAIプロバイダに送信されます</li>
         <li>様式は、自治体様式（内蔵）・文科省参考様式・新潟県様式・汎用を初期搭載。自校の欄名を貼り付ければ、そのまま差し込めるで</li>
         <li>Excel出力は、内蔵方式で本物の.xlsxとして書き出すで</li>
         <li>やさしい日本語チェック・配慮した文面づくりは、本アプリ（新潟県ハンドブック準拠）と同じ観点を再現しとる</li>
@@ -771,7 +843,7 @@ details summary{cursor:pointer;font-family:var(--round);font-weight:700;font-siz
     </div>
   </section>
 
-  <footer>正式リリース候補／v47／ 入力内容はこのブラウザ内にのみ保存されます。</footer>
+  <footer>正式リリース候補／v48／ 入力内容はこのブラウザ内にのみ保存されます。</footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1172,31 +1244,81 @@ function aiPromptForCell(p,rowName,c){
   var ctx=planContextText(p);
   return aiPromptBase()+"作成する欄：個別の指導計画の指導表。領域「"+(rowName||"")+"」の「"+(COL[c]||c)+"」の欄です。\n"+(ctx?"参考情報：\n"+ctx:"");
 }
-async function geminiDraft(prompt){
-  var key=gemKey();if(!key)throw new Error("NOKEY");
-  var res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6}})});
-  if(!res.ok)throw new Error("HTTP "+res.status);
-  var j=await res.json(),parts=(((j.candidates||[])[0]||{}).content||{}).parts||[];
-  var out=parts.map(function(x){return x.text||"";}).join("").trim();
+/* ===== v48: AIプロバイダ切替 ===== */
+var AI_CFG_LS="kobetsu_ai_cfg";
+var AI_PROVIDERS={
+  gemini:{name:"Google Gemini",defModel:"gemini-2.0-flash"},
+  openai:{name:"OpenAI",defModel:"gpt-4o-mini"},
+  claude:{name:"Anthropic Claude",defModel:"claude-sonnet-4-5"},
+  custom:{name:"カスタム（OpenAI互換）",defModel:""}
+};
+function aiCfg(){
+  var d={provider:"gemini",
+    gemini:{key:"",model:AI_PROVIDERS.gemini.defModel},
+    openai:{key:"",model:AI_PROVIDERS.openai.defModel},
+    claude:{key:"",model:AI_PROVIDERS.claude.defModel},
+    custom:{base:"",key:"",model:""}};
+  try{var raw=localStorage.getItem(AI_CFG_LS);
+    if(raw){var j=JSON.parse(raw);
+      if(j&&AI_PROVIDERS[j.provider])d.provider=j.provider;
+      Object.keys(AI_PROVIDERS).forEach(function(pv){if(j&&j[pv]){Object.keys(d[pv]).forEach(function(k){if(typeof j[pv][k]==="string")d[pv][k]=j[pv][k];});}});
+    }}catch(e){}
+  if(!d.gemini.key){var old=gemKey();if(old)d.gemini.key=old;}
+  return d;
+}
+function aiSaveCfg(c){try{localStorage.setItem(AI_CFG_LS,JSON.stringify(c));}catch(e){}}
+function aiCurrent(){var c=aiCfg();return {prov:c.provider,cfg:c[c.provider]||{},name:AI_PROVIDERS[c.provider].name};}
+function aiHasKey(){var cur=aiCurrent();return cur.prov==="custom"||!!(cur.cfg.key&&cur.cfg.key.trim());}
+async function aiHttpError(res){
+  var detail="";try{var j=await res.json();detail=(j.error&&(j.error.message||j.error.type))||"";}catch(e){}
+  if(res.status===401||res.status===403)return "キーを受け付けてもらえませんでした（HTTP "+res.status+"）。キーを確認してください";
+  if(res.status===404)return "モデルが見つかりませんでした（HTTP 404）。モデル名を確認してください";
+  return "HTTP "+res.status+(detail?": "+detail:"");
+}
+async function aiGenerate(prompt){
+  var cur=aiCurrent(),cfg=cur.cfg,model=(cfg.model||"").trim()||AI_PROVIDERS[cur.prov].defModel;
+  if(cur.prov!=="custom"&&!(cfg.key||"").trim())throw new Error("NOKEY");
+  var res,j,out="";
+  if(cur.prov==="gemini"){
+    res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":cfg.key.trim()},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.6}})});
+    if(!res.ok)throw new Error(await aiHttpError(res));
+    j=await res.json();
+    out=((((j.candidates||[])[0]||{}).content||{}).parts||[]).map(function(x){return x.text||"";}).join("").trim();
+  }else if(cur.prov==="claude"){
+    res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":cfg.key.trim(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:model,max_tokens:1024,messages:[{role:"user",content:prompt}]})});
+    if(!res.ok)throw new Error(await aiHttpError(res));
+    j=await res.json();
+    out=(j.content||[]).map(function(x){return x.text||"";}).join("").trim();
+  }else{
+    var base=cur.prov==="openai"?"https://api.openai.com/v1":(cfg.base||"").trim().replace(/\/+$/,"");
+    if(!base)throw new Error("NOBASE");
+    var headers={"Content-Type":"application/json"};if((cfg.key||"").trim())headers["Authorization"]="Bearer "+cfg.key.trim();
+    res=await fetch(base+"/chat/completions",{method:"POST",headers:headers,body:JSON.stringify({model:model,messages:[{role:"user",content:prompt}],temperature:0.6})});
+    if(!res.ok)throw new Error(await aiHttpError(res));
+    j=await res.json();
+    out=String((((j.choices||[])[0]||{}).message||{}).content||"").trim();
+  }
   if(!out)throw new Error("EMPTY");
   return out;
 }
+async function geminiDraft(prompt){return aiGenerate(prompt);}
 function openAiDraft(p,k){
   var box=$("draft-"+k);if(!box)return;box.hidden=false;
-  if(!gemKey()){box.innerHTML='<b>AIで下書き</b><br><span class="small muted">Gemini APIキーが未設定です。「データ管理」画面の「AI入力支援」でキーを保存すると使えます。キーなしでも、文例と文例ライブラリはそのまま使えます。</span>';return;}
+  if(!aiHasKey()){box.innerHTML='<b>AIで下書き</b><br><span class="small muted">AIプロバイダのキーが未設定です。「データ管理」画面の「AI入力支援」でプロバイダとキーを保存すると使えます。キーなしでも、文例と文例ライブラリはそのまま使えます。</span>';return;}
   box.innerHTML='<span class="small muted">AIが下書きを考えています…</span>';
   geminiDraft(aiPromptForField(p,k)).then(function(txt){
-    box.innerHTML="<b>AIの下書き（要確認・修正）</b><br>"+esc(txt)+'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="aigen-apply-'+k+'">この下書きを反映</button> <span class="small muted">そのまま使わず、事実と自分の言葉に直してな</span></div>';
+    box.innerHTML="<b>AIの下書き（要確認・修正）</b> <span class=\"small muted\">"+esc(aiCurrent().name)+"／"+esc((aiCurrent().cfg.model||"").trim()||AI_PROVIDERS[aiCurrent().prov].defModel)+"</span><br>"+esc(txt)+'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="aigen-apply-'+k+'">この下書きを反映</button> <span class="small muted">そのまま使わず、事実と自分の言葉に直してな</span></div>';
     $("aigen-apply-"+k).onclick=function(){p.data[k]=txt;var ta=$("fld-"+k);if(ta)ta.value=txt;touch();liveWarn(k,txt);toast("AIの下書きを反映したで（要確認・修正）");};
   }).catch(function(e){box.innerHTML='<span class="small muted">AIの下書きに失敗しました（'+esc(e.message)+"）。キーと通信環境を確認してな。</span>";});
 }
 function openCellAssist(p,period,i,c,arr,g,box){
   if(!box)return;box.hidden=false;
-  var rowName=(arr[i]&&arr[i].name)||"",sample=TABLE_SAMPLES[c]||"";
-  function apply(txt){arr[i][c]=txt;var ta=g.querySelector('textarea[data-r="'+i+'"][data-c="'+c+'"]');if(ta)ta.value=txt;touch();toast("文例を反映したで（要確認・修正）");}
+  var live=(period==="後期"?p.table2:p.table);
+  var rowName=(live[i]&&live[i].name)||"",sample=TABLE_SAMPLES[c]||"";
+  function apply(txt){var la=(period==="後期"?p.table2:p.table);if(la[i])la[i][c]=txt;var ta=g.querySelector('textarea[data-r="'+i+'"][data-c="'+c+'"]');if(ta)ta.value=txt;touch();toast("文例を反映したで（要確認・修正）");}
   var html="<b>"+esc(rowName)+"／"+(COL[c]||c)+" の記入例</b><br>"+esc(sample)
     +'<div style="margin-top:.5rem"><button class="b-primary b-sm" id="cell-apply">この記入例を反映</button>'
-    +(gemKey()?' <button class="b-ghost b-sm" id="cell-ai">🤖 AIでこの欄を書く</button>':"")
+    +(aiHasKey()?' <button class="b-ghost b-sm" id="cell-ai">🤖 AIでこの欄を書く</button>':"")
     +' <span class="small muted">そのまま使わず、自分の言葉に直してな</span></div>'
     +'<div class="small muted" style="margin-top:.35rem">※ 記入の観点は文部科学省「個別の教育支援計画の参考様式」（令和3年6月）などを参考にしています。文例はこのアプリ独自の文章です。</div>';
   box.innerHTML=html;
@@ -1283,6 +1405,9 @@ function normalizePlan(p,seen){
     if("seiro_complement" in p.data)delete p.data.seiro_complement;
   }
   if(!p.code)p.code="S-"+p.school_year+"-001";
+  if(!Array.isArray(p.history))p.history=[];
+  /* v48: 変更履歴の起点は「読み込んだ時点の状態」。面談や編集の差分が記録できるよう、未設定ならここで確定する */
+  if(!p.lastSnap){try{p.lastSnap=snapOf(p);}catch(e){}}
   if(p.grade==null)p.grade="";
   if(p.class_type==null)p.class_type="特別支援学級";
   if(p.school==null)p.school="";
@@ -1398,6 +1523,7 @@ function createAnnualCopy(source){
     if(Array.isArray(c[t]))c[t]=c[t].map(function(r){r=(r&&typeof r==="object")?r:{};return {name:r.name||"",fact:r.fact||"",goal:r.goal||"",method:r.method||"",eval:""};});
   });
   c.data.guardian_confirmed=false;
+  c.history=[];delete c.lastSnap;
   return normalizePlan(c);
 }
 function knownStorageKeys(){return [LSKEY,LAST_GOOD_RECOVERY_KEY,CORRUPT_RECOVERY_KEY,MIGRATION_RECOVERY_KEY,LSKEY+"_corrupt_marker","kobetsu_col_map"];}
@@ -1561,9 +1687,11 @@ function go(name){
     if(b.dataset.go===name)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   window.scrollTo({top:0,behavior:"smooth"});
   if(name==="home")renderHome();
+  if(name==="meeting")renderMeeting();
+  if(name==="quick")renderQuick();
   if(name==="wizard")renderWizard();
   if(name==="sort")renderSort();
-  if(name==="check")paintCheck();
+  if(name==="check"){paintCheck();renderHistory();}
   if(name==="preview")renderPaper();
   if(name==="data")renderData();
   if(name==="form")renderForm();
@@ -1603,6 +1731,7 @@ function renderHome(){
       +'<span class="badge '+st+'">'+({draft:"下書き",review:"提出中",approved:"承認済"}[st]||st)+'</span>'
       +'<span class="bar"><span style="width:'+pct+'%"></span></span>'
       +'<span class="next">次の一手：'+esc(list?(pct>=100?"出力・提出":nextHint(p)):p.next)+'</span>'
+      +(list&&p.history&&p.history.length?' <span class="tag">前回から'+p.history[p.history.length-1].changes.length+'項目変更</span>':"")
       +(list?'<button class="b-brand b-sm" data-open="'+p.id+'">開く</button>':'<button class="b-ghost b-sm" data-demo="1">サンプルで試す</button>');
     box.appendChild(r);
   });
@@ -1928,6 +2057,9 @@ function renderTable(body,p,period){
   normalizeTable(p);
   var isPost=(period==="後期");
   var arr=isPost?p.table2:p.table;
+  /* 保存のたびに normalizePlan が p.table を新しい配列に差し替える。
+     描画時点の配列を持ち続けると、保存後に書いた内容が消えるため、操作のたびに最新を引く。 */
+  function liveArr(){return isPost?p.table2:p.table;}
   body.appendChild(el("div","tablenote","実態→目標→指導・支援方法→評価 の4列や。行の名前（日常生活・対人・自立活動・国語・算数など）は変えられるで。使う行だけ埋めればOK。"));
   var g=el("div","gridtable");
   arr.forEach(function(r,i){
@@ -1947,29 +2079,61 @@ function renderTable(body,p,period){
   body.appendChild(g);
   var tbox=el("div","draftbox");tbox.id="tbldraft-"+period;tbox.hidden=true;body.appendChild(tbox);
   g.querySelectorAll("[data-cell]").forEach(function(b){
-    b.onclick=function(){var pr=b.dataset.cell.split(":");openCellAssist(p,period,+pr[0],pr[1],arr,g,tbox);};
+    b.onclick=function(){var pr=b.dataset.cell.split(":");openCellAssist(p,period,+pr[0],pr[1],liveArr(),g,tbox);};
   });
   var bar=el("div","row mt");
   bar.innerHTML='<button class="b-ghost b-sm" id="addT">＋ 行を追加</button>'+(arr.length>1?'<button class="b-ghost b-sm" id="delT">最後の行を消す</button>':"");
   body.appendChild(bar);
-  g.querySelectorAll(".rnin").forEach(function(inp){inp.oninput=function(){arr[+inp.closest(".trow").querySelector("textarea").dataset.r].name=inp.value;touch();};});
-  g.querySelectorAll("textarea").forEach(function(ta){ta.oninput=function(){arr[+ta.dataset.r][ta.dataset.c]=ta.value;touch();};});
-  $("addT").onclick=function(){if(arr.length>=9){toast("9行までやで");return;}arr.push({name:"",fact:"",goal:"",method:"",eval:""});save(true);renderWizard();};
-  if($("delT"))$("delT").onclick=function(){arr.pop();save(true);renderWizard();};
+  g.querySelectorAll(".rnin").forEach(function(inp){inp.oninput=function(){var la=liveArr();if(la[+inp.closest(".trow").querySelector("textarea").dataset.r])la[+inp.closest(".trow").querySelector("textarea").dataset.r].name=inp.value;touch();};});
+  g.querySelectorAll("textarea").forEach(function(ta){ta.oninput=function(){var la=liveArr();if(la[+ta.dataset.r])la[+ta.dataset.r][ta.dataset.c]=ta.value;touch();};});
+  $("addT").onclick=function(){var la=liveArr();if(la.length>=9){toast("9行までやで");return;}la.push({name:"",fact:"",goal:"",method:"",eval:""});save(true);renderWizard();};
+  if($("delT"))$("delT").onclick=function(){liveArr().pop();save(true);renderWizard();};
 }
 $("btnNext").onclick=function(){if(S.step<STEPS.length-1){S.step++;save(true);renderWizard();window.scrollTo({top:0,behavior:"smooth"});}else{go("check");runCheck();}};
 $("btnPrev").onclick=function(){if(S.step>0){S.step--;save(true);renderWizard();}};
-$("btnSave").onclick=function(){flushQueuedSave();if(save())toast("下書きを保存しました");};
+$("btnSave").onclick=function(){var n=commitHistory(cur(),"通常");flushQueuedSave();if(save())toast(n?("下書きを保存しました（変更 "+n+" 件を履歴に記録）"):"下書きを保存しました");};
 $("btnJumpCheck").onclick=function(){go("check");runCheck();};
 
-/* ===== v47: AIキー設定の配線 ===== */
+/* ===== v48: AIプロバイダ設定の配線 ===== */
 (function(){
-  var inp=$("gemKeyInput"),st=$("gemKeyState");if(!inp||!st)return;
-  function refresh(){st.textContent=gemKey()?"キーは保存済みです（このブラウザ内のみ）。":"キーは未設定です。AIで下書きはキー設定後に使えます。";}
-  if(gemKey())inp.placeholder="保存済み（変更する場合だけ入力）";
-  refresh();
-  $("btnGemKeySave").onclick=function(){var v=inp.value.trim();if(!v){toast("キーを入力してな");return;}setGemKey(v);inp.value="";inp.placeholder="保存済み（変更する場合だけ入力）";refresh();toast("キーを保存したで");};
-  $("btnGemKeyClear").onclick=function(){setGemKey("");inp.value="";inp.placeholder="Gemini APIキー";refresh();toast("キーを消したで");};
+  var sel=$("aiProvSel");if(!sel)return;
+  var state=$("aiCfgState");
+  function collect(){
+    var c=aiCfg();c.provider=sel.value;
+    Object.keys(AI_PROVIDERS).forEach(function(pv){
+      var k=$("aiKey-"+pv),m=$("aiModel-"+pv);
+      if(k)c[pv].key=k.value.trim();
+      if(m)c[pv].model=m.value.trim();
+    });
+    var b=$("aiBase-custom");if(b)c.custom.base=b.value.trim();
+    return c;
+  }
+  function showPanel(){
+    Object.keys(AI_PROVIDERS).forEach(function(pv){var p=$("aiPanel-"+pv);if(p)p.hidden=pv!==sel.value;});
+  }
+  function fill(){
+    var c=aiCfg();sel.value=c.provider;
+    Object.keys(AI_PROVIDERS).forEach(function(pv){
+      var k=$("aiKey-"+pv),m=$("aiModel-"+pv);
+      if(k)k.value=c[pv].key||"";
+      if(m)m.value=c[pv].model||"";
+    });
+    var b=$("aiBase-custom");if(b)b.value=c.custom.base||"";
+    showPanel();
+    state.textContent="現在のプロバイダ："+AI_PROVIDERS[c.provider].name;
+  }
+  sel.onchange=function(){showPanel();aiSaveCfg(collect());state.textContent="現在のプロバイダ："+AI_PROVIDERS[sel.value].name;};
+  $("btnAiSave").onclick=function(){aiSaveCfg(collect());state.textContent="保存しました（このブラウザ内のみ）";toast("AI設定を保存したで");};
+  $("btnAiTest").onclick=function(){
+    aiSaveCfg(collect());
+    state.textContent="接続テスト中…";
+    aiGenerate("接続テストです。「接続OK」とだけ返してください。").then(function(t){
+      state.textContent="接続OK："+AI_PROVIDERS[sel.value].name+" から応答がありました";
+    }).catch(function(e){
+      state.textContent="接続できませんでした："+(e.message==="NOKEY"?"キーが未設定です":e.message==="NOBASE"?"ベースURLが未設定です":e.message);
+    });
+  };
+  fill();
 })();
 
 /* ===== v47: 様式テンプレート差し込み（結合セル対応） =====
@@ -2207,6 +2371,282 @@ function tplExport(){
     S.tplProfiles=(S.tplProfiles||[]).filter(function(x){return x.sig!==TPLENG.sig;});
     S.tplProfiles.push({id:"tp"+Date.now().toString(36),name:name,fileName:TPLENG.fileName,sheetName:TPLENG.sheetName,sig:TPLENG.sig,mapping:TPLENG.entries.map(function(e){return {labelRef:e.labelRef,field:e.field,target:e.target};})});
     save(true);toast("対応づけを保存したで："+name);
+  };
+})();
+
+/* ===== v48: 変更履歴 ===== */
+function snapOf(p){
+  var o={};
+  LONG_KEYS.forEach(function(k){o[k]=String((p.data||{})[k]||"");});
+  try{o["__table"]=tableText(p,"前期");}catch(e){o["__table"]=JSON.stringify(p.table||[]);}
+  try{o["__table2"]=tableText(p,"後期");}catch(e){o["__table2"]=JSON.stringify(p.table2||[]);}
+  var d=p.data||{};
+  o["__consent"]="了承日："+(d.consent_date||"")+"／了承者："+(d.guardian_name_confirm||"")+"／確認："+(d.guardian_confirmed?"済み":"未");
+  return o;
+}
+function snapLabel(k){
+  if(k==="__table")return "指導表（前期）";
+  if(k==="__table2")return "指導表（後期）";
+  if(k==="__consent")return "保護者の了承";
+  return FM[k]||k;
+}
+function commitHistory(p,kind){
+  if(!p)return 0;
+  var now=snapOf(p);
+  if(!p.lastSnap){p.lastSnap=now;return 0;}
+  var changes=[];
+  Object.keys(now).forEach(function(k){
+    if(now[k]!==p.lastSnap[k])changes.push({k:k,label:snapLabel(k),from:String(p.lastSnap[k]||"").slice(0,300),to:String(now[k]||"").slice(0,300)});
+  });
+  if(!changes.length)return 0;
+  p.history=Array.isArray(p.history)?p.history:[];
+  p.history.push({ts:Date.now(),kind:kind||"通常",changes:changes});
+  if(p.history.length>30)p.history=p.history.slice(p.history.length-30);
+  p.lastSnap=now;
+  return changes.length;
+}
+function renderHistory(){
+  var box=$("histArea");if(!box)return;
+  var p=cur();
+  var h='<div class="section-head"><span class="eyebrow">History</span><h3 style="margin:0">変更履歴</h3></div>';
+  if(!p){box.innerHTML=h+'<p class="small muted">計画を選ぶと履歴が出るで。</p>';return;}
+  if(!p.history||!p.history.length){
+    box.innerHTML=h+'<p class="small muted">まだ変更履歴はありません。面談モードを終えたときや、保存ボタンを押したときに、変わった項目がここに記録されます。</p>'
+      +'<div class="row mt"><button class="b-ghost b-sm" id="btnHistNow">今の状態を履歴の起点にする</button></div>';
+    var b0=$("btnHistNow");if(b0)b0.onclick=function(){commitHistory(p,"通常");p.lastSnap=snapOf(p);save(true);renderHistory();toast("起点を記録したで");};
+    return;
+  }
+  var items=p.history.slice().reverse().map(function(en){
+    var d=new Date(en.ts);
+    var when=d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+    var body=en.changes.map(function(c){
+      return '<div style="margin:.45rem 0"><b>'+esc(c.label)+'</b><div class="small" style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.4rem .55rem;white-space:pre-wrap"><span class="muted">前：</span>'+esc(c.from||"（空）")+'<br><span class="muted">後：</span>'+esc(c.to||"（空）")+"</div></div>";
+    }).join("");
+    return '<details style="border-top:1px solid var(--line);padding:.45rem 0"><summary>'+esc(when)+"・"+esc(en.kind)+"・"+en.changes.length+"項目を変更</summary>"+body+"</details>";
+  }).join("");
+  box.innerHTML=h+items+'<div class="row mt"><button class="b-ghost b-sm" id="btnHistNow">今の状態を履歴に記録</button></div>';
+  $("btnHistNow").onclick=function(){var n=commitHistory(p,"通常");save(true);renderHistory();toast(n?("変更 "+n+" 件を記録したで"):"前回から変更はないで");};
+}
+
+/* ===== v48: 音声入力（項目ごと） ===== */
+function dictateTo(ta,btn){
+  var SRw=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SRw){toast("この環境は音声入力に未対応や（Chrome/Edgeで試してな）");return;}
+  if(ta._rec){try{ta._rec.stop();}catch(e){}return;}
+  var rec=new SRw();rec.lang="ja-JP";rec.continuous=true;rec.interimResults=false;
+  rec.onresult=function(ev){
+    var txt="";for(var i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)txt+=ev.results[i][0].transcript;}
+    if(!txt)return;
+    var v=ta.value;ta.value=(v?v.replace(/\n?$/,"\n"):"")+"・"+txt;
+    ta.dispatchEvent(new Event("input"));
+  };
+  rec.onend=function(){ta._rec=null;if(btn)btn.textContent="🎤 音声";};
+  rec.onerror=function(){ta._rec=null;if(btn)btn.textContent="🎤 音声";};
+  ta._rec=rec;if(btn)btn.textContent="⏹ 停止";
+  try{rec.start();}catch(e){ta._rec=null;if(btn)btn.textContent="🎤 音声";}
+}
+
+/* ===== v48: 項目支援（面談・一括入力 共通） ===== */
+function assistApply(p,k,ta){
+  return function(txt){p.data[k]=txt;if(ta)ta.value=txt;touch();toast("反映したで（要確認・修正）");};
+}
+function assistSample(p,k,box,apply){
+  box.hidden=false;
+  var txt=AI_SAMPLES[k];
+  if(!txt){box.innerHTML='<span class="small muted">この項目の記入例はまだありません。</span>';return;}
+  box.innerHTML="<b>記入例</b><br>"+esc(txt)+'<div style="margin-top:.5rem"><button class="b-primary b-sm" data-a="1">この記入例を反映</button> <span class="small muted">そのまま使わず、自分の言葉に直してな</span></div>';
+  box.querySelector("[data-a]").onclick=function(){apply(txt);};
+}
+function assistAi(p,k,box,apply){
+  box.hidden=false;
+  if(!aiHasKey()){box.innerHTML='<b>AIで下書き</b><br><span class="small muted">AIプロバイダのキーが未設定です。「データ管理」の「AI入力支援」で設定すると使えます。</span>';return;}
+  box.innerHTML='<span class="small muted">AIが下書きを考えています…</span>';
+  aiGenerate(aiPromptForField(p,k)).then(function(txt){
+    box.innerHTML="<b>AIの下書き（要確認・修正）</b><br>"+esc(txt)+'<div style="margin-top:.5rem"><button class="b-primary b-sm" data-a="1">この下書きを反映</button> <span class="small muted">そのまま使わず、事実と自分の言葉に直してな</span></div>';
+    box.querySelector("[data-a]").onclick=function(){apply(txt);};
+  }).catch(function(e){box.innerHTML='<span class="small muted">AIの下書きに失敗しました（'+esc(e.message)+"）。</span>";});
+}
+function wireAssist(container,p,taPrefix,boxPrefix){
+  container.querySelectorAll("[data-mic]").forEach(function(b){
+    b.onclick=function(){var ta=document.getElementById(taPrefix+b.dataset.mic);if(ta)dictateTo(ta,b);};
+  });
+  container.querySelectorAll("[data-sample]").forEach(function(b){
+    b.onclick=function(){var k=b.dataset.sample;assistSample(p,k,document.getElementById(boxPrefix+k),assistApply(p,k,document.getElementById(taPrefix+k)));};
+  });
+  container.querySelectorAll("[data-aig]").forEach(function(b){
+    b.onclick=function(){var k=b.dataset.aig;assistAi(p,k,document.getElementById(boxPrefix+k),assistApply(p,k,document.getElementById(taPrefix+k)));};
+  });
+}
+function assistRowHtml(k){
+  return '<div class="airow"><button class="b-ghost b-sm" data-mic="'+k+'">🎤 音声</button>'
+    +'<button class="b-soft b-sm" data-sample="'+k+'">✨ 記入例</button>'
+    +'<button class="b-ghost b-sm" data-aig="'+k+'">🤖 AIで下書き</button></div>';
+}
+
+/* ===== v48: 面談モード ===== */
+var MEET_KEYS=["profile_strengths","profile_needs","child_wish","guardian_wish","support_long_goal","short_goal_1","short_goal_2","supports","school_support","family_support","eval_method","period_note"];
+var MEET_SORT=[];
+function renderMeeting(){
+  var p=cur(),box=$("meetFields");if(!box)return;
+  if(!p){box.innerHTML='<p class="lead">まず計画を選んでな。ホームから計画を開くと、ここが使えるで。</p>';$("meetMeta").textContent="";return;}
+  $("meetMeta").textContent=p.code+"／"+(p.grade||"")+"／"+(p.data.child_name||"");
+  renderMeetConsent(p);
+  box.innerHTML="";
+  var card=el("div","card");
+  card.innerHTML='<div class="section-head"><span class="eyebrow">Interview</span><h3 style="margin:0">面談で確認する項目</h3></div>';
+  MEET_KEYS.forEach(function(k){
+    var d=el("div","field");d.style.marginTop="1rem";
+    d.innerHTML='<label class="f" for="mf-'+k+'" style="font-size:1.02rem">'+esc(FM[k]||k)+'</label>'
+      +'<textarea id="mf-'+k+'" rows="4" style="font-size:1.05rem;line-height:1.8">'+esc(p.data[k]||"")+"</textarea>"
+      +assistRowHtml(k)
+      +'<div class="draftbox" id="mdraft-'+k+'" hidden></div>';
+    card.appendChild(d);
+    d.querySelector("textarea").oninput=function(e){p.data[k]=e.target.value;touch();};
+  });
+  box.appendChild(card);
+  wireAssist(box,p,"mf-","mdraft-");
+}
+function renderMeetConsent(p){
+  var box=$("meetConsent");if(!box)return;
+  var done=!!p.data.guardian_confirmed;
+  box.innerHTML='<div class="row" style="flex-wrap:wrap;gap:.6rem;align-items:flex-end">'
+    +'<label class="small">了承日<input type="text" id="meetConsentDate" value="'+esc(p.data.consent_date||"")+'" placeholder="例）2026/11/01" style="width:150px;margin-left:.4rem"></label>'
+    +'<label class="small">了承者氏名<input type="text" id="meetConsentName" value="'+esc(p.data.guardian_name_confirm||"")+'" style="width:180px;margin-left:.4rem"></label>'
+    +(done?'<span class="chip on">✓ 了承済み</span>':'<button class="b-primary b-sm" id="btnConsentStamp">保護者の了承を得た</button>')
+    +'</div><p class="small muted" style="margin:.5rem 0 0">「保護者の了承を得た」を押すと、了承日に今日の日付が入り、確認済みになります。</p>';
+  $("meetConsentDate").oninput=function(e){p.data.consent_date=e.target.value;touch();};
+  $("meetConsentName").oninput=function(e){p.data.guardian_name_confirm=e.target.value;touch();};
+  var b=$("btnConsentStamp");
+  if(b)b.onclick=function(){
+    var now=new Date();
+    p.data.consent_date=now.getFullYear()+"/"+String(now.getMonth()+1).padStart(2,"0")+"/"+String(now.getDate()).padStart(2,"0");
+    p.data.guardian_confirmed=true;touch();
+    toast(String(p.data.guardian_name_confirm||"").trim()?"了承を記録したで":"了承を記録したで。了承者氏名も入れてな");
+    renderMeeting();
+  };
+}
+function renderMeetSort(){
+  var box=$("meetSortRows");if(!box)return;
+  box.innerHTML="";
+  if(!MEET_SORT.length)return;
+  MEET_SORT.forEach(function(r){
+    var row=el("div","srow");
+    var opts=CATS.map(function(c){return '<option value="'+c[0]+'"'+(c[0]===r.cat?" selected":"")+">"+esc(c[1])+"</option>";}).join("");
+    row.innerHTML='<div><label class="f">振り分け先</label><select class="catsel">'+opts+'</select></div>'
+      +'<textarea class="txt" rows="2">'+esc(r.text)+"</textarea>"
+      +'<label class="small"><input type="checkbox" class="use" checked> 反映する</label>';
+    row.querySelector(".catsel").onchange=function(e){r.cat=e.target.value;};
+    row.querySelector(".txt").oninput=function(e){r.text=e.target.value;};
+    row.querySelector(".use").onchange=function(e){r.use=e.target.checked;};
+    box.appendChild(row);
+  });
+  var bar=el("div","row mt");
+  bar.innerHTML='<button class="b-primary b-sm" id="btnMeetApply">選んだ行を項目に反映</button>';
+  box.appendChild(bar);
+  $("btnMeetApply").onclick=function(){
+    var p=cur();if(!p)return;
+    var n=0;
+    MEET_SORT.forEach(function(r){
+      if(r.use===false||!r.cat||r.cat==="none"||!r.text.trim())return;
+      var cur2=String(p.data[r.cat]||"");
+      p.data[r.cat]=(cur2?cur2.replace(/\n?$/,"\n"):"")+"・"+r.text.trim();
+      n++;
+    });
+    touch();MEET_SORT=[];$("meetMemo").value="";
+    renderMeeting();renderMeetSort();
+    toast(n+" 行を反映したで");
+  };
+}
+
+/* ===== v48: 一括入力 ===== */
+var QUICK_EMPTY_IDX=0;
+function quickProgress(){
+  var tas=document.querySelectorAll("#quickFields textarea"),filled=0;
+  tas.forEach(function(t){if(t.value.trim())filled++;});
+  var e=$("quickProgress");if(e)e.textContent="入力済み "+filled+"／"+tas.length+" 項目";
+}
+function renderQuick(){
+  var p=cur(),box=$("quickFields");if(!box)return;
+  if(!p){box.innerHTML='<p class="lead">まず計画を選んでな。</p>';return;}
+  box.innerHTML="";
+  var basics=[["school_year","年度"],["grade","学年"],["class_type","学級・在籍形態"],["school","学校名"]];
+  var bg=el("div","card");
+  bg.innerHTML='<div class="section-head"><span class="eyebrow">Basic</span><h3 style="margin:0">基本情報</h3></div>';
+  basics.forEach(function(pr){
+    var k=pr[0],d=el("div","field");d.dataset.label=pr[1];
+    d.innerHTML='<label class="f">'+pr[1]+'</label><input type="text" value="'+esc(fieldVal(p,k))+'">';
+    d.querySelector("input").oninput=function(e){
+      if(k==="school_year"){var y=parseInt(e.target.value,10);if(y>=2000&&y<=9999)p.school_year=y;}
+      else if(k==="grade")p.grade=e.target.value;
+      else if(k==="class_type")p.class_type=e.target.value;
+      else if(k==="school")p.school=e.target.value;
+      touch();
+    };
+    bg.appendChild(d);
+  });
+  box.appendChild(bg);
+  STEPS.forEach(function(st){
+    if(st.id==="personal"||st.id==="table"||st.id==="table2"||st.id==="localfmt_setup")return;
+    var keys=st.keys.filter(function(k){return LONG_KEYS.indexOf(k)>=0;});
+    if(!keys.length)return;
+    var card=el("div","card mt");
+    card.innerHTML='<div class="section-head"><span class="eyebrow">Step</span><h3 style="margin:0">'+esc(st.t)+"</h3></div>";
+    keys.forEach(function(k){
+      var d=el("div","field");d.dataset.label=FM[k]||k;d.style.marginTop=".8rem";
+      d.innerHTML='<label class="f">'+esc(FM[k]||k)+'</label><textarea id="qf-'+k+'" rows="3">'+esc(p.data[k]||"")+"</textarea>"
+        +assistRowHtml(k)
+        +'<div class="draftbox" id="qdraft-'+k+'" hidden></div>';
+      card.appendChild(d);
+      d.querySelector("textarea").oninput=function(e){p.data[k]=e.target.value;touch();quickProgress();};
+    });
+    box.appendChild(card);
+  });
+  var tb=el("div","card mt");
+  tb.innerHTML='<p class="small muted" style="margin:0 0 .5rem">指導表（前期・後期）は「計画の入力」の指導表タブで編集できます。</p><button class="b-ghost b-sm" id="quickToTable">指導表を開く</button>';
+  box.appendChild(tb);
+  $("quickToTable").onclick=function(){var i=STEPS.findIndex(function(s){return s.id==="table";});if(i>=0){S.step=i;save(true);}go("wizard");};
+  wireAssist(box,p,"qf-","qdraft-");
+  quickProgress();
+}
+
+/* ===== v48: 面談・一括入力の配線 ===== */
+(function(){
+  var bs=$("btnMeetSort");
+  if(bs)bs.onclick=function(){
+    var t=$("meetMemo").value||"";
+    MEET_SORT=t.split("\n").map(function(l){return l.replace(/^[\s・\-\*●○.,、]+/,"").trim();}).filter(Boolean)
+      .map(function(x){return {text:x,cat:classify(x),use:true};});
+    renderMeetSort();
+    if(!MEET_SORT.length)toast("メモが空やで");
+  };
+  var bm=$("btnMeetMic");
+  if(bm)bm.onclick=function(){dictateTo($("meetMemo"),bm);};
+  var be=$("btnMeetEnd");
+  if(be)be.onclick=function(){
+    var p=cur();if(!p){go("home");return;}
+    var n=commitHistory(p,"面談");save(true);
+    toast(n?("面談の変更 "+n+" 件を履歴に記録したで"):"面談での変更はなかったで");
+    go("check");
+  };
+  var qf=$("quickFilter");
+  if(qf)qf.oninput=function(){
+    var q=qf.value.trim();
+    document.querySelectorAll("#quickFields .field").forEach(function(f){
+      f.style.display=(!q||(f.dataset.label||"").indexOf(q)>=0)?"":"none";
+    });
+    document.querySelectorAll("#quickFields .card").forEach(function(c){
+      var any=false;c.querySelectorAll(".field").forEach(function(f){if(f.style.display!=="none")any=true;});
+      c.style.display=any?"":"none";
+    });
+  };
+  var qn=$("btnQuickNext");
+  if(qn)qn.onclick=function(){
+    var tas=Array.prototype.filter.call(document.querySelectorAll("#quickFields textarea"),function(t){
+      return !t.value.trim()&&t.closest(".field")&&t.closest(".field").style.display!=="none";
+    });
+    if(!tas.length){toast("空欄はないで");return;}
+    var t=tas[QUICK_EMPTY_IDX%tas.length];QUICK_EMPTY_IDX++;
+    t.scrollIntoView({block:"center",behavior:"smooth"});t.focus();
   };
 })();
 
